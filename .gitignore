@@ -1,0 +1,67 @@
+# Generated files
+.docusaurus
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+documentation/static/extensionDocs
+documentation/static/websiteDocs
+documentation/static/flaskdocs
+
+# Extension
+out
+dist
+node_modules
+.vscode-test/
+*.vsix
+extension/coverage/
+
+# Server
+.venv/
+.idea/
+__pycache__/
+**/.env
+**/*.env
+**/prod.env
+**/dev.env
+.pytest_cache/
+flask_session/
+.coverage
+htmlcov/
+extensionDocs/
+websiteDocs/
+flaskdocs/
+server/docs/build/
+server/docs/extensionDocs/
+server/docs/websiteDocs/
+
+# Website
+website/coverage/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
