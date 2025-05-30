@@ -13,7 +13,7 @@ export const Landing: React.FC = () => {
         <h1 className="text-5xl font-extrabold text-text">
           Welcome to{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#50B498] to-[#9CDBA6]">
-            CLOVER
+            CLOVER TESTING
           </span>
         </h1>
         <p className="mt-4 text-lg text-text max-w-2xl">
