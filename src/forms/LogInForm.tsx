@@ -20,6 +20,7 @@ export const LoginForm: React.FC = () => {
   const handleGitHubLogin = async () => {
     try {
       window.location.href = `${AUTH_ENDPOINT}/login?provider=github&next=https://clover.nickrucinski.com/auth`; // Redirect user to GitHub OAuth
+      // window.location.href = `${AUTH_ENDPOINT}/login?provider=github&next=http://localhost:5173/auth`; // Redirect user to GitHub OAuth
     } catch (err) {
       setError("An error occurred while attempting GitHub login." + err);
     }
@@ -117,6 +118,15 @@ export const LoginForm: React.FC = () => {
           Sign Up
         </button>
       </p>
+      <p className="mt-4 text-center text-text">
+        <button
+          onClick={() => navigate("/passwordreset")}  
+          className="text-[#50B498] hover:underline"
+        >
+          Forgot your password?
+        </button>
+      </p>
+      
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { supabase } from "../supabaseClient";
 import { EnrollmentStatus, UserActivityLogItem } from "../types";
 import { CLASS_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
-import { UserClass } from "./types/user";
+import { ClassData, UserClass, UserData } from "./types/user";
 
 /**
  * * Creates a new class in the database.
@@ -215,3 +215,101 @@ export const updateStudentEnrollmentStatus = async (
 
   return { success: true };
 };
+
+type ClassUserRow = {
+  class_id: string;
+  classes: {
+    id: string;
+    class_title: string;
+    class_code: string;
+    instructor_id: string;
+    class_hex_color?: string;
+    class_image_cover?: string | null;
+    class_description?: string | null;
+    created_at?: string;
+  };
+  users: {
+    id: string;
+    created_at: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    role: UserData["role"];
+    status?: string;
+    settings: UserData["settings"];
+  };
+};
+
+export async function getAllClasses(): Promise<{
+  classes?: ClassData[];
+  error?: string;
+}> {
+  try {
+    const { data, error } = (await supabase.from("class_users").select(`
+        class_id,
+        classes (
+          id,
+          class_title,
+          class_code,
+          instructor_id,
+          class_hex_color,
+          class_image_cover,
+          class_description,
+          created_at
+        ),
+        users (
+          id,
+          created_at,
+          email,
+          first_name,
+          last_name,
+          role,
+          status,
+          settings
+        )
+      `)) as { data: ClassUserRow[]; error: any }; // 👈 Cast the expected type
+
+    if (error) throw error;
+
+    const classMap = new Map<string, ClassData>();
+
+    for (const row of data) {
+      const cls = row.classes;
+      const usr = row.users;
+
+      if (!classMap.has(cls.id)) {
+        classMap.set(cls.id, {
+          id: cls.id,
+          classTitle: cls.class_title,
+          classCode: cls.class_code,
+          instructorId: cls.instructor_id,
+          classHexColor: cls.class_hex_color,
+          classImageCover: cls.class_image_cover,
+          classDescription: cls.class_description,
+          createdAt: cls.created_at,
+          students: [],
+        });
+      }
+
+      const user: UserData = {
+        id: usr.id,
+        createdAt: usr.created_at,
+        firstName: usr.first_name,
+        lastName: usr.last_name,
+        email: usr.email,
+        role: usr.role,
+        status: usr.status,
+        settings: usr.settings,
+      };
+
+      classMap.get(cls.id)!.students.push(user);
+    }
+
+    return { classes: Array.from(classMap.values()) };
+  } catch (err) {
+    console.error(`Failed to get all classes:`, err);
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}

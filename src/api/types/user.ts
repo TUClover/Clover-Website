@@ -83,3 +83,15 @@ export enum StudentStatus {
   SUSPENDED = "SUSPENDED",
   LOCKED = "LOCKED",
 }
+
+export interface ClassData {
+  id?: string;
+  classTitle: string;
+  classCode: string;
+  instructorId?: string;
+  classHexColor?: string;
+  classImageCover?: string | null;
+  classDescription?: string | null;
+  createdAt?: string;
+  students: UserData[];
+}

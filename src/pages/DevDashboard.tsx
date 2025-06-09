@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAllUsers } from "../hooks/useAllUsers";
 import { useUserClasses, useUserClassStatus } from "../hooks/useUserClasses";
-import { Line } from "react-chartjs-2";
 import { useAIStats } from "../hooks/useAIStats";
 import {
   Chart as ChartJS,
@@ -12,9 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { AIStats } from "../api/types/suggestion";
-import { UserClass, UserData, UserRole } from "../api/types/user";
-import DatePicker from "react-datepicker";
+import { ClassData, UserClass, UserData, UserRole } from "../api/types/user";
 import "react-datepicker/dist/react-datepicker.css";
 import { useUserActivity } from "../hooks/useUserActivity";
 import UserSideBar from "../components/UsersSideBar";
@@ -23,6 +20,10 @@ import DataDownload from "../components/DataDownload";
 import { useInstructorClasses } from "../hooks/useInstructorClasses";
 import { toast } from "sonner";
 import StudentDashboardCard from "../components/StudentDashboardCard";
+import ClassSideBar from "../components/ClassSideBar";
+import { AIStatGraph } from "../components/AIStatGraph";
+import { useAllClasses } from "../hooks/useAllClasses";
+import ClassDetailsPanel from "../components/ClassDetailsPanel";
 
 ChartJS.register(
   LineElement,
@@ -42,6 +43,7 @@ ChartJS.register(
  */
 export const DevDashboard = () => {
   const [selectedUsers, setSelectedUsers] = useState<UserData[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedClass, setSelectedClass] = useState<UserClass | null>(null);
@@ -54,27 +56,24 @@ export const DevDashboard = () => {
         : "class";
 
   const { users, isLoading, error } = useAllUsers();
-
   const primaryUser = selectedUsers[0];
-
   const { classes, loading: userClassesLoading } = useUserClasses(
     primaryUser?.id
   );
-
   const { userActivity, loading: userActivityLoading } = useUserActivity(
     primaryUser?.id
   );
-
   const { classes: instructorClasses, loading: instructorLoading } =
     useInstructorClasses(primaryUser?.id);
 
-  const { aiStats } = useAIStats();
+  const { classes: allClasses, isLoading: isLoadingClasses } = useAllClasses();
 
   const { userActivity: selectedActivity, progressData } = useUserActivity(
     selectedUserId,
     selectedClassId,
     selectedClassType
   );
+  const { aiStats } = useAIStats();
 
   const { studentStatus } = useUserClassStatus(
     selectedUsers[0]?.id || null,
@@ -92,10 +91,9 @@ export const DevDashboard = () => {
         <AIStatGraph aiStats={aiStats} />
       </div>
       {/* User Section */}
-      <div className="flex gap-6 mb-6">
+      <div className="flex flex-col md:flex-row gap-6 mb-6">
         {/* Sidebar */}
         <UserSideBar
-          title="Users"
           users={users}
           selectedUsers={selectedUsers}
           loading={isLoading}
@@ -120,8 +118,32 @@ export const DevDashboard = () => {
             instructorLoading
           }
           setSelectedClass={setSelectedClass}
+          isSettingsPanel={false}
         />
       </div>
+      <div className="flex flex-col md:flex-row gap-6 mb-6">
+        <ClassSideBar
+          classes={allClasses}
+          selectedClasses={selectedClasses}
+          onSelectClass={(classData) => {
+            setSelectedClasses([classData]);
+          }}
+          onSetSelectedClasses={setSelectedClasses}
+          loading={isLoadingClasses}
+          setSelectedClassId={(id) => {
+            const selected = allClasses.find((cls) => cls.id === id);
+            if (selected) {
+              setSelectedClasses([selected]);
+            }
+          }}
+        />
+        <ClassDetailsPanel
+          users={users}
+          classDetails={selectedClasses}
+          isLoading={isLoadingClasses}
+        />
+      </div>
+
       {/* Data Download Section */}
       <div className="w-full mb-3 text-text">
         <DataDownload />
@@ -149,146 +171,3 @@ export const DevDashboard = () => {
 };
 
 export default DevDashboard;
-
-/**
- * AIStatGraph component
- * Only available in the developer dashboard.
- * @param {aiStats[]} The AI statistics data to be displayed in the graph.
- * @returns {JSX.Element} - The AIStatGraph component.
- */
-export const AIStatGraph = ({
-  aiStats,
-}: {
-  aiStats: AIStats[] | undefined;
-}) => {
-  useEffect(() => {
-    const checkDarkMode = () => {
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      setTextColor(isDarkMode ? "#FFFFFF" : "#000000");
-      setGridColor(isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)");
-    };
-
-    checkDarkMode();
-
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const [textColor, setTextColor] = useState("#000000");
-  const [gridColor, setGridColor] = useState("rgba(255,255,255,0.1)");
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-
-  const filteredStats = aiStats?.filter((stat) => {
-    const date = new Date(stat.created_at);
-    return (!startDate || date >= startDate) && (!endDate || date <= endDate);
-  });
-
-  // const groupedStats = aiStats?.reduce((acc, stat) => {
-  //   const dateKey = new Date(stat.created_at).toLocaleDateString();
-  //   acc[dateKey] = (acc[dateKey] || 0) + stat.total_tokens;
-  //   return acc;
-  // }, {} as Record<string, number>);
-
-  const chartData = {
-    // labels: Object.keys(groupedStats || {}),
-    labels:
-      filteredStats?.map((stat) =>
-        new Date(stat.created_at).toLocaleDateString()
-      ) ?? [],
-    datasets: [
-      {
-        label: "Total Tokens Used",
-        // data: Object.values(groupedStats || {}),
-        data: filteredStats?.map((stat) => stat.total_tokens) ?? [],
-        borderColor: "#50B498",
-        backgroundColor: "rgba(80, 180, 152, 0.2)",
-        tension: 0.3,
-        fill: true,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: { color: textColor },
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          color: textColor,
-        },
-        grid: { color: gridColor },
-      },
-      y: {
-        ticks: { color: textColor },
-        grid: { color: gridColor },
-      },
-    },
-  };
-
-  return (
-    <div className="w-full h-auto bg-white dark:bg-black border border-gray-600 dark:border-gray-400 rounded-lg shadow p-4 pb-12">
-      {/* Header with responsive flex layout */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 px-2">
-        <h2 className="text-lg font-semibold">AI Stats</h2>
-
-        {/* Date pickers with responsive layout */}
-        <div className="flex flex-col xs:flex-row gap-2 sm:gap-4 items-start xs:items-center">
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-500 whitespace-nowrap w-12">
-              From:
-            </label>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              className="dark:bg-black border text-sm w-full min-w-[120px]"
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-500 whitespace-nowrap w-12">
-              To:
-            </label>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              className="dark:bg-black border text-sm w-full min-w-[120px]"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Responsive chart container */}
-      <div
-        className="relative w-full"
-        style={{ height: "clamp(200px, 30vh, 400px)" }}
-      >
-        <Line
-          data={chartData}
-          options={{
-            ...chartOptions,
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              ...chartOptions.plugins,
-              legend: {
-                ...chartOptions.plugins?.legend,
-                position: "bottom",
-              },
-            },
-          }}
-        />
-      </div>
-    </div>
-  );
-};

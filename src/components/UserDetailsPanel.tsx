@@ -5,7 +5,7 @@ import {
   UserData,
   UserRole,
 } from "../api/types/user";
-import { deleteUser, updateUser } from "../api/user";
+import { deleteUser, updateUser, updateUserPassword } from "../api/user";
 import PaginatedTable from "./PaginatedTable";
 import SuggestionTable from "./SuggestionTable";
 import UserSettings from "./UserSettings";
@@ -33,6 +33,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { supabase } from "../supabaseClient";
 
 /**
  * UserDetailsPanel component displays user details, activity, and settings.
@@ -53,6 +54,7 @@ export const UserDetailsPanel: React.FC<{
   instructorClasses?: UserClass[];
   isLoading?: boolean;
   setSelectedClass?: (cls: UserClass) => void;
+  isSettingsPanel: boolean;
 }> = ({
   user,
   userRole,
@@ -61,20 +63,21 @@ export const UserDetailsPanel: React.FC<{
   instructorClasses,
   isLoading,
   setSelectedClass,
+  isSettingsPanel,
 }) => {
   const isArray = Array.isArray(user);
   const singleUser = isArray && user.length === 1 ? user[0] : null;
 
   if (isLoading) {
     return (
-      <div className="flex-1 bg-white dark:bg-black border border-gray-600 dark:border-gray-400 rounded-lg shadow p-6 overflow-y-auto">
+      <div className="w-full md:flex-1 max-h-[80vh] bg-white dark:bg-black border border-gray-600 dark:border-gray-400 rounded-lg shadow p-6 overflow-y-auto no-scrollbar">
         <UserDetailsSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="flex-1 bg-white dark:bg-black border border-gray-600 dark:border-gray-400 rounded-lg shadow p-6 overflow-y-auto no-scrollbar">
+    <div className="w-full md:flex-1 max-h-[80vh] bg-white dark:bg-black border border-gray-600 dark:border-gray-400 rounded-lg shadow p-6 overflow-y-auto no-scrollbar">
       {singleUser ? (
         <div>
           <div className="flex justify-between items-center mb-4">
@@ -100,7 +103,12 @@ export const UserDetailsPanel: React.FC<{
             />
             <UserSettingsSection user={singleUser} userRole={userRole} />
           </div>
-          <div className="flex justify-end mt-4">
+          <div className="flex justify-end mt-4 space-x-4">
+            {isSettingsPanel ? (
+              <ResetPasswordButton />
+            ) : (
+              <ResetPasswordButton userId={singleUser.id} />
+            )}
             <DeleteUserButton userId={singleUser.id} />
           </div>
         </div>
@@ -141,6 +149,106 @@ const DeleteUserButton: React.FC<{
     >
       Delete User
     </button>
+  );
+};
+
+const ResetPasswordButton: React.FC<{ userId?: string }> = ({ userId }) => {
+  const [open, setOpen] = useState(false);
+  const form = useForm({
+    defaultValues: {
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  const changePassword = async () => {
+    if (form.getValues("newPassword") !== form.getValues("confirmPassword")) {
+      form.setError("confirmPassword", {
+        type: "manual",
+        message: "Passwords do not match",
+      });
+      return;
+    }
+    if (userId) {
+      const { error } = await updateUserPassword(
+        userId,
+        form.getValues("newPassword")
+      );
+
+      if (error) {
+        console.error("Error resetting password: ", error);
+      }
+    } else {
+      const { data, error } = await supabase.auth.updateUser({
+        password: form.getValues("newPassword"),
+      });
+      if (data) {
+        console.log("Password updated successfully");
+      }
+      if (error) {
+        console.error("Error updating user: ", error);
+      }
+    }
+
+    setOpen(false);
+    form.reset();
+  };
+
+  return (
+    <div className="">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <button className="button-gray">Change Password</button>
+        </DialogTrigger>
+        <DialogContent className="bg-white dark:bg-zinc-900 rounded-xl shadow shadow-gray-800 p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Enter a new password</DialogTitle>
+          </DialogHeader>
+
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(changePassword)}
+              className="space-y-8 mt-4"
+            >
+              <FormField
+                control={form.control}
+                name="newPassword"
+                rules={{ required: "Password is required" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                rules={{ required: "Please confirm your password" }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                className="w-full !mt-8 font-semibold text-lg !py-5"
+              >
+                Change
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 

@@ -15,6 +15,8 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import { useUserData } from "./hooks/useUserData";
 import { Loader2 } from "lucide-react";
+import Reset from "./pages/PasswordReset";
+import PasswordCallback from "./pages/PasswordCallback";
 
 /**
  * ProtectedRoute component that checks if the user is authenticated.
@@ -77,6 +79,8 @@ const App = () => {
           <Route path="/download" element={<Download />} />
           <Route path="/getting-started" element={<Help />} />
           <Route path="/auth" element={<AuthCallback />} />
+          <Route path="/passwordreset" element={<Reset />} />
+          <Route path="/resetform" element={<PasswordCallback />} />
         </Route>
       </Routes>
     </main>

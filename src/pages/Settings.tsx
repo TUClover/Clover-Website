@@ -35,6 +35,7 @@ export const Settings = ({ userData }: { userData: UserData | null }) => {
             userActivityLoading ||
             instructorClassesLoading
           }
+          isSettingsPanel={true}
         />
       </div>
     </div>

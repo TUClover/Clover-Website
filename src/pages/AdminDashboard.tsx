@@ -83,10 +83,9 @@ export const AdminDashboard = () => {
   return (
     <div>
       {/* User Section */}
-      <div className="flex h-[calc(100vh-5rem)] gap-6 mb-3">
+      <div className="flex flex-col md:flex-row gap-6 mb-6">
         {/* Sidebar */}
         <UserSideBar
-          title="Users"
           users={users}
           selectedUsers={selectedUsers}
           loading={isLoading}
@@ -111,6 +110,7 @@ export const AdminDashboard = () => {
             instructorLoading
           }
           setSelectedClass={setSelectedClass}
+          isSettingsPanel={false}
         />
       </div>
       <div className="w-full mb-6 text-text">

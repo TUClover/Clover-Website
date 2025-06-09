@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api/auth";
 import { supabase } from "../supabaseClient";
 import { Eye, EyeOff } from "lucide-react";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 
 /**
  * SignUpForm component for user registration.
@@ -25,10 +25,15 @@ export const SignUpForm: React.FC = () => {
     setError("");
 
     try {
-      const userData = await registerUser(firstName, lastName, email, password);
+      const { error } = await registerUser(
+        firstName,
+        lastName,
+        email,
+        password
+      );
 
-      if (userData.error) {
-        setError(userData.error);
+      if (error) {
+        setError(error);
         return;
       }
 
@@ -38,16 +43,16 @@ export const SignUpForm: React.FC = () => {
       });
 
       if (data) {
-        Swal.fire({
-          title: "Sign Up Successful",
-          text: "Welcome to Clover! Please Sign In to continue.",
-          toast: true,
-          color: "#50B498",
-          position: "top-end",
-          allowOutsideClick: true,
-          showConfirmButton: false,
-          timer: 5000,
-        });
+        // Swal.fire({
+        //   title: "Sign Up Successful",
+        //   text: "Welcome to Clover! Please Sign In to continue.",
+        //   toast: true,
+        //   color: "#50B498",
+        //   position: "top-end",
+        //   allowOutsideClick: true,
+        //   showConfirmButton: false,
+        //   timer: 5000,
+        // });
         navigate("/dashboard", { replace: true });
       }
     } catch (err) {

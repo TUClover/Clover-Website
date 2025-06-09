@@ -28,6 +28,8 @@ export const SuggestionTable = ({
 
   useEffect(() => {
     const fetchSuggestion = async () => {
+      console.log(JSON.stringify(selectedLogItem?.metadata, null, 2));
+
       if (!selectedLogItem?.metadata?.suggestionId) return;
 
       setLoading(true);
@@ -37,6 +39,8 @@ export const SuggestionTable = ({
         const result = await getSuggestionById(
           selectedLogItem.metadata.suggestionId as unknown as string
         );
+
+        console.log("result from getSuggestionById:", result);
 
         if (result.error) {
           setFetchError(result.error);

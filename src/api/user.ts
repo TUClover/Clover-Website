@@ -351,3 +351,36 @@ export async function updateUser(
     };
   }
 }
+
+export async function updateUserPassword(
+  userId: string,
+  password: string 
+): Promise<{
+  success?: boolean;
+  error?: string;
+}> {
+  try {
+    const response = await fetch(`${USER_ENDPOINT}/${userId}/password`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(password),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      return {
+        success: false,
+        error:
+          data.message ||
+          `Failed to update user: ${response.status} ${response.statusText}`,
+      };
+    }
+
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}

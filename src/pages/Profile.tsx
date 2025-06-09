@@ -52,7 +52,7 @@ export const Profile = ({
       {effectiveRole === UserRole.STUDENT && (
         <StudentProfile userData={userData} />
       )}
-      {effectiveRole === UserRole.DEV && <EmptyProfileView />}
+      {effectiveRole === UserRole.DEV && <AdminProfile userData={userData} />}
     </div>
   );
 };

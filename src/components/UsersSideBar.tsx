@@ -3,7 +3,6 @@ import { UserData } from "../api/types/user";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
 type UserSideBarProps = {
-  title: string;
   users: UserData[];
   selectedUsers: UserData[];
   onSelectUser: (user: UserData) => void;
@@ -17,7 +16,6 @@ type UserSideBarProps = {
  * It allows users to search for specific users and select/deselect them.
  * It also supports selecting a range of users using Shift+Click.
  * The component is styled with Tailwind CSS and includes loading states.
- * @param {string} title - The title of the sidebar.
  * @param {UserData[]} users - The list of users to display.
  * @param {UserData[]} selectedUsers - The list of currently selected users.
  * @param {(user: UserData) => void} onSelectUser - Callback function to handle user selection.
@@ -26,7 +24,6 @@ type UserSideBarProps = {
  * @returns {JSX.Element} The rendered UserSideBar component.
  */
 export const UserSideBar: React.FC<UserSideBarProps> = ({
-  title,
   users,
   selectedUsers,
   onSelectUser,
@@ -129,13 +126,13 @@ export const UserSideBar: React.FC<UserSideBarProps> = ({
       ),
     ];
 
-    onSetSelectedUsers(Array.from(new Set(newSelected))); // avoid duplicates
+    onSetSelectedUsers(Array.from(new Set(newSelected)));
   };
 
   return (
-    <div className="w-1/4 bg-white dark:bg-black border border-gray-600 dark:border-gray-400 rounded-lg shadow p-4 overflow-y-auto no-scrollbar">
+    <div className="w-full md:w-1/4 max-h-[80vh] bg-white dark:bg-black border border-gray-600 dark:border-gray-400 rounded-lg shadow p-4 overflow-y-auto no-scrollbar">
       <h2 className="text-lg font-semibold mb-2 pl-2">
-        {title} ({users.length})
+        Users ({users.length})
       </h2>
       <input
         type="text"

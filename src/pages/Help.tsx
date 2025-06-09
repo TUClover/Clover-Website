@@ -37,7 +37,7 @@ const sections = [
               <li>
                 Follow{" "}
                 <a
-                  href="vscode:extension/capstone-team-2.clover"
+                  href="vscode:extension/capstone-team-2.temple-capstone-clover"
                   className="text-blue-500 underline"
                   target="_blank"
                 >
@@ -118,11 +118,14 @@ const sections = [
               <li>
                 When first starting up the extension you will receive a popup in
                 the bottom right telling you to sign up or sign in.
+                Alternatively, sign up can be done on the website by clicking
+                the "Sign Up" button in the top right corner.
               </li>
               <li>
-                If you miss the notification the command to do so will be
-                available through the command pallete by pressing Ctrl+Shift+P
-                (Windows/Linux) or Cmd+Shift+P (Mac).
+                If you miss the notification you may interact with the Sign In
+                button in the bottom right of the VS Code interface or with the
+                command available through the command palette by pressing
+                Ctrl+Shift+P (Windows/Linux) or Cmd+Shift+P (Mac).
               </li>
               <li>
                 From there you will directed to enter your first and last name,
@@ -184,7 +187,12 @@ const sections = [
         content: (
           <div className="text-text">
             <ol className="list-decimal list-inside mb-4 space-y-2">
-              <li>Open one of your project files or create a new one.</li>
+              <li>
+                Open one of your project files or create a new one. If you
+                create a new file, make sure to save it with a supported file
+                extension (e.g., .js, .py, .java, etc.) otherwise suggestions
+                will not be available.
+              </li>
               <li>
                 Start typing like you normally would and when you stop for a
                 short period a suggestion will appear inline with the rest of
@@ -206,6 +214,37 @@ const sections = [
       },
       {
         id: "first-use-2",
+        title: "Joining a Class",
+        content: (
+          <div className="text-text">
+            <ol className="list-decimal list-inside mb-4 space-y-2">
+              <li>
+                By default all suggestions will be general and collected into
+                the "Non-Class Activities" section on the dashboard. Joining
+                will group all suggestions and rejections under that class'
+                statistics.
+              </li>
+              <li>
+                If you are a student, you can join a class by clicking the "Join
+                Class" button in the bottom left of the VS Code interface.
+              </li>
+              <li>
+                Classes can be created by instructors on the CLOVER website.
+                Once a class is created, it will be available to select in the
+                student dashboard. By default, students will be put on a wait
+                list until the instructor approves their request.
+              </li>
+              <li>
+                Once accepted into a class it will appear in the join class list
+                in VSCode and you can select it to set your class for that
+                session.
+              </li>
+            </ol>
+          </div>
+        ),
+      },
+      {
+        id: "first-use-3",
         title: "Reviewing Code",
         content: (
           <div className="text-text">
@@ -239,7 +278,7 @@ const sections = [
         ),
       },
       {
-        id: "first-use-3",
+        id: "first-use-4",
         title: "Seeing your statistics",
         content: (
           <div className="text-text">

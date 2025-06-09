@@ -94,7 +94,7 @@ export const Download = () => {
         </div>
 
         {/* Manual Installation */}
-        <div className="info-card p-6 rounded-2xl shadow-lg mt-6 w-full max-w-3xl">
+        {/* <div className="info-card p-6 rounded-2xl shadow-lg mt-6 w-full max-w-3xl">
           <h3 className="text-xl font-bold text-text">Manual Installation</h3>
           <p className="text-text mt-2">
             If you prefer, you can download the VSIX file and install it
@@ -115,7 +115,7 @@ export const Download = () => {
               extension.
             </p>
           </div>
-        </div>
+        </div> */}
       </section>
     </div>
   );
