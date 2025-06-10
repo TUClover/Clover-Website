@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { AUTH_ENDPOINT } from "../api/endpoints";
 import { Eye, EyeOff } from "lucide-react";
 
 /**
@@ -19,7 +18,8 @@ export const LoginForm: React.FC = () => {
   // Handle GitHub Login
   const handleGitHubLogin = async () => {
     try {
-      window.location.href = `${AUTH_ENDPOINT}/login?provider=github&next=https://clover.nickrucinski.com/auth`; // Redirect user to GitHub OAuth
+      window.location.href =
+        "https://backend-639487598928.us-east5.run.app/auth/login?provider=github&next=https://clover.nickrucinski.com/auth"; // Redirect user to GitHub OAuth
       // window.location.href = `${AUTH_ENDPOINT}/login?provider=github&next=http://localhost:5173/auth`; // Redirect user to GitHub OAuth
     } catch (err) {
       setError("An error occurred while attempting GitHub login." + err);
@@ -120,13 +120,12 @@ export const LoginForm: React.FC = () => {
       </p>
       <p className="mt-4 text-center text-text">
         <button
-          onClick={() => navigate("/passwordreset")}  
+          onClick={() => navigate("/passwordreset")}
           className="text-[#50B498] hover:underline"
         >
           Forgot your password?
         </button>
       </p>
-      
     </div>
   );
 };
