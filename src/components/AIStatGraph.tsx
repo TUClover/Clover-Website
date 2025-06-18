@@ -20,6 +20,8 @@ export const AIStatGraph = ({
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
+  const MAX_FLASH_2_0_REQUESTS_PER_DAY = 1500; // Max Requests Per Day for Gemini Flash 2.0
+
   useEffect(() => {
     const checkDarkMode = () => {
       const isDarkMode = document.documentElement.classList.contains("dark");
@@ -38,15 +40,21 @@ export const AIStatGraph = ({
     return () => observer.disconnect();
   }, []);
 
-  const groupedStats = new Map<string, number>();
+  const groupedStats = new Map<
+    string,
+    { totalTokens: number; requestCount: number }
+  >();
 
   aiStats?.forEach((stat) => {
     const dateObj = new Date(stat.created_at);
-    const dateStr = dateObj.toISOString().split("T")[0];
-    groupedStats.set(
-      dateStr,
-      (groupedStats.get(dateStr) ?? 0) + stat.total_tokens
-    );
+    const dateStr = dateObj.toISOString().split("T")[0]; // YYYY-MM-DD
+
+    if (!groupedStats.has(dateStr)) {
+      groupedStats.set(dateStr, { totalTokens: 0, requestCount: 0 });
+    }
+    const currentStats = groupedStats.get(dateStr)!;
+    currentStats.totalTokens += stat.total_tokens;
+    currentStats.requestCount += 1;
   });
 
   let firstDate = startDate;
@@ -75,7 +83,12 @@ export const AIStatGraph = ({
   }
 
   const sortedDates = allDates;
-  const tokensByDate = sortedDates.map((date) => groupedStats.get(date) ?? 0);
+  const tokensByDate = sortedDates.map(
+    (date) => groupedStats.get(date)?.totalTokens ?? 0
+  );
+  const requestsByDate = sortedDates.map(
+    (date) => groupedStats.get(date)?.requestCount ?? 0
+  );
 
   const chartData = {
     labels: sortedDates,
@@ -87,6 +100,26 @@ export const AIStatGraph = ({
         backgroundColor: "rgba(80, 180, 152, 0.2)",
         tension: 0.3,
         fill: true,
+        yAxisID: "y",
+      },
+      {
+        label: "Total Requests Made",
+        data: requestsByDate,
+        borderColor: "#4A90E2",
+        backgroundColor: "rgba(74, 144, 226, 0.2)",
+        tension: 0.3,
+        fill: false,
+        yAxisID: "y1",
+      },
+      {
+        label: `Max Requests/Day (Tier 1)`,
+        data: sortedDates.map(() => MAX_FLASH_2_0_REQUESTS_PER_DAY),
+        borderColor: "#FF6384",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        borderDash: [5, 5],
+        pointRadius: 0,
+        fill: false,
+        yAxisID: "y1",
       },
     ],
   };
@@ -107,8 +140,30 @@ export const AIStatGraph = ({
         grid: { color: gridColor },
       },
       y: {
+        // Left Y-axis for tokens
+        type: "linear",
+        position: "left",
         ticks: { color: textColor },
         grid: { color: gridColor },
+        title: {
+          display: true,
+          text: "Tokens Used",
+          color: textColor,
+        },
+      },
+      y1: {
+        // Right Y-axis for requests
+        type: "linear",
+        position: "right",
+        ticks: { color: textColor },
+        grid: { color: "transparent" }, // No grid lines for this axis, or a very faint one
+        title: {
+          display: true,
+          text: "Requests",
+          color: textColor,
+        },
+        suggestedMax: MAX_FLASH_2_0_REQUESTS_PER_DAY * 1.2, // Add padding above the max limit
+        min: 0, // Ensure requests start from 0
       },
     },
   };
