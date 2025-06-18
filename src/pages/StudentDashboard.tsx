@@ -57,6 +57,20 @@ export const StudentDashboard = ({ userData }: { userData: UserData }) => {
     );
   }
 
+  if (progressData.totalAccepted === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center card">
+          <h2 className="text-lg font-semibold text mb-4">No activity found</h2>
+          <p className="text-gray-500">
+            It seems you haven't accepted any suggestions yet. Start coding to
+            see your progress here!
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-4 gap-6">

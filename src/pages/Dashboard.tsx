@@ -100,7 +100,7 @@ export const DashboardHeader = ({
     <div className="flex justify-between items-center w-full">
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold">
-          Welcome back,{" "}
+          Welcome{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#50B498] to-[#9CDBA6]">
             {userData.firstName}
           </span>
