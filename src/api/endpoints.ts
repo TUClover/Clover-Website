@@ -12,6 +12,8 @@ export const USER_ENDPOINT: string = `${BASE_ENDPOINT}/users`;
 /** Endpoint for logging information */
 export const LOG_ENDPOINT: string = `${BASE_ENDPOINT}/logs`;
 
+export const STAT_ENDPOINT: string = `${BASE_ENDPOINT}/status`;
+
 export const AUTH_ENDPOINT: string = `${BASE_ENDPOINT}/auth`;
 
 export const CLASS_ENDPOINT: string = `${BASE_ENDPOINT}/classes`;
