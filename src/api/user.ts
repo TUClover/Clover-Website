@@ -112,7 +112,7 @@ export async function getUserActivity(
     });
 
     const data = await response.json();
-    // console.log("Fetched user activity:", data);
+    console.log("Fetched user activity:", data);
 
     if (!response.ok) {
       return {
@@ -122,7 +122,11 @@ export async function getUserActivity(
       };
     }
 
-    if (!Array.isArray(data)) {
+    if (data == null) {
+      return { data: [] };
+    }
+
+    if (data != null && !Array.isArray(data)) {
       return { error: "Invalid response: expected an array of activity logs" };
     }
 
@@ -229,7 +233,7 @@ export async function getAllUsers(): Promise<{
   error?: string;
 } | null> {
   try {
-    const response = await fetch(USER_ENDPOINT, {
+    const response = await fetch(`${USER_ENDPOINT}/`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -243,14 +247,15 @@ export async function getAllUsers(): Promise<{
           `Failed to get all users: ${response.status} ${response.statusText}`,
       };
     }
+    console.log("Response data:", data);
 
-    if (!Array.isArray(data.data)) {
+    if (!Array.isArray(data)) {
       return { error: "Invalid response: expected an array of users" };
     }
 
-    console.log("Fetched users:", data.data);
+    console.log("Fetched users:", data);
 
-    const users = data.data.map(
+    const users = data.map(
       (userItem: {
         id: string;
         created_at: string;
