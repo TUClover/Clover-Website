@@ -84,6 +84,14 @@ export enum StudentStatus {
   LOCKED = "LOCKED",
 }
 
+export enum EnrollementStatus {
+  WAITLISTED = "WAITLISTED",
+  ENROLLED = "ENROLLED",
+  COMPLETED = "COMPLETED",
+  REMOVED = "REMOVED",
+  REJECTED = "REJECTED",
+}
+
 export interface ClassData {
   id?: string;
   classTitle: string;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StudentStatus, UserClass } from "../api/types/user";
+import { EnrollementStatus, StudentStatus, UserClass } from "../api/types/user";
 import { useAuth } from "./useAuth";
 import { getUserClasses } from "../api/user";
 import { supabase } from "../supabaseClient";
@@ -10,6 +10,8 @@ import { supabase } from "../supabaseClient";
  */
 export interface UserClassInfo {
   userClass: UserClass;
+  joinedAt: string;
+  enrollementStatus: EnrollementStatus;
   studentStatus: StudentStatus;
 }
 

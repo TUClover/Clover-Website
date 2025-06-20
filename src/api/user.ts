@@ -4,6 +4,7 @@ import {
   UserActivityLogItem,
   UserRole,
   UserSettings,
+  EnrollementStatus,
 } from "./types/user";
 import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
 import { StudentStatus } from "../api/types/user";
@@ -66,25 +67,27 @@ export async function getUserData(
       };
     }
 
-    if (!data.data) {
+    // console.log("Fetched user data:", data);
+
+    if (!data.user) {
       return { error: "Invalid response: expected user data" };
     }
 
     return {
       data: {
-        id: data.data.id,
-        createdAt: data.data.created_at,
-        firstName: data.data.first_name,
-        lastName: data.data.last_name,
-        email: data.data.email,
-        status: data.data.status,
-        role: data.data.role,
-        settings: data.data.settings as UserSettings,
-        last_updated_at: data.data.last_updated_at,
-        auth_created_at: data.data.auth_created_at,
-        last_sign_in: data.data.last_sign_in,
-        source: data.data.source,
-        avatar_url: data.data.avatar_url,
+        id: data.user.id,
+        createdAt: data.user.created_at,
+        firstName: data.user.first_name,
+        lastName: data.user.last_name,
+        email: data.user.email,
+        status: data.user.status,
+        role: data.user.role,
+        settings: data.user.settings as UserSettings,
+        last_updated_at: data.user.last_updated_at,
+        auth_created_at: data.user.auth_created_at,
+        last_sign_in: data.user.last_sign_in,
+        source: data.user.source,
+        avatar_url: data.user.avatar_url,
       } as UserData,
     };
   } catch (err) {
@@ -109,6 +112,7 @@ export async function getUserActivity(
     });
 
     const data = await response.json();
+    // console.log("Fetched user activity:", data);
 
     if (!response.ok) {
       return {
@@ -118,12 +122,12 @@ export async function getUserActivity(
       };
     }
 
-    if (!Array.isArray(data.data)) {
+    if (!Array.isArray(data)) {
       return { error: "Invalid response: expected an array of activity logs" };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const activityLogs: UserActivityLogItem[] = data.data.map((item: any) => ({
+    const activityLogs: UserActivityLogItem[] = data.map((item: any) => ({
       id: item.id,
       event: item.event,
       timestamp: item.timestamp,
@@ -171,34 +175,39 @@ export async function getUserClasses(userId: string): Promise<{
       };
     }
 
-    if (!Array.isArray(data.data)) {
+    if (!Array.isArray(data)) {
       return { error: "Invalid response: expected an array of classes" };
     }
+    console.log("Fetched user classes:", data);
 
-    const classInfoList: UserClassInfo[] = data.data.map(
+    const classInfoList: UserClassInfo[] = data.map(
       (item: {
-        userClass: {
+        class_data: {
           id: string;
+          created_at: string;
           class_title: string;
           class_code: string;
           instructor_id: string;
           class_hex_color: string;
           class_image_cover: string;
-          created_at: string;
           class_description: string;
         };
+        joinedAt: string;
         studentStatus: StudentStatus;
+        enrollmentStatus: EnrollementStatus;
       }) => ({
         userClass: {
-          id: item.userClass.id,
-          classTitle: item.userClass.class_title,
-          classCode: item.userClass.class_code,
-          instructorId: item.userClass.instructor_id,
-          classHexColor: item.userClass.class_hex_color,
-          classImageCover: item.userClass.class_image_cover,
-          createdAt: item.userClass.created_at,
-          classDescription: item.userClass.class_description,
+          id: item.class_data.id,
+          createdAt: item.class_data.created_at,
+          classTitle: item.class_data.class_title,
+          classCode: item.class_data.class_code,
+          instructorId: item.class_data.instructor_id,
+          classHexColor: item.class_data.class_hex_color,
+          classImageCover: item.class_data.class_image_cover,
+          classDescription: item.class_data.class_description,
         },
+        joinedAt: item.joinedAt,
+        enrollementStatus: item.enrollmentStatus,
         studentStatus: item.studentStatus,
       })
     );
@@ -238,6 +247,8 @@ export async function getAllUsers(): Promise<{
     if (!Array.isArray(data.data)) {
       return { error: "Invalid response: expected an array of users" };
     }
+
+    console.log("Fetched users:", data.data);
 
     const users = data.data.map(
       (userItem: {
@@ -354,7 +365,7 @@ export async function updateUser(
 
 export async function updateUserPassword(
   userId: string,
-  password: string 
+  password: string
 ): Promise<{
   success?: boolean;
   error?: string;

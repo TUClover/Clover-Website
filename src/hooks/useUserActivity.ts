@@ -64,6 +64,7 @@ export const useUserActivity = (
         const progress = calculateProgress(filteredActivities);
         setProgressData(progress);
       } catch (err) {
+        console.error("Error fetching user activity:", err);
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
