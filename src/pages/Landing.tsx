@@ -11,7 +11,7 @@ export const Landing: React.FC = () => {
   return (
     <div className="flex-grow flex flex-col items-center justify-center width-container">
       {/* Hero Section */}
-      <section className="w-full flex flex-col items-center justify-center text-center px-6 pb-12">
+      <section className="max-w-6xl flex flex-col items-center justify-center text-center px-6 pb-12">
         <br />
         <Title>
           Welcome to <CLOVER />

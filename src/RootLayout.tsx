@@ -17,7 +17,9 @@ const RootLayout = () => {
 
       {/* Main Content - Takes up remaining space */}
       <div className="flex-grow mt-24 p-6">
-        <Outlet />
+        <div className="max-w-6xl mx-auto w-full">
+          <Outlet />
+        </div>
       </div>
 
       {/* Footer - Always at the bottom */}
