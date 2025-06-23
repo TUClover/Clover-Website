@@ -1,6 +1,7 @@
 import { Pie } from "react-chartjs-2";
 import { useEffect, useState } from "react";
 import InfoTooltip from "./InfoTooltip";
+import { Card } from "./ui/card";
 
 /**
  * PieChart component displays a pie chart with correct and incorrect answers.
@@ -63,7 +64,7 @@ export const PieChart = ({
     },
   };
   return (
-    <div className="card rounded-2xl p-6 shadow-sm">
+    <Card className="p-6">
       <div className="flex items-center gap-3 mb-4">
         <h2 className="text-lg font-semibold text-[#50B498]">{title}</h2>
         <InfoTooltip>
@@ -88,7 +89,7 @@ export const PieChart = ({
       <div className="relative w-full h-60 md:h-64 lg:h-72">
         <Pie data={data} options={options} />
       </div>
-    </div>
+    </Card>
   );
 };
 

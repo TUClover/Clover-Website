@@ -51,19 +51,26 @@ export const PaginatedTable = <T,>({
   return (
     <div className="">
       <div className="flex justify-between items-center mb-4">
-        <div>
-          <label className="text-sm text-text mr-2">Show:</label>
-          <select
-            onChange={handleItemsPerPageChange}
-            className="card text-text px-2 py-1 rounded text-sm"
-            value={itemsPerPage}
-          >
-            <option value="10">10 Per Page</option>
-            <option value="20">20 Per Page</option>
-            <option value="50">50 Per Page</option>
-          </select>
+        <div className="flex items-center space-x-2">
+          <label className="text-sm text-text">Show:</label>
+          <div className="border border-gray-900 dark:border-gray-100 rounded-lg">
+            <select
+              onChange={handleItemsPerPageChange}
+              className="text-text rounded 
+               px-2 py-1 text-xs
+               sm:px-3 sm:py-1.5 sm:text-sm
+               md:px-4 md:py-2 md:text-base"
+              value={itemsPerPage}
+              style={{ backgroundColor: "transparent" }}
+            >
+              <option value="10">10 Per Page</option>
+              <option value="20">20 Per Page</option>
+              <option value="50">50 Per Page</option>
+            </select>
+          </div>
         </div>
 
+        {/* Page indicator */}
         <div className="text-sm text-text">
           Page {currentPage} of {totalPages}
         </div>

@@ -133,7 +133,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
                 setBugPercentage(value);
               }
             }}
-            className="w-16 px-2 py-1 border border-black dark:border-white card text-center"
+            className="w-16 px-2 py-1 border border-black dark:border-white bg-transparent rounded text-center"
           />
           <span className="text-[#50B498] font-semibold">%</span>
         </div>
@@ -214,7 +214,7 @@ const NumberInput = ({
       min="0"
       value={value}
       onChange={(e) => onChange(parseInt(e.target.value))}
-      className="w-16 px-2 py-1 border border-black dark:border-white card text-center"
+      className="bg-transparent rounded w-16 px-2 py-1 border border-black dark:border-white text-center"
     />
   </div>
 );

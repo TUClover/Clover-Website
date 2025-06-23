@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { Card } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 
 /**
  * LoginForm component for user authentication.
@@ -53,27 +56,27 @@ export const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="card p-8 rounded-lg shadow-lg w-96">
+    <Card className="p-8 w-96">
       <h2 className="text-2xl font-bold text-center mb-6">Log In to CLOVER</h2>
       {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
       {/* Email + Password Login */}
-      <form onSubmit={handleLogin} className="flex flex-col">
-        <input
+      <form onSubmit={handleLogin} className="flex flex-col gap-6">
+        <Input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="input-field"
+          className="w-full border py-6 border-gray-400 dark:border-gray-600 rounded dark:bg-gray-700 text-black dark:text-white bg-gray-100 pr-12"
           required
         />
         <div className="relative">
-          <input
+          <Input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input-field w-full pr-12"
+            value={password}
+            className="w-full border py-6 border-gray-400 dark:border-gray-600 rounded dark:bg-gray-700 text-black dark:text-white bg-gray-100 pr-12"
             required
           />
           <button
@@ -88,18 +91,15 @@ export const LoginForm: React.FC = () => {
             )}
           </button>
         </div>
-        <button
-          type="submit"
-          className="button-primary w-full bg-[#50B498] text-black py-2 rounded hover:bg-[#468585] transition"
-        >
+        <Button type="submit" className="w-full text-text py-6 mt-6 text-md">
           Log In
-        </button>
+        </Button>
       </form>
 
       {/* GitHub OAuth Login */}
-      <button
+      <Button
         onClick={handleGitHubLogin}
-        className="button-primary mt-4 w-full bg-gray-700 text-white dark:text-white py-2 rounded hover:bg-gray-600 transition flex items-center justify-center space-x-2"
+        className="mt-4 text-md w-full bg-gray-700 text-white dark:text-white py-6 hover:bg-gray-600 transition flex items-center justify-center space-x-2"
       >
         <img
           src="https://img.icons8.com/?size=100&id=62856&format=png&color=FFFFFF"
@@ -107,13 +107,13 @@ export const LoginForm: React.FC = () => {
           className="h-5 w-5"
         />
         <span>Sign in with GitHub</span>
-      </button>
+      </Button>
 
       <p className="mt-4 text-center text-text">
         Don't have an account?{" "}
         <button
           onClick={() => navigate("/signup")}
-          className="text-[#50B498] hover:underline"
+          className="text-primary hover:underline"
         >
           Sign Up
         </button>
@@ -121,12 +121,12 @@ export const LoginForm: React.FC = () => {
       <p className="mt-4 text-center text-text">
         <button
           onClick={() => navigate("/passwordreset")}
-          className="text-[#50B498] hover:underline"
+          className="text-primary hover:underline"
         >
           Forgot your password?
         </button>
       </p>
-    </div>
+    </Card>
   );
 };
 

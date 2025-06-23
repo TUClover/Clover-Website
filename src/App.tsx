@@ -2,7 +2,7 @@ import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import "./index.css";
 import RootLayout from "./RootLayout";
 import Dashboard from "./pages/Dashboard";
-import Quiz from "./pages/Quiz";
+import { QuizPage } from "./pages/Quiz";
 import Landing from "./pages/Landing";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
@@ -61,7 +61,7 @@ const App = () => {
               path="/dashboard"
               element={<Dashboard userData={userData} loading={loading} />}
             />
-            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/quiz" element={<QuizPage />} />
             <Route
               path="/settings"
               element={<Settings userData={userData} />}
