@@ -9,6 +9,7 @@ import CreateNewClassDialog from "../components/CreateNewClassDialog";
 import StudentDataTable from "../components/StudentDataTable";
 import { UserData } from "../api/types/user";
 import InfoTooltip from "../components/InfoTooltip";
+import { Card } from "../components/ui/card";
 
 /**
  * InstructorDashboard component displays the instructor dashboard with class statistics and activity logs.
@@ -80,16 +81,16 @@ export const InstructorDashboard = ({ userData }: { userData: UserData }) => {
           <StackedBarChart
             activities={selectedClassId === "all" ? allActivity : classActivity}
           />
-          <div className="card rounded shadow-sm p-6">
+          <Card className="p-6">
             <div className="flex items-center mb-2 gap-3">
-              <h2 className="text-md font-semibold text-[#50B498]">
+              <h2 className="text-md font-semibold text-primary">
                 Insights About Students
               </h2>
               <InfoTooltip>
                 <div className="text-sm space-y-2">
                   <p>
                     The table shows insights from{" "}
-                    <span className="text-[#50B498] font-semibold">
+                    <span className="text-primary font-semibold">
                       {selectedClassId === "all"
                         ? "all classes"
                         : selectedClassTitle}
@@ -98,6 +99,77 @@ export const InstructorDashboard = ({ userData }: { userData: UserData }) => {
                     their accuracy.
                   </p>
 
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                    <StatCard
+                      title="Accepted"
+                      value={progressData.totalAccepted}
+                      tooltipContent="Total suggestions accepted by the user, including both correct and incorrect suggestions."
+                    />
+                    <StatCard
+                      title="Correct"
+                      value={progressData.correctSuggestions}
+                      tooltipContent="Number of accepted suggestions that were actually correct (without bugs)."
+                    />
+                    <StatCard
+                      title="Accuracy"
+                      value={`${progressData.percentageCorrect.toFixed(2)}%`}
+                      tooltipContent={`${progressData.percentageCorrect.toFixed(2)}% of accepted suggestions were correct (${progressData.correctSuggestions}/${progressData.totalAccepted})`}
+                    />
+                  </div>
+
+                  {/* Charts Row */}
+                  <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                    <PieChart
+                      correct={progressData.correctSuggestions}
+                      incorrect={
+                        progressData.totalAccepted -
+                        progressData.correctSuggestions
+                      }
+                    />
+                    <LineChart
+                      activities={
+                        selectedClassId === "all" ? allActivity : classActivity
+                      }
+                    />
+                  </div>
+
+                  <StackedBarChart
+                    activities={
+                      selectedClassId === "all" ? allActivity : classActivity
+                    }
+                  />
+                  <Card className="p-6">
+                    <div className="flex items-center mb-2 gap-3">
+                      <h2 className="text-md font-semibold text-primary">
+                        Insights About Students
+                      </h2>
+                      <InfoTooltip>
+                        <div className="text-sm space-y-2">
+                          <p>
+                            The table shows insights from{" "}
+                            <span className="text-primary font-semibold">
+                              {selectedClassId === "all"
+                                ? "all classes"
+                                : selectedClassTitle}
+                            </span>
+                            , summarizing student decisions on code suggestions
+                            and their accuracy.
+                          </p>
+
+                          <p className="text-xs text-muted-foreground">
+                            Click on any row to view student-specific
+                            suggestions and performance details.
+                          </p>
+                        </div>
+                      </InfoTooltip>
+                    </div>
+                    <StudentDataTable
+                      logs={
+                        selectedClassId === "all" ? allActivity : classActivity
+                      }
+                      classFilter={selectedClassId === "all" ? "all" : "class"}
+                    />
+                  </Card>
                   <p className="text-xs text-muted-foreground">
                     Click on any row to view student-specific suggestions and
                     performance details.
@@ -109,7 +181,7 @@ export const InstructorDashboard = ({ userData }: { userData: UserData }) => {
               logs={selectedClassId === "all" ? allActivity : classActivity}
               classFilter={selectedClassId === "all" ? "all" : "class"}
             />
-          </div>
+          </Card>
         </>
       ) : (
         <>

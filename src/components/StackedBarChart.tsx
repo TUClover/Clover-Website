@@ -4,6 +4,7 @@ import { UserActivityLogItem } from "../api/types/user";
 import { parseISODate } from "../utils/timeConverter";
 import TimeIntervalDropDown from "./TimeIntervalDropDown";
 import InfoTooltip from "./InfoTooltip";
+import { Card } from "./ui/card";
 
 /**
  * StackedBarChart component displays a stacked bar chart of user activity log items.
@@ -195,7 +196,7 @@ export const StackedBarChart = ({
   };
 
   return (
-    <div className="card rounded-2xl p-6 shadow-sm mb-6">
+    <Card className="p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold text-[#50B498]">{title}</h2>
@@ -221,7 +222,7 @@ export const StackedBarChart = ({
       <div className="relative w-full h-60 md:h-64 lg:h-72">
         <Bar data={data} options={options} />
       </div>
-    </div>
+    </Card>
   );
 };
 

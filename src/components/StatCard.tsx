@@ -1,3 +1,4 @@
+import { Card } from "./ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -24,10 +25,10 @@ const StatCard = ({ title, value, tooltipContent }: StatCardProps) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="card rounded-2xl shadow-sm p-6 flex flex-col gap-1 hover:shadow-md transition-shadow cursor-default">
-            <p className="text-2xl font-bold text-[#50B498]">{title}</p>
+          <Card className="w-full h-full p-4 flex flex-col gap-1">
+            <p className="text-2xl font-bold text-primary">{title}</p>
             <p className="text-2xl font-bold text-text">{value}</p>
-          </div>
+          </Card>
         </TooltipTrigger>
         {tooltipContent && (
           <TooltipContent

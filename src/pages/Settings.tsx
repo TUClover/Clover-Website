@@ -1,4 +1,5 @@
 import { UserData, UserRole } from "../api/types/user";
+import { Title } from "../components/ui/text";
 import UserDetailsPanel from "../components/UserDetailsPanel";
 import { useInstructorClasses } from "../hooks/useInstructorClasses";
 import { useUserActivity } from "../hooks/useUserActivity";
@@ -19,11 +20,9 @@ export const Settings = ({ userData }: { userData: UserData | null }) => {
   );
 
   return (
-    <div className="flex min-h-screen flex-col text-text width-container pb-8">
-      <p className="text-2xl font-bold mb-4 px-2 py-5 justify-center text-center">
-        Settings
-      </p>
-      <div className="items-center p-4">
+    <div className="flex min-h-screen items-center flex-col text-text width-container pb-8">
+      <Title className="pb-6">Settings</Title>
+      <div>
         <UserDetailsPanel
           userRole={userData?.role ?? UserRole.STUDENT}
           user={userData ? [userData] : null}

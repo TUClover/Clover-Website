@@ -14,6 +14,7 @@ import RegisterClassDialog from "../components/RegisterClassDialog";
 import { UserData } from "../api/types/user";
 import { LogEvent } from "../api/types/event";
 import InfoTooltip from "../components/InfoTooltip";
+import { Card } from "../components/ui/card";
 
 Chart.register(...registerables);
 
@@ -139,7 +140,7 @@ export const StudentDashboard = ({ userData }: { userData: UserData }) => {
         <StackedBarChart activities={userActivity} />
 
         {/* Insights Table */}
-        <div className="card rounded-2xl shadow-sm p-6">
+        <Card className="p-6">
           <div className="flex items-center mb-3 gap-3">
             <h2 className="text-lg font-semibold text-[#50B498]">
               User Insights Table
@@ -164,7 +165,7 @@ export const StudentDashboard = ({ userData }: { userData: UserData }) => {
               <SuggestionTable logItems={items} startIndex={startIndex} />
             )}
           />
-        </div>
+        </Card>
       </div>
     </div>
   );

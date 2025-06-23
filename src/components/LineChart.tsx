@@ -4,6 +4,7 @@ import { Line } from "react-chartjs-2";
 import TimeIntervalDropDown from "./TimeIntervalDropDown";
 import { parseISODate } from "../utils/timeConverter";
 import InfoTooltip from "./InfoTooltip";
+import { Card } from "./ui/card";
 
 /**
  * LineChart component displays a line chart of user activity over time.
@@ -110,7 +111,7 @@ export const LineChart = ({
   const rejectedValues = labels.map((key) => rejectedMap[key] || 0);
 
   return (
-    <div className="card rounded-2xl p-6 shadow-sm">
+    <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold text-[#50B498]">{title}</h2>
@@ -211,7 +212,7 @@ export const LineChart = ({
           }}
         />
       </div>
-    </div>
+    </Card>
   );
 };
 

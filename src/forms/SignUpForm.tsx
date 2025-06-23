@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api/auth";
 import { supabase } from "../supabaseClient";
 import { Eye, EyeOff } from "lucide-react";
-// import Swal from "sweetalert2";
+import { Input } from "../components/ui/input";
+import { Card } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 
 /**
  * SignUpForm component for user registration.
@@ -43,16 +45,6 @@ export const SignUpForm: React.FC = () => {
       });
 
       if (data) {
-        // Swal.fire({
-        //   title: "Sign Up Successful",
-        //   text: "Welcome to Clover! Please Sign In to continue.",
-        //   toast: true,
-        //   color: "#50B498",
-        //   position: "top-end",
-        //   allowOutsideClick: true,
-        //   showConfirmButton: false,
-        //   timer: 5000,
-        // });
         navigate("/dashboard", { replace: true });
       }
     } catch (err) {
@@ -62,43 +54,43 @@ export const SignUpForm: React.FC = () => {
   };
 
   return (
-    <div className="card p-8 rounded-lg shadow-lg w-96">
+    <Card className="p-8 w-96">
       <h2 className="text-2xl font-bold text-center mb-6">
         Create Your Clover Account
       </h2>
       {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-      <form onSubmit={handleSignUp} className="flex flex-col">
-        <input
+      <form onSubmit={handleSignUp} className="flex flex-col gap-6">
+        <Input
           type="text"
           placeholder="First Name"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
-          className="input-field"
+          className="w-full border py-6 border-gray-400 dark:border-gray-600 rounded dark:bg-gray-700 text-black dark:text-white bg-gray-100 pr-12"
           required
         />
-        <input
+        <Input
           type="text"
           placeholder="Last Name"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
-          className="input-field"
+          className="w-full border py-6 border-gray-400 dark:border-gray-600 rounded dark:bg-gray-700 text-black dark:text-white bg-gray-100 pr-12"
           required
         />
-        <input
+        <Input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="input-field"
+          className="w-full border py-6 border-gray-400 dark:border-gray-600 rounded dark:bg-gray-700 text-black dark:text-white bg-gray-100 pr-12"
           required
         />
         <div className="relative">
-          <input
+          <Input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input-field w-full pr-12"
+            className="w-full border py-6 border-gray-400 dark:border-gray-600 rounded dark:bg-gray-700 text-black dark:text-white bg-gray-100 pr-12"
             required
           />
           <button
@@ -113,14 +105,11 @@ export const SignUpForm: React.FC = () => {
             )}
           </button>
         </div>
-        <button
-          type="submit"
-          className="button-primary w-full bg-[#50B498] py-2 rounded hover:bg-[#468585] transition"
-        >
+        <Button type="submit" className="w-full y-2 text-md p-6 mt-6">
           Sign Up
-        </button>
+        </Button>
       </form>
-    </div>
+    </Card>
   );
 };
 

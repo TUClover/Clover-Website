@@ -34,6 +34,7 @@ export async function registerUser(
     const data = await response.json();
 
     if (!response.ok) {
+      console.log(data);
       return { error: data.message };
     }
 
