@@ -14,14 +14,15 @@ export const TimeIntervalDropDown = ({
   onChange: (newInterval: "day" | "week" | "month") => void;
 }) => {
   return (
-    <div className="border-b border-gray-300 dark:border-gray-500 rounded-lg">
+    <div className="border border-gray-900 dark:border-gray-100 rounded-lg">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as "day" | "week" | "month")}
-        className="card text-text rounded 
+        className="text-text rounded 
                    px-2 py-1 text-xs
                    sm:px-3 sm:py-1.5 sm:text-sm
                    md:px-4 md:py-2 md:text-base"
+        style={{ backgroundColor: "transparent" }}
       >
         <option value="day">Daily</option>
         <option value="week">Weekly</option>

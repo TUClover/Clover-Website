@@ -7,6 +7,7 @@ import {
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
+import { CLOVER, Header, Paragraph, Title } from "../components/ui/text";
 
 /**
  * CopyButton component that allows users to copy text to the clipboard.
@@ -55,19 +56,16 @@ export const Download = () => {
     <div className="flex-grow flex flex-col items-center justify-center width-container">
       {/* Hero Section */}
       <section className="w-full flex flex-col items-center justify-center text-center px-6 mt-6 pb-12">
-        <h1 className="text-5xl font-extrabold text-text">
-          Download{" "}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#50B498] to-[#9CDBA6]">
-            CLOVER
-          </span>
-        </h1>
-        <p className="mt-4 text-lg text-text max-w-2xl">
+        <Title>
+          Download <CLOVER />
+        </Title>
+        <Paragraph>
           Get started with CLOVER, the AI-powered coding assistant for Visual
           Studio Code. Choose the installation method that works best for you.
-        </p>
+        </Paragraph>
 
         {/* Download Options */}
-        <h2 className="text-3xl font-bold text-[#50B498]">Download Options</h2>
+        <Header>Download Options</Header>
         <a
           href="/getting-started"
           className="mt-4 text-lg text-blue-600 dark:text-blue-400 hover:underline"

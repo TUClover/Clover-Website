@@ -7,6 +7,10 @@ import { useUserClasses } from "../hooks/useUserClasses";
 import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { Card } from "../components/ui/card";
+import { UserClass } from "../api/types/user";
+import { Button } from "../components/ui/button";
+import { Paragraph, Title } from "../components/ui/text";
 
 type QuizQuestion = {
   id: string;
@@ -24,12 +28,215 @@ type QuizResult = {
 };
 
 /**
- * Quiz component that allows users to generate and review quizzes.
- * It fetches quiz questions from the server, allows users to select answers,
- * and submit their answers for scoring.
- * @returns {JSX.Element} The Quiz component.
+ * Props for the QuizControls component.
  */
-export const Quiz: React.FC = () => {
+type QuizControlsProps = {
+  classes: UserClass[];
+  selectedClassId: string | null;
+  onClassSelect: (selection: {
+    id: string | null;
+    type: "all" | "class" | "non-class";
+  }) => void;
+  onGenerate: () => void;
+  isGenerating: boolean;
+  previousQuizzes: QuizResult[];
+  onPreviousQuizSelect: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onOpenPreviousQuiz: () => void;
+};
+
+/**
+ * Displays the controls for generating a new quiz or opening a previous one.
+ */
+const QuizControls: React.FC<QuizControlsProps> = ({
+  classes,
+  selectedClassId,
+  onClassSelect,
+  onGenerate,
+  isGenerating,
+  previousQuizzes,
+  onPreviousQuizSelect,
+  onOpenPreviousQuiz,
+}) => (
+  <Card className="p-6 mb-6 w-container grid grid-cols-1 sm:grid-cols-6 gap-4">
+    <div className="col-span-full sm:col-span-2">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        Select a class:
+      </label>
+      <ClassesDropdownMenu
+        classes={classes}
+        onClassSelect={onClassSelect}
+        selectedId={selectedClassId}
+      />
+    </div>
+    <div className="flex sm:col-span-1 items-end justify-start sm:justify-center pb-1">
+      <Button onClick={onGenerate} disabled={isGenerating} className="">
+        {isGenerating ? <Loader2 className="animate-spin" /> : "Generate"}
+      </Button>
+    </div>
+    <div className="col-span-full sm:col-span-2">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        View Previous Quizzes:
+      </label>
+      <select
+        className="w-full px-4 py-2 border text-sm rounded bg-white dark:bg-gray-800 border-black dark:border-white h-8"
+        onChange={onPreviousQuizSelect}
+        defaultValue=""
+      >
+        <option value="">-- Select a past quiz --</option>
+        {previousQuizzes.map((q) => (
+          <option key={q.quiz_id} value={q.quiz_id}>
+            {new Date(q.submitted_at).toLocaleString()} – Score: {q.score} / 10
+          </option>
+        ))}
+      </select>
+    </div>
+    <div className="flex sm:col-span-1 items-end justify-start sm:justify-center pb-1">
+      <Button
+        onClick={onOpenPreviousQuiz}
+        disabled={isGenerating}
+        className="px-6"
+      >
+        Open
+      </Button>
+    </div>
+  </Card>
+);
+
+/**
+ * Props for the QuizDisplay component.
+ */
+type QuizDisplayProps = {
+  quiz: QuizQuestion[];
+  answers: Record<string, number | null>;
+  submitting: boolean;
+  onAnswerSelect: (questionId: string, choiceIndex: number) => void;
+};
+
+/**
+ * Renders the list of quiz questions and their choices.
+ */
+const QuizDisplay: React.FC<QuizDisplayProps> = ({
+  quiz,
+  answers,
+  submitting,
+  onAnswerSelect,
+}) => (
+  <div className="space-y-10 max-h-[60vh] overflow-y-auto pr-2">
+    {quiz.map((question, index) => (
+      <div key={question.id}>
+        <p className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100">
+          {index + 1}. {question.question}
+        </p>
+        <div className="space-y-2">
+          {question.choices.map((option, choiceIndex) => (
+            <label
+              key={choiceIndex}
+              className={`block border rounded-md px-4 py-2 cursor-pointer transition-colors ${
+                submitting && answers[question.id] === choiceIndex
+                  ? question.answerIndex === choiceIndex
+                    ? "bg-green-200 dark:bg-green-800 border-green-900" // Correct answer picked
+                    : "bg-red-200 dark:bg-red-800 border-red-700" // Incorrect answer picked
+                  : answers[question.id] === choiceIndex
+                    ? "bg-blue-100 dark:bg-blue-900" // Selected but not submitted
+                    : "bg-gray-100 dark:bg-gray-700" // Default
+              }`}
+            >
+              <input
+                type="radio"
+                name={`question-${question.id}`}
+                value={option}
+                onChange={() => onAnswerSelect(question.id, choiceIndex)}
+                className="hidden"
+                checked={answers[question.id] === choiceIndex}
+                disabled={submitting}
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+        {submitting && (
+          <p className="mt-2 text-lg text-[#50B498] dark:text-green-400 font-semibold">
+            {answers[question.id] === question.answerIndex
+              ? "Explanation: "
+              : "Hint: "}
+            {question.explanation}
+          </p>
+        )}
+      </div>
+    ))}
+  </div>
+);
+
+/**
+ * Props for the QuizResults component.
+ */
+type QuizResultsProps = {
+  score: number;
+  totalQuestions: number;
+  passed: boolean;
+  onTryAgain: () => void;
+  onBackToDashboard: () => void;
+};
+
+/**
+ * Displays the results of the quiz after submission.
+ */
+const QuizResults: React.FC<QuizResultsProps> = ({
+  score,
+  totalQuestions,
+  passed,
+  onTryAgain,
+  onBackToDashboard,
+}) => (
+  <>
+    <p className="mt-4 text-green-600 font-semibold">
+      Your answers have been submitted!
+    </p>
+    <div className="mt-4">
+      <p className="text-lg font-bold">
+        Your Score: {score} / {totalQuestions}
+      </p>
+      <p className="text-lg font-bold">
+        Percentage:{" "}
+        {totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(2) : 0}%
+      </p>
+
+      {passed ? (
+        <>
+          <p className="text-2xl text-green-600 font-bold mt-4">
+            Congratulations! 🎉 You passed!
+          </p>
+          <button
+            onClick={onBackToDashboard}
+            className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Back to Dashboard
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="text-2xl text-red-600 font-bold mt-4">
+            Keep practicing! You'll do better next time!
+          </p>
+          <button
+            onClick={onTryAgain}
+            className="mt-4 bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Try Again
+          </button>
+        </>
+      )}
+    </div>
+  </>
+);
+
+// --- MAIN PAGE COMPONENT ---
+
+/**
+ * QuizPage component that orchestrates quiz generation, interaction, and review.
+ * It holds the primary state and logic, passing data and handlers to child components.
+ */
+export const QuizPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -43,29 +250,44 @@ export const Quiz: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [previousQuizzes, setPreviousQuizzes] = useState<QuizResult[]>([]);
   const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
-
   const [score, setScore] = useState<number>(0);
   const [passed, setPassed] = useState(false);
 
   const quizId = quiz[0]?.userSectionId || "";
+  const isAllAnswered =
+    quiz.length > 0 &&
+    quiz.every(
+      (question) =>
+        answers[question.id] !== null && answers[question.id] !== undefined
+    );
 
-  const generateQuiz = async (userId: string) => {
+  const resetQuizState = () => {
+    setQuiz([]);
+    setAnswers({});
+    setSubmitting(false);
+    setScore(0);
+    setPassed(false);
+    setSelectedQuizId(null);
+  };
+
+  const generateQuiz = async () => {
+    if (!user?.id) {
+      toast.error("You must be logged in to generate a quiz.");
+      return;
+    }
+    if (selectedClassId === "all") {
+      toast.warning("Please select a specific class to generate a quiz.");
+      return;
+    }
+
+    resetQuizState();
+    setIsGenerating(true);
     try {
-      if (!userId) {
-        throw new Error("Missing userId or userSectionId");
-      }
-
-      if (selectedClassId === "all") {
-        toast.warning("Please select a specific class to generate a quiz.");
-        return;
-      }
-
-      setIsGenerating(true);
       const response = await fetch(`${BASE_ENDPOINT}/quiz/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: userId,
+          user_id: user.id,
           user_class_id: selectedClassId,
         }),
       });
@@ -80,145 +302,172 @@ export const Quiz: React.FC = () => {
           const selectedClass = classes.find(
             (cls) => cls.id === selectedClassId
           );
-
           toast.success(
-            `You're doing great! No sections need review${
-              selectedClassId === "non-class"
-                ? " for your non-class activities"
-                : selectedClass
-                  ? ` in you class: ${selectedClass.classTitle}`
-                  : ""
-            }.`
+            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.classTitle}` : ""}.`
           );
-          return;
+        } else {
+          throw new Error(data?.message || "Failed to generate quiz");
         }
-
-        throw new Error(data?.message || "Failed to generate quiz");
+        return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const quizQuestion = data.data.quiz.map((question: any) => ({
-        id: question.id,
-        question: question.question,
-        choices: question.choices,
-        answerIndex: question.answer_index,
-        explanation: question.explanation,
-        userSectionId: question.user_section_id,
+      const quizQuestions = data.data.quiz.map((q: any) => ({
+        id: q.id,
+        question: q.question,
+        choices: q.choices,
+        answerIndex: q.answer_index,
+        explanation: q.explanation,
+        userSectionId: q.user_section_id,
       }));
 
-      setQuiz(quizQuestion);
-
-      console.log(
-        "Quiz generated successfully:",
-        JSON.stringify(quizQuestion, null, 2)
-      );
+      setQuiz(quizQuestions);
     } catch (error) {
-      console.error("Error generating quiz prompt:", error);
+      console.error("Error generating quiz:", error);
       toast.error(
-        error instanceof Error ? error.message : "Unknown error occurred"
+        error instanceof Error ? error.message : "An unknown error occurred"
       );
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleSelection = (questionId: string, selectedIndex: number) => {
-    setAnswers((prevAnswers) => ({
-      ...prevAnswers,
-      [questionId]: selectedIndex,
-    }));
+  const handleAnswerSelect = (questionId: string, selectedIndex: number) => {
+    if (submitting) return; // Prevent changing answers after submission
+    setAnswers((prev) => ({ ...prev, [questionId]: selectedIndex }));
   };
 
-  const isAllAnswered = quiz.every(
-    (question) =>
-      answers[question.id] !== null && answers[question.id] !== undefined
-  );
-
-  const handleSubmit = async () => {
+  const handleQuizSubmit = async () => {
     setSubmitting(true);
-
-    const calculatedScore = quiz.reduce((total, q) => {
-      const userAnswer = answers[q.id];
-      return userAnswer === q.answerIndex ? total + 1 : total;
-    }, 0);
+    const calculatedScore = quiz.reduce(
+      (total, q) => (answers[q.id] === q.answerIndex ? total + 1 : total),
+      0
+    );
+    const passThreshold = 0.8;
+    const hasPassed = calculatedScore / quiz.length >= passThreshold;
 
     setScore(calculatedScore);
+    setPassed(hasPassed);
 
-    setPassed(calculatedScore / quiz.length >= 0.8);
-    const currentTime = new Date().toISOString();
-    const userClassId =
-      selectedClassId === "non-class" ? null : selectedClassId;
+    // Database operations
+    try {
+      // 1. Update each question with the user's answer
+      await Promise.all(
+        quiz.map((q) =>
+          supabase
+            .from("user_section_questions")
+            .update({ user_answer_index: answers[q.id] ?? null })
+            .eq("id", q.id)
+        )
+      );
 
-    const updatePromises = quiz.map((q) => {
-      return supabase
-        .from("user_section_questions")
-        .update({
-          user_answer_index: answers[q.id] ?? null,
-        })
-        .eq("id", q.id);
-    });
-
-    const updateResults = await Promise.all(updatePromises);
-    const updateErrors = updateResults.filter((res) => res.error);
-
-    if (updateErrors.length > 0) {
-      console.error("Error updating user answers:", updateErrors);
-      return;
-    }
-
-    const { data: existingResults, error: checkError } = await supabase
-      .from("quiz_results")
-      .select("*")
-      .eq("quiz_id", quizId);
-
-    if (checkError) {
-      console.error("Error checking existing quiz result:", checkError);
-      return;
-    }
-
-    if (existingResults && existingResults.length > 0) {
-      const { error: updateScoreError } = await supabase
-        .from("quiz_results")
-        .update({
-          score: calculatedScore,
-          submitted_at: currentTime,
-        })
-        .eq("quiz_id", quizId);
-
-      if (updateScoreError) {
-        console.error("Error updating quiz result:", updateScoreError);
-      }
-    } else {
-      const { error: insertError } = await supabase
-        .from("quiz_results")
-        .insert({
+      // 2. Upsert the quiz result
+      const { error: upsertError } = await supabase.from("quiz_results").upsert(
+        {
           quiz_id: quizId,
-          submitted_at: currentTime,
           score: calculatedScore,
+          submitted_at: new Date().toISOString(),
           user_id: user?.id,
-          user_class_id: userClassId,
-        });
+          user_class_id:
+            selectedClassId === "non-class" ? null : selectedClassId,
+        },
+        { onConflict: "quiz_id" }
+      );
 
-      if (insertError) {
-        console.error("Error inserting quiz result:", insertError);
+      if (upsertError) throw upsertError;
+
+      // 3. Update progress if passed
+      if (hasPassed && user?.id) {
+        await updateUserProgress(user.id, quizId, selectedClassId);
       }
+    } catch (error) {
+      console.error("Error submitting quiz results:", error);
+      toast.error("There was an error saving your results.");
+    }
+  };
+
+  const fetchQuizData = async (quizIdToFetch: string) => {
+    resetQuizState();
+    setIsGenerating(true);
+    try {
+      const { data: questions, error } = await supabase
+        .from("user_section_questions")
+        .select("*")
+        .eq("user_section_id", quizIdToFetch)
+        .order("created_at");
+
+      if (error) throw error;
+      if (!questions || questions.length === 0) {
+        toast.warning("Could not find questions for the selected quiz.");
+        return;
+      }
+
+      const loadedQuiz = questions.map((q) => ({
+        id: q.id,
+        question: q.question,
+        choices: q.choices,
+        answerIndex: q.correct_answer_index,
+        explanation: q.explanation,
+        userSectionId: q.user_section_id,
+      }));
+
+      const loadedAnswers = questions.reduce(
+        (acc, q) => {
+          acc[q.id] = q.user_answer_index;
+          return acc;
+        },
+        {} as Record<string, number | null>
+      );
+
+      const calculatedScore = loadedQuiz.reduce(
+        (total, q) =>
+          loadedAnswers[q.id] === q.answerIndex ? total + 1 : total,
+        0
+      );
+
+      setQuiz(loadedQuiz);
+      setAnswers(loadedAnswers);
+      setScore(calculatedScore);
+      setPassed(calculatedScore / loadedQuiz.length >= 0.8);
+      setSubmitting(true); // A previously opened quiz is always in the "submitted" state
+    } catch (error) {
+      console.error("Error fetching quiz data:", error);
+      toast.error("Failed to load the selected quiz.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const updateUserProgress = async (
+    userId: string,
+    sectionId: string | null,
+    classId: string | null
+  ) => {
+    try {
+      // Mark the section as complete
+      await supabase
+        .from("user_sections")
+        .update({ status: "COMPLETE" })
+        .eq("section_id", sectionId);
+
+      // Update class status if applicable
+      if (classId !== "non-class") {
+        await supabase
+          .from("class_users")
+          .update({ user_class_status: "ACTIVE" })
+          .eq("student_id", userId)
+          .eq("class_id", classId);
+      }
+      toast.success("Your progress has been updated!");
+    } catch (error) {
+      console.error("Error updating progress:", error);
+      toast.error("Failed to update progress status.");
     }
   };
 
   useEffect(() => {
-    if (passed && user?.id && quiz.length > 0) {
-      updateUserProgress(
-        user.id,
-        quizId,
-        selectedClassId === "non-class" ? null : selectedClassId
-      );
-    }
-  });
+    if (!user?.id) return;
 
-  useEffect(() => {
     const fetchPreviousQuizzes = async () => {
-      if (!user?.id) return;
-
       let query = supabase
         .from("quiz_results")
         .select("quiz_id, score, submitted_at")
@@ -226,17 +475,16 @@ export const Quiz: React.FC = () => {
         .order("submitted_at", { ascending: false });
 
       if (selectedClassId && selectedClassId !== "all") {
-        if (selectedClassId === "non-class") {
-          query = query.is("user_class_id", null);
-        } else {
-          query = query.eq("user_class_id", selectedClassId);
-        }
+        query =
+          selectedClassId === "non-class"
+            ? query.is("user_class_id", null)
+            : query.eq("user_class_id", selectedClassId);
       }
 
       const { data, error } = await query;
-
       if (error) {
         console.error("Failed to fetch previous quizzes: ", error);
+        toast.error("Could not load past quizzes.");
       } else {
         setPreviousQuizzes((data as QuizResult[]) || []);
       }
@@ -245,264 +493,62 @@ export const Quiz: React.FC = () => {
     fetchPreviousQuizzes();
   }, [user, selectedClassId]);
 
-  const fetchQuizData = async (quizId: string) => {
-    try {
-      const { data: quizResult, error: resultError } = await supabase
-        .from("quiz_results")
-        .select("*")
-        .eq("quiz_id", quizId)
-        .single();
-
-      if (resultError) throw resultError;
-
-      const { data: questions, error: questionsError } = await supabase
-        .from("user_section_questions")
-        .select("*")
-        .eq("user_section_id", quizId)
-        .order("created_at");
-
-      if (questionsError) throw questionsError;
-
-      if (quizResult && questions) {
-        setQuiz(
-          questions.map((q) => ({
-            id: q.id,
-            question: q.question,
-            choices: q.choices,
-            answerIndex: q.correct_answer_index,
-            explanation: q.explanation,
-            userSectionId: q.user_section_id,
-          }))
-        );
-
-        const userAnswers = questions.reduce(
-          (acc, q) => {
-            acc[q.id] = q.user_answer_index;
-            return acc;
-          },
-          {} as Record<string, number | null>
-        );
-
-        setAnswers(userAnswers);
-        setScore(quizResult.score || 0);
-      }
-    } catch (error) {
-      console.error("Error fetching quiz data:", error);
-      toast.error("Failed to load quiz");
-    }
-  };
-
-  const handleQuizSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedQuizId(e.target.value || null);
-  };
-
-  const handleOpenQuiz = async () => {
-    if (!selectedQuizId) {
-      toast.warning("Please select a quiz first");
-      return;
-    }
-
-    await fetchQuizData(selectedQuizId);
-  };
-
-  const resetQuiz = () => {
-    setAnswers({});
-    setSubmitting(false);
-    setScore(0);
-  };
-
-  const updateUserProgress = async (
-    userId?: string,
-    userSectionId?: string,
-    userClassId?: string | null
-  ) => {
-    try {
-      if (!userSectionId) return;
-
-      console.log("Updating progress...");
-
-      const { error: sectionError } = await supabase
-        .from("user_sections")
-        .update({ status: "COMPLETE" })
-        .eq("section_id", userSectionId);
-
-      if (sectionError) throw sectionError;
-
-      if (userClassId) {
-        const { error: classError } = await supabase
-          .from("class_users")
-          .update({ user_class_status: "ACTIVE" })
-          .eq("student_id", userId)
-          .eq("class_id", userClassId);
-
-        if (classError) throw classError;
-      }
-    } catch (error) {
-      console.error("Error updating progress:", error);
-      toast.error("Failed to update progress status");
-    }
-  };
-
   return (
-    <div className="min-h-screen p-6 flex flex-col items-center bg-gradient-to-b from-white to-green-50 dark:from-black dark:to-gray-900 transition-colors">
-      <div className="max-w-3xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 transition-colors">
-        <div className="mb-6 w-full grid grid-cols-3 sm:grid-cols-6 gap-4">
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Select a class (if any):
-            </label>
-            <ClassesDropdownMenu
-              classes={classes}
-              onClassSelect={handleClassSelect}
-              selectedId={selectedClassId}
-            />
+    <div className="flex-grow flex flex-col items-center justify-center width-container gap-6">
+      <Title>Review Quiz</Title>
+
+      <QuizControls
+        classes={classes}
+        selectedClassId={selectedClassId}
+        onClassSelect={handleClassSelect}
+        onGenerate={generateQuiz}
+        isGenerating={isGenerating}
+        previousQuizzes={previousQuizzes}
+        onPreviousQuizSelect={(e) => setSelectedQuizId(e.target.value || null)}
+        onOpenPreviousQuiz={() =>
+          selectedQuizId && fetchQuizData(selectedQuizId)
+        }
+      />
+
+      {quiz.length > 0 ? (
+        <>
+          <QuizDisplay
+            quiz={quiz}
+            answers={answers}
+            submitting={submitting}
+            onAnswerSelect={handleAnswerSelect}
+          />
+          <div className="mt-10 pt-6 text-center border-t border-gray-200 dark:border-gray-700">
+            {submitting ? (
+              <QuizResults
+                score={score}
+                totalQuestions={quiz.length}
+                passed={passed}
+                onTryAgain={generateQuiz} // Retrying generates a new quiz for the same class
+                onBackToDashboard={() => navigate("/dashboard")}
+              />
+            ) : (
+              isAllAnswered && (
+                <Button onClick={handleQuizSubmit}>Submit Answers</Button>
+              )
+            )}
+            {!submitting && !isAllAnswered && (
+              <Paragraph>
+                *You will be able to submit once all questions have been
+                answered*
+              </Paragraph>
+            )}
           </div>
-
-          <div className="flex col-span-1 items-end justify-center pb-1">
-            <button
-              onClick={() => generateQuiz(user?.id || "")}
-              disabled={isGenerating}
-              className="bg-blue-500 hover:bg-blue-800 text-white text-sm font-semibold rounded h-8 w-24 transition-transform hover:scale-105 flex items-center justify-center"
-            >
-              {isGenerating ? <Loader2 className="animate-spin" /> : "Generate"}
-            </button>
-          </div>
-
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              View Previous Quizes (if any):
-            </label>
-            <select
-              className="w-full px-4 py-2 border text-sm rounded bg-white dark:bg-gray-800 border-black dark:border-white"
-              onChange={handleQuizSelect}
-            >
-              <option value="">-- Select Previous Quiz --</option>
-              {previousQuizzes.map((q) => (
-                <option key={q.quiz_id} value={q.quiz_id}>
-                  {new Date(q.submitted_at).toLocaleString()} – Score: {q.score}{" "}
-                  /10
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex col-span-1 items-end justify-center pb-1">
-            <button
-              onClick={handleOpenQuiz}
-              disabled={isGenerating}
-              className="bg-blue-500 hover:bg-blue-800 text-white text-sm font-semibold rounded h-8 w-24 transition-transform hover:scale-105 flex items-center justify-center"
-            >
-              {isGenerating ? <Loader2 className="animate-spin" /> : "Open"}
-            </button>
-          </div>
-        </div>
-
-        <h1 className="text-2xl font-bold text-[#50B498] mb-6">Review Quiz</h1>
-        <p className="text-sm font-semibold text-[#50B498] mb-6">
-          *You Will Only Be Able To Submit Once All Questions Have Been
-          Answered*
-        </p>
-
-        <div className="space-y-10 max-h-[70vh] overflow-y-auto pr-2">
-          {quiz.length > 0 &&
-            quiz.map((question, index) => (
-              <div key={question.id}>
-                <p className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100">
-                  {index + 1}. {question.question}
-                </p>
-                <div className="space-y-2">
-                  {question.choices.map((option, index) => (
-                    <label
-                      key={index}
-                      className={`block border rounded-md px-4 py-2 cursor-pointer transition-colors ${
-                        submitting && answers[question.id] === index
-                          ? question.choices[question.answerIndex] === option
-                            ? "bg-green-200 dark:bg-green-800 border-green-900"
-                            : "bg-red-200 dark:bg-red-800 border-red-700"
-                          : answers[question.id] === index
-                            ? "bg-blue-100 dark:bg-blue-900"
-                            : "bg-gray-100 dark:bg-gray-700"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name={`question-${question.id}`}
-                        value={option}
-                        onChange={() => handleSelection(question.id, index)}
-                        className="hidden"
-                        checked={answers[question.id] === index}
-                      />
-                      {option}
-                    </label>
-                  ))}
-                </div>
-                {submitting && (
-                  <p className="mt-2 text-lg text-[#50B498] dark:text-green-400 font-semibold">
-                    {answers[question.id] === question.answerIndex
-                      ? "Explanation: "
-                      : "Hint: "}
-                    {question.explanation}
-                  </p>
-                )}
-              </div>
-            ))}
-          {quiz.length > 0 && (
-            <div className="mt-10 pt-6 text-center">
-              {isAllAnswered && !submitting && (
-                <button
-                  onClick={handleSubmit}
-                  className="bg-green-500 hover:bg-green-800 hover:scale-105 text-white font-bold py-2 px-4 rounded"
-                >
-                  Submit
-                </button>
-              )}
-              {submitting && (
-                <>
-                  <p className="mt-4 text-green-600 font-semibold">
-                    Your answers have been submitted!
-                  </p>
-                  <div className="mt-4">
-                    <p className="text-lg font-bold">
-                      Your Score: {score} / {quiz.length}
-                    </p>
-                    <p className="text-lg font-bold">
-                      Percentage: {((score / quiz.length) * 100).toFixed(2)}%
-                    </p>
-
-                    {passed ? (
-                      <>
-                        <p className="text-2xl text-green-600 font-bold mt-4">
-                          Congratulations! 🎉 You passed!
-                        </p>
-                        <button
-                          onClick={() => navigate("/dashboard")}
-                          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                          Back to Dashboard
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-2xl text-red-600 font-bold mt-4">
-                          Keep practicing! You'll do better next time!
-                        </p>
-                        <button
-                          onClick={resetQuiz}
-                          className="mt-4 bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                          Try Again
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+        </>
+      ) : (
+        <Card className="w-container p-6">
+          <Paragraph>
+            Generate a new quiz or select a previous one to begin.
+          </Paragraph>
+        </Card>
+      )}
     </div>
   );
 };
 
-export default Quiz;
+export default QuizPage;

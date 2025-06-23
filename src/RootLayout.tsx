@@ -23,7 +23,7 @@ const RootLayout = () => {
       {/* Footer - Always at the bottom */}
       <footer className="py-6 bg-gradient-to-t from-white to-green-100 dark:bg-gradient-to-t dark:from-black dark:to-gray-800 text-center text-sm text-gray-600 dark:text-gray-400">
         <p>© 2025 CLOVER</p>
-        <p className="text-[#50B498]">TEAM 22</p>
+        <p className="text-primary">TEAM 2</p>
       </footer>
     </div>
   );
