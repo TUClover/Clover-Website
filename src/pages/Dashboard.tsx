@@ -41,7 +41,7 @@ export const Dashboard = ({
   };
 
   return (
-    <div className="px-6 space-y-8 width-container">
+    <div className="space-y-8 width-container">
       <DashboardHeader
         userData={userData}
         selectedRole={effectiveRole}

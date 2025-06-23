@@ -9,6 +9,7 @@ import CreateNewClassDialog from "../components/CreateNewClassDialog";
 import StudentDataTable from "../components/StudentDataTable";
 import { UserData } from "../api/types/user";
 import InfoTooltip from "../components/InfoTooltip";
+import { Card } from "../components/ui/card";
 
 /**
  * InstructorDashboard component displays the instructor dashboard with class statistics and activity logs.
@@ -80,16 +81,16 @@ export const InstructorDashboard = ({ userData }: { userData: UserData }) => {
       <StackedBarChart
         activities={selectedClassId === "all" ? allActivity : classActivity}
       />
-      <div className="card rounded shadow-sm p-6">
+      <Card className="p-6">
         <div className="flex items-center mb-2 gap-3">
-          <h2 className="text-md font-semibold text-[#50B498]">
+          <h2 className="text-md font-semibold text-primary">
             Insights About Students
           </h2>
           <InfoTooltip>
             <div className="text-sm space-y-2">
               <p>
                 The table shows insights from{" "}
-                <span className="text-[#50B498] font-semibold">
+                <span className="text-primary font-semibold">
                   {selectedClassId === "all"
                     ? "all classes"
                     : selectedClassTitle}
@@ -109,7 +110,7 @@ export const InstructorDashboard = ({ userData }: { userData: UserData }) => {
           logs={selectedClassId === "all" ? allActivity : classActivity}
           classFilter={selectedClassId === "all" ? "all" : "class"}
         />
-      </div>
+      </Card>
     </div>
   );
 };

@@ -130,8 +130,8 @@ const DeleteUserButton: React.FC<{
   userId: string;
 }> = ({ userId }) => {
   return (
-    <button
-      className="button-gray bg-red-600 dark:bg-red-800 hover:bg-red-700 hover:dark:bg-red-700"
+    <Button
+      className="bg-red-600 dark:bg-red-800 hover:bg-red-700 hover:dark:bg-red-700"
       onClick={async () => {
         const confirmed = window.confirm(
           "Are you sure you want to delete this user?"
@@ -148,7 +148,7 @@ const DeleteUserButton: React.FC<{
       }}
     >
       Delete User
-    </button>
+    </Button>
   );
 };
 
@@ -198,7 +198,9 @@ const ResetPasswordButton: React.FC<{ userId?: string }> = ({ userId }) => {
     <div className="">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <button className="button-gray">Change Password</button>
+          <Button className="bg-gray-500 hover:bg-gray-600">
+            Change Password
+          </Button>
         </DialogTrigger>
         <DialogContent className="bg-white dark:bg-zinc-900 rounded-xl shadow shadow-gray-800 p-6">
           <DialogHeader>
