@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Card } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -72,31 +77,34 @@ export const Download = () => {
 
         {/* VS Code Marketplace */}
 
-        <Card>
-          <h3 className="text-xl font-bold text-text">Install from VS Code</h3>
-          <p className="text-text mt-2">
-            Install CLOVER directly from the VS Code or the VS Code Marketplace.
-          </p>
-          <div className="flex flex-col items-center gap-4 mt-4">
-            <Button className="bg-blue-400 dark: bg-blue-600 hover:bg-blue-500 dark:hover:bg-blue-700 hover:scale-105 text-white font-bold py-2 px-4 rounded transition-all">
-              <Link
-                to="vscode:extension/capstone-team-2.temple-capstone-clover"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open in VS Code
-              </Link>
-            </Button>
-            <Button className="bg-blue-400 dark:bg-blue-600 hover:bg-blue-500 dark:hover:bg-blue-700 hover:scale-105 text-white font-bold py-2 px-4 rounded transition-all">
-              <Link
-                to="https://marketplace.visualstudio.com/items?itemName=capstone-team-2.temple-capstone-clover"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open in VS Code Marketplace
-              </Link>
-            </Button>
-          </div>
+        <Card className="p-6 pb-2">
+          <CardTitle>Install for VS Code</CardTitle>
+          <CardContent>
+            <CardDescription>
+              Install CLOVER directly from the VS Code or the VS Code
+              Marketplace.
+            </CardDescription>
+            <div className="flex flex-col items-center gap-4 mt-4">
+              <Button className="bg-blue-400 dark: bg-blue-600 hover:bg-blue-500 dark:hover:bg-blue-700 hover:scale-105 text-white font-bold py-2 px-4 rounded transition-all">
+                <Link
+                  to="vscode:extension/capstone-team-2.temple-capstone-clover"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open in VS Code
+                </Link>
+              </Button>
+              <Button className="bg-blue-400 dark:bg-blue-600 hover:bg-blue-500 dark:hover:bg-blue-700 hover:scale-105 text-white font-bold py-2 px-4 rounded transition-all">
+                <Link
+                  to="https://marketplace.visualstudio.com/items?itemName=capstone-team-2.temple-capstone-clover"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open in VS Code Marketplace
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
         </Card>
         {/* Manual Installation */}
         {/* <div className="info-card p-6 rounded-2xl shadow-lg mt-6 w-full max-w-3xl">
