@@ -182,12 +182,12 @@ export const DropdownAvatar = ({
             {userData?.avatar_url ? (
               <img
                 src={userData.avatar_url ?? ""}
-                alt={`${userData.firstName} ${userData.lastName}`}
+                alt={`${userData.first_name} ${userData.last_name}`}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
               <AvatarFallback className="bg-[#50B498] text-white text-lg font-semibold">
-                {userData?.firstName.charAt(0).toUpperCase()}
+                {userData?.first_name.charAt(0).toUpperCase()}
               </AvatarFallback>
             )}
           </Avatar>

@@ -76,9 +76,9 @@ export async function getUserData(
     return {
       data: {
         id: data.user.id,
-        createdAt: data.user.created_at,
-        firstName: data.user.first_name,
-        lastName: data.user.last_name,
+        created_at: data.user.created_at,
+        first_name: data.user.first_name,
+        last_name: data.user.last_name,
         email: data.user.email,
         status: data.user.status,
         role: data.user.role,
@@ -272,9 +272,9 @@ export async function getAllUsers(): Promise<{
         avatar_url?: string;
       }): UserData => ({
         id: userItem.id,
-        createdAt: userItem.created_at,
-        firstName: userItem.first_name,
-        lastName: userItem.last_name,
+        created_at: userItem.created_at,
+        first_name: userItem.first_name,
+        last_name: userItem.last_name,
         email: userItem.email,
         status: userItem.status,
         role: userItem.role,

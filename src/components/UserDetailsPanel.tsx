@@ -82,7 +82,7 @@ export const UserDetailsPanel: React.FC<{
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold mb-4 px-2">
-              {singleUser.firstName} {singleUser.lastName}
+              {singleUser.first_name} {singleUser.last_name}
               <span className="text-sm text-gray-500 px-4">
                 {singleUser.email}
               </span>
@@ -263,8 +263,8 @@ const EditUserButton: React.FC<{
   const editUser = async () => {
     const editedUser: UserData = {
       ...user,
-      firstName: form.getValues("firstName"),
-      lastName: form.getValues("lastName"),
+      first_name: form.getValues("firstName"),
+      last_name: form.getValues("lastName"),
       email: form.getValues("email"),
       avatar_url: form.getValues("avatar_url"),
       role: form.getValues("role"),
@@ -283,8 +283,8 @@ const EditUserButton: React.FC<{
 
   const form = useForm({
     defaultValues: {
-      firstName: user.firstName,
-      lastName: user.lastName,
+      firstName: user.first_name,
+      lastName: user.last_name,
       email: user.email,
       avatar_url: user.avatar_url,
       role: user.role,

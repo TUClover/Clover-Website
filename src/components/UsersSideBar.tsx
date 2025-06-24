@@ -57,7 +57,7 @@ export const UserSideBar: React.FC<UserSideBarProps> = ({
         keywords.length === 0 ||
         keywords.some(
           (kw) =>
-            `${user.firstName} ${user.lastName}`.toLowerCase().includes(kw) ||
+            `${user.first_name} ${user.last_name}`.toLowerCase().includes(kw) ||
             user.email?.toLowerCase().includes(kw)
         );
 
@@ -184,18 +184,18 @@ export const UserSideBar: React.FC<UserSideBarProps> = ({
                       {user.avatar_url ? (
                         <img
                           src={user.avatar_url ?? ""}
-                          alt={`${user.firstName} ${user.lastName}`}
+                          alt={`${user.first_name} ${user.last_name}`}
                           className="w-full h-full rounded-full"
                         />
                       ) : (
                         <AvatarFallback className="bg-[#50B498] text-white text-lg font-semibold">
-                          {user?.firstName.charAt(0).toUpperCase()}
+                          {user?.first_name.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate">
-                        {user.firstName} {user.lastName}
+                        {user.first_name} {user.last_name}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
                         {user.email}

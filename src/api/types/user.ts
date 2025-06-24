@@ -19,9 +19,9 @@ export interface User {
 
 export interface UserData {
   id: string;
-  createdAt: string;
-  firstName: string;
-  lastName: string;
+  created_at: string;
+  first_name: string;
+  last_name: string;
   email: string;
   status?: string;
   role: UserRole;
