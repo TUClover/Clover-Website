@@ -27,10 +27,14 @@ export const useUserClasses = (userID?: string | null) => {
     const currentUserId = userID ?? user?.id;
     if (!currentUserId) {
       setLoading(false);
+      setClasses([]);
       return;
     }
 
     const fetchClasses = async () => {
+      setLoading(true);
+      setClasses([]);
+
       try {
         const { data, error } = await getUserClasses(currentUserId);
         if (error) {
