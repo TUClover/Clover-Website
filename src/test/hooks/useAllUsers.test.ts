@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { useAllUsers } from "../../hooks/useAllUsers";
 import { getAllUsers } from "../../api/user";
-import { UserData, UserRole } from "../../api/types/user";
+import { User, UserRole } from "../../api/types/user";
 
 jest.mock("../../api/user");
 const mockGetAllUsers = getAllUsers as jest.Mock;
@@ -16,12 +16,12 @@ describe("useAllUsers", () => {
     jest.clearAllMocks();
   });
 
-  const mockUsers: UserData[] = [
+  const mockUsers: User[] = [
     {
       id: "1",
-      createdAt: "2025-01-01T00:00:00Z",
-      firstName: "Jane",
-      lastName: "Doe",
+      created_at: "2025-01-01T00:00:00Z",
+      first_name: "Jane",
+      last_name: "Doe",
       email: "jane.doe@example.com",
       role: UserRole.STUDENT,
       settings: {

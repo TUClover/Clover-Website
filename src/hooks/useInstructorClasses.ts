@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "./useAuth";
-import { UserClass, UserData } from "../api/types/user";
+import { UserClass, User } from "../api/types/user";
 import { getClassesByInstructor } from "../api/classes";
 import { supabase } from "../supabaseClient";
 
@@ -108,8 +108,8 @@ export const useInstructorClasses = (userID?: string | null) => {
  * @returns {Object} - Contains enrolled and waitlisted students, loading state, error message, and refetch function.
  */
 export const useClassStudentsInfo = (classId: string | null) => {
-  const [enrolledStudents, setEnrolledStudents] = useState<UserData[]>([]);
-  const [waitlistedStudents, setWaitlistedStudents] = useState<UserData[]>([]);
+  const [enrolledStudents, setEnrolledStudents] = useState<User[]>([]);
+  const [waitlistedStudents, setWaitlistedStudents] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshFlag, setRefreshFlag] = useState(false);

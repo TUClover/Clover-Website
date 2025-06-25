@@ -1,4 +1,4 @@
-import { UserRole, UserData } from "../api/types/user";
+import { UserRole, User } from "../api/types/user";
 import InstructorDashboard from "./InstructorDashboard";
 import StudentDashboard from "./StudentDashboard";
 import DevDashboard from "./DevDashboard";
@@ -19,7 +19,7 @@ export const Dashboard = ({
   userData,
   loading,
 }: {
-  userData: UserData | null;
+  userData: User | null;
   loading: boolean;
 }) => {
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
@@ -65,7 +65,7 @@ export const Dashboard = ({
 export default Dashboard;
 
 type DashboardHeaderProps = {
-  userData: UserData | null;
+  userData: User | null;
   selectedRole?: UserRole | null;
   onRoleChange?: (role: UserRole) => void;
 };
@@ -102,7 +102,7 @@ export const DashboardHeader = ({
         <h1 className="text-3xl font-bold">
           Welcome{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#50B498] to-[#9CDBA6]">
-            {userData.firstName}
+            {userData.first_name}
           </span>
           👋
         </h1>

@@ -1,8 +1,8 @@
-import { ClassData, UserData } from "../api/types/user";
+import { ClassData, User } from "../api/types/user";
 import UserSettings from "./UserSettings";
 
 export const ClassDetailsPanel: React.FC<{
-  users: UserData[];
+  users: User[];
   classDetails: ClassData | ClassData[] | null;
   isLoading?: boolean;
 }> = ({ users, classDetails: classData, isLoading }) => {
@@ -24,28 +24,28 @@ export const ClassDetailsPanel: React.FC<{
           {/* Class Info */}
           <div>
             <h2 className="text-3xl font-bold text-primary mb-1">
-              {singleClass.classTitle}
+              {singleClass.class_title}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-1">
               <span className="font-medium">Class Code:</span>{" "}
-              {singleClass.classCode}
+              {singleClass.class_code}
             </p>
-            {singleClass.instructorId && (
+            {singleClass.instructor_id && (
               <p className="text-gray-600 dark:text-gray-300 mb-1">
                 <span className="font-medium">Instructor:</span>{" "}
                 {(() => {
                   const instructor = users.find(
-                    (u) => u.id === singleClass.instructorId
+                    (u) => u.id === singleClass.instructor_id
                   );
                   return instructor
-                    ? `${instructor.firstName} ${instructor.lastName} (${instructor.id})`
-                    : singleClass.instructorId;
+                    ? `${instructor.first_name} ${instructor.last_name} (${instructor.id})`
+                    : singleClass.instructor_id;
                 })()}
               </p>
             )}
-            {singleClass.classDescription && (
+            {singleClass.class_description && (
               <p className="text-gray-700 dark:text-gray-200 mt-2">
-                {singleClass.classDescription}
+                {singleClass.class_description}
               </p>
             )}
           </div>
@@ -58,7 +58,7 @@ export const ClassDetailsPanel: React.FC<{
                 {singleClass.students.map((student) => (
                   <li key={student.id} className="py-2">
                     <span className="font-medium">
-                      {student.firstName} {student.lastName}
+                      {student.first_name} {student.last_name}
                     </span>{" "}
                     <span className="text-gray-500 text-sm">
                       ({student.email})

@@ -1,5 +1,5 @@
 import { MailIcon } from "lucide-react";
-import { UserData } from "../api/types/user";
+import { User } from "../api/types/user";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Card } from "./ui/card";
 
@@ -9,7 +9,7 @@ interface StatItem {
 }
 
 interface ProfileCardProps {
-  userData: UserData;
+  userData: User;
   detailsContent?: StatItem[];
 }
 

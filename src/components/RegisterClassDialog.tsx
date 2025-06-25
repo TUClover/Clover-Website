@@ -21,7 +21,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { toast } from "sonner";
-import { UserClass, UserData } from "../api/types/user";
+import { ClassData, User } from "../api/types/user";
 
 /**
  * RegisterClassDialog component allows users to search and register for classes.
@@ -34,10 +34,10 @@ export const RegisterClassDialog = () => {
   const { userData } = useUserData();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [results, setResults] = useState<UserClass[]>([]);
+  const [results, setResults] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(false);
   const [classId, setClassId] = useState<string | null>(null);
-  const [instructor, setInstructor] = useState<UserData | null>(null);
+  const [instructor, setInstructor] = useState<User | null>(null);
 
   const [enrollmentStatus, setEnrollmentStatus] = useState<
     Record<string, string>
@@ -128,6 +128,7 @@ export const RegisterClassDialog = () => {
         classImageCover: cls.class_image_cover,
         createdAt: cls.created_at,
         classDescription: cls.class_description,
+        students: [],
       }));
 
       setResults(camelCaseResults);
@@ -136,7 +137,7 @@ export const RegisterClassDialog = () => {
     setLoading(false);
   };
 
-  const registerForClass = async (cls: UserClass) => {
+  const registerForClass = async (cls: ClassData) => {
     setRegisterLoading(true);
 
     try {
@@ -258,7 +259,7 @@ export const RegisterClassDialog = () => {
                             Instructor
                           </h3>{" "}
                           <p>
-                            {instructor?.firstName} {instructor?.lastName}
+                            {instructor?.first_name} {instructor?.last_name}
                           </p>
                         </div>
                         <div className="space-y-1">

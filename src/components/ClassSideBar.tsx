@@ -53,15 +53,15 @@ export const ClassSideBar: React.FC<ClassSideBarProps> = ({
       }
     }
 
-    return classes.filter((classItem) => {
+    return classes.filter((classItem: ClassData) => {
       const keywordMatch =
         keywords.length === 0 ||
         keywords.some(
           (kw) =>
-            classItem.classTitle.toLowerCase().includes(kw) ||
-            classItem.classCode.toLowerCase().includes(kw) ||
-            (classItem.classDescription &&
-              classItem.classDescription.toLowerCase().includes(kw))
+            classItem.class_title.toLowerCase().includes(kw) ||
+            classItem.class_code.toLowerCase().includes(kw) ||
+            (classItem.class_description &&
+              classItem.class_description.toLowerCase().includes(kw))
         );
 
       const allFiltersMatch = (
@@ -195,25 +195,25 @@ export const ClassSideBar: React.FC<ClassSideBarProps> = ({
                 >
                   <div className="flex items-center">
                     <Avatar className="w-10 h-10 mr-3">
-                      {classItem.classImageCover ? (
+                      {classItem.class_image_cover ? (
                         <img
-                          src={classItem.classImageCover}
-                          alt={classItem.classTitle}
+                          src={classItem.class_image_cover}
+                          alt={classItem.class_title}
                           className="w-full h-full rounded-full object-cover"
                         />
                       ) : (
                         <AvatarFallback className="bg-[#50B498] text-white text-lg font-semibold">
                           {" "}
-                          {classItem.classTitle?.charAt(0).toUpperCase()}
+                          {classItem.class_title?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate">
-                        {classItem.classTitle}
+                        {classItem.class_title}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                        {classItem.classCode}
+                        {classItem.class_code}
                       </div>
                     </div>
                   </div>

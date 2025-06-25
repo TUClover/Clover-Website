@@ -1,17 +1,21 @@
 import { useUserData } from "../hooks/useUserData";
 import { Loader2 } from "lucide-react";
 import StudentStatusBadge from "./StudentStatusBadge";
-import { UserClassInfo } from "../hooks/useUserClasses";
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import PingDot from "./PingDot";
-import { StudentStatus, UserClass, UserData } from "../api/types/user";
+import {
+  StudentStatus,
+  ClassData,
+  User,
+  UserClassInfo,
+} from "../api/types/user";
 
 type ClassCardProps = {
-  classInfo: UserClass | UserClassInfo;
+  classInfo: ClassData | UserClassInfo;
   onSelect: (
-    userClass: UserClass,
+    userClass: ClassData,
     studentStatus?: StudentStatus,
-    instructorData?: UserData
+    instructorData?: User
   ) => void;
   isInstructor?: boolean;
 };
@@ -31,7 +35,7 @@ export const ClassInfoCard = ({
   isInstructor = false,
 }: ClassCardProps) => {
   const isUserClassInfo = (
-    info: UserClass | UserClassInfo
+    info: ClassData | UserClassInfo
   ): info is UserClassInfo => {
     return (info as UserClassInfo).userClass !== undefined;
   };
@@ -112,7 +116,7 @@ export const ClassInfoCard = ({
                     <div className="size-8 rounded-full overflow-hidden border-white dark:border-slate-700">
                       <img
                         src={instructorData.avatar_url ?? ""}
-                        alt={`${instructorData.firstName} ${instructorData.lastName}`}
+                        alt={`${instructorData.first_name} ${instructorData.last_name}`}
                         className="w-full h-full rounded-full object-cover"
                       />
                     </div>
@@ -123,11 +127,11 @@ export const ClassInfoCard = ({
                         backgroundColor: classHexColor || "#E5E7EB",
                       }}
                     >
-                      {instructorData.firstName?.charAt(0).toUpperCase()}
+                      {instructorData.first_name?.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <span className="text-sm text-muted-foreground ml-3">
-                    by {instructorData.firstName} {instructorData.lastName}
+                    by {instructorData.first_name} {instructorData.last_name}
                   </span>
                 </div>
               </div>

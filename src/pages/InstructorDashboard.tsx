@@ -7,7 +7,7 @@ import { useInstructorClasses } from "../hooks/useInstructorClasses";
 import StackedBarChart from "../components/StackedBarChart";
 import CreateNewClassDialog from "../components/CreateNewClassDialog";
 import StudentDataTable from "../components/StudentDataTable";
-import { UserData } from "../api/types/user";
+import { User } from "../api/types/user";
 import InfoTooltip from "../components/InfoTooltip";
 import { Card } from "../components/ui/card";
 
@@ -17,7 +17,7 @@ import { Card } from "../components/ui/card";
  * @param { userData } - The user data of the instructor.
  * @returns
  */
-export const InstructorDashboard = ({ userData }: { userData: UserData }) => {
+export const InstructorDashboard = ({ userData }: { userData: User }) => {
   const { classes, selectedClassId, handleClassSelect } = useInstructorClasses(
     userData.id
   );

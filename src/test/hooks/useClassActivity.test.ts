@@ -2,7 +2,7 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { useClassActivity } from "../../hooks/useClassActivity";
 import { getClassActivityByClassId } from "../../api/classes";
 import { LogEvent } from "../../api/types/event";
-import { UserActivityLogItem, UserClass } from "../../api/types/user";
+import { UserActivityLogItem, ClassData } from "../../api/types/user";
 import { calculateProgress } from "../../utils/calculateProgress";
 
 jest.mock("../../api/classes", () => ({
@@ -67,9 +67,9 @@ describe("useClassActivity", () => {
       percentageCorrect: 50,
     });
 
-    const classes: UserClass[] = [
-      { id: "class-1", classTitle: "Class 1", classCode: "C1" },
-      { id: "class-2", classTitle: "Class 2", classCode: "C2" },
+    const classes: ClassData[] = [
+      { id: "class-1", classTitle: "Class 1", classCode: "C1", students: [] },
+      { id: "class-2", classTitle: "Class 2", classCode: "C2", students: [] },
     ];
 
     const { result } = renderHook(() => useClassActivity(classes, "class-1"));
@@ -96,8 +96,8 @@ describe("useClassActivity", () => {
       error: "Fetch failed",
     });
 
-    const classes: UserClass[] = [
-      { id: "class-1", classTitle: "Class 1", classCode: "C1" },
+    const classes: ClassData[] = [
+      { id: "class-1", classTitle: "Class 1", classCode: "C1", students: [] },
     ];
 
     const { result } = renderHook(() => useClassActivity(classes, "class-1"));
@@ -126,9 +126,9 @@ describe("useClassActivity", () => {
       percentageCorrect: 66.67,
     });
 
-    const classes: UserClass[] = [
-      { id: "class-1", classTitle: "Class 1", classCode: "C1" },
-      { id: "class-2", classTitle: "Class 2", classCode: "C2" },
+    const classes: ClassData[] = [
+      { id: "class-1", classTitle: "Class 1", classCode: "C1", students: [] },
+      { id: "class-2", classTitle: "Class 2", classCode: "C2", students: [] },
     ];
 
     const { result } = renderHook(() => useClassActivity(classes, null));
@@ -150,8 +150,8 @@ describe("useClassActivity", () => {
       error: null,
     });
 
-    const classes: UserClass[] = [
-      { id: "class-1", classTitle: "Class 1", classCode: "C1" },
+    const classes: ClassData[] = [
+      { id: "class-1", classTitle: "Class 1", classCode: "C1", students: [] },
     ];
 
     const { result } = renderHook(() => useClassActivity(classes, "class-1"));
@@ -175,9 +175,9 @@ describe("useClassActivity", () => {
       percentageCorrect: 66.67,
     });
 
-    const classes: UserClass[] = [
-      { id: "class-1", classTitle: "Class 1", classCode: "C1" },
-      { id: "class-2", classTitle: "Class 2", classCode: "C2" },
+    const classes: ClassData[] = [
+      { id: "class-1", classTitle: "Class 1", classCode: "C1", students: [] },
+      { id: "class-2", classTitle: "Class 2", classCode: "C2", students: [] },
     ];
 
     const { result } = renderHook(() => useClassActivity(classes, "all"));

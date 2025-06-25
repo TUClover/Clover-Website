@@ -11,7 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { ClassData, UserClass, UserData, UserRole } from "../api/types/user";
+import { ClassData, User, UserRole } from "../api/types/user";
 import "react-datepicker/dist/react-datepicker.css";
 import { useUserActivity } from "../hooks/useUserActivity";
 import UserSideBar from "../components/UsersSideBar";
@@ -42,11 +42,11 @@ ChartJS.register(
  * @returns {JSX.Element} The DevDashboard component.
  */
 export const DevDashboard = () => {
-  const [selectedUsers, setSelectedUsers] = useState<UserData[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedClass, setSelectedClass] = useState<UserClass | null>(null);
+  const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
   const selectedClassId = selectedClass?.id ?? "all";
   const selectedClassType =
     selectedClass?.id === "all"
@@ -152,8 +152,8 @@ export const DevDashboard = () => {
       {selectedClass && selectedUserId && (
         <StudentDashboardCard
           student={{
-            fullName: `${selectedUsers[0].firstName} ${selectedUsers[0].lastName}`,
-            classTitle: selectedClass.classTitle,
+            fullName: `${selectedUsers[0].first_name} ${selectedUsers[0].last_name}`,
+            classTitle: selectedClass.class_title,
             studentStatus:
               selectedClassId !== "all" && selectedClassId !== "non-class"
                 ? studentStatus

@@ -265,9 +265,9 @@ describe("user-api", () => {
 
     const result = await updateUser("u1", {
       id: "u1",
-      createdAt: "now",
-      firstName: "New",
-      lastName: "Name",
+      created_at: "now",
+      first_name: "New",
+      last_name: "Name",
       email: "new@example.com",
       role: UserRole.STUDENT,
       settings: {

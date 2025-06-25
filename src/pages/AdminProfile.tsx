@@ -1,9 +1,9 @@
 import { Loader2, Star } from "lucide-react";
-import { UserData } from "../api/types/user";
+import { User } from "../api/types/user";
 import ProfileCard from "../components/ProfileCard";
 import { useInstructorClasses } from "../hooks/useInstructorClasses";
 
-const AdminProfile = ({ userData }: { userData: UserData }) => {
+const AdminProfile = ({ userData }: { userData: User }) => {
   const { originalClasses, loading: userClassLoading } = useInstructorClasses();
 
   if (userClassLoading) {

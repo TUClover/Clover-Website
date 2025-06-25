@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { renderHook, waitFor, act } from "@testing-library/react";
-import {
-  UserClassInfo,
-  useUserClasses,
-  useUserClassStatus,
-} from "../../hooks/useUserClasses";
+import { useUserClasses, useUserClassStatus } from "../../hooks/useUserClasses";
 import { getUserClasses } from "../../api/user";
-import { StudentStatus } from "../../api/types/user";
+import {
+  EnrollmentStatus,
+  StudentStatus,
+  UserClassInfo,
+} from "../../api/types/user";
 
 // Mocks
 jest.mock("../../api/user", () => ({
@@ -40,7 +40,10 @@ const mockClassInfo: UserClassInfo = {
     classImageCover: null,
     classDescription: "Intro to Physics",
     createdAt: "2024-01-01T00:00:00Z",
+    students: [],
   },
+  joinedAt: "2024-01-01T00:00:00Z",
+  enrollementStatus: EnrollmentStatus.ENROLLED,
   studentStatus: StudentStatus.ACTIVE,
 };
 

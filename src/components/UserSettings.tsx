@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { saveUserSettings } from "../api/user";
-import { UserData, UserSettings as UserSettingsType } from "../api/types/user";
+import { User, UserSettings as UserSettingsType } from "../api/types/user";
 
 type UserSettingsProps = {
-  user: UserData | UserData[] | null;
+  user: User | User[] | null;
 };
 
 const defaultSettings: UserSettingsType = {
@@ -21,7 +21,7 @@ const defaultSettings: UserSettingsType = {
  * UserSettings component allows users to view and modify their settings.
  * It supports both single user and bulk user settings.
  *
- * @param {UserData | UserData[] | null} user - The user data or an array of user data.
+ * @param {User | User[] | null} user - The user data or an array of user data.
  * @returns {JSX.Element} The rendered component.
  */
 export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {

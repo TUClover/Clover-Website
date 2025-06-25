@@ -1,14 +1,12 @@
 import {
-  UserData,
+  User,
   SettingsData,
   UserActivityLogItem,
   UserRole,
   UserSettings,
-  EnrollementStatus,
+  UserClassInfo,
 } from "./types/user";
 import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
-import { StudentStatus } from "../api/types/user";
-import { UserClassInfo } from "../hooks/useUserClasses";
 
 /**
  * Function to save user settings to the database.
@@ -46,11 +44,11 @@ export async function saveUserSettings(
 /**
  * Function to get the user data from the database.
  * @param {string} userId - The ID of the user whose data is to be fetched
- * @returns {Promise<{ data?: UserData; error?: string }>} - The response from the server or an error message
+ * @returns {Promise<{ data?: User; error?: string }>} - The response from the server or an error message
  */
 export async function getUserData(
   userId: string
-): Promise<{ data?: UserData; error?: string }> {
+): Promise<{ data?: User; error?: string }> {
   try {
     const response = await fetch(`${USER_ENDPOINT}/${userId}`, {
       method: "GET",
@@ -88,7 +86,7 @@ export async function getUserData(
         last_sign_in: data.user.last_sign_in,
         source: data.user.source,
         avatar_url: data.user.avatar_url,
-      } as UserData,
+      } as User,
     };
   } catch (err) {
     return {
@@ -112,7 +110,6 @@ export async function getUserActivity(
     });
 
     const data = await response.json();
-    console.log("Fetched user activity:", data);
 
     if (!response.ok) {
       return {
@@ -125,26 +122,13 @@ export async function getUserActivity(
     if (data == null) {
       return { data: [] };
     }
+    console.log(data);
 
-    if (data != null && !Array.isArray(data)) {
+    if (!Array.isArray(data)) {
       return { error: "Invalid response: expected an array of activity logs" };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const activityLogs: UserActivityLogItem[] = data.map((item: any) => ({
-      id: item.id,
-      event: item.event,
-      timestamp: item.timestamp,
-      timeLapse: item.time_lapse,
-      metadata: {
-        hasBug: item.metadata.has_bug,
-        suggestionId: item.metadata.suggestion_id,
-        userSectionId: item.metadata.user_section_id,
-        userClassId: item.metadata.user_class_id,
-      },
-    }));
-
-    return { data: activityLogs };
+    return { data: data as UserActivityLogItem[] };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
@@ -168,6 +152,8 @@ export async function getUserClasses(userId: string): Promise<{
     });
     const data = await response.json();
 
+    console.log("classes for user " + userId + ": " + JSON.stringify(data));
+
     if (response.status === 404) {
       return { data: [] };
     }
@@ -184,39 +170,7 @@ export async function getUserClasses(userId: string): Promise<{
     }
     console.log("Fetched user classes:", data);
 
-    const classInfoList: UserClassInfo[] = data.map(
-      (item: {
-        class_data: {
-          id: string;
-          created_at: string;
-          class_title: string;
-          class_code: string;
-          instructor_id: string;
-          class_hex_color: string;
-          class_image_cover: string;
-          class_description: string;
-        };
-        joinedAt: string;
-        studentStatus: StudentStatus;
-        enrollmentStatus: EnrollementStatus;
-      }) => ({
-        userClass: {
-          id: item.class_data.id,
-          createdAt: item.class_data.created_at,
-          classTitle: item.class_data.class_title,
-          classCode: item.class_data.class_code,
-          instructorId: item.class_data.instructor_id,
-          classHexColor: item.class_data.class_hex_color,
-          classImageCover: item.class_data.class_image_cover,
-          classDescription: item.class_data.class_description,
-        },
-        joinedAt: item.joinedAt,
-        enrollementStatus: item.enrollmentStatus,
-        studentStatus: item.studentStatus,
-      })
-    );
-
-    return { data: classInfoList };
+    return { data: data };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
@@ -226,10 +180,10 @@ export async function getUserClasses(userId: string): Promise<{
 
 /**
  * Function to get all users from the database.
- * @returns {Promise<{ data?: UserData[]; error?: string } | null>} - The response from the server or an error message
+ * @returns {Promise<{ data?: User[]; error?: string } | null>} - The response from the server or an error message
  */
 export async function getAllUsers(): Promise<{
-  data?: UserData[];
+  data?: User[];
   error?: string;
 } | null> {
   try {
@@ -270,7 +224,7 @@ export async function getAllUsers(): Promise<{
         last_sign_in?: string;
         source?: string;
         avatar_url?: string;
-      }): UserData => ({
+      }): User => ({
         id: userItem.id,
         created_at: userItem.created_at,
         first_name: userItem.first_name,
@@ -332,12 +286,12 @@ export async function deleteUser(userID: string): Promise<{
 /**
  * Function to update a user's data in the database.
  * @param {string} userId - The ID of the user to be updated
- * @param {UserData} payload - The payload containing user data to be updated
+ * @param {User} payload - The payload containing user data to be updated
  * @returns {Promise<{ success?: boolean; error?: string }>} - The response from the server or an error message
  */
 export async function updateUser(
   userId: string,
-  payload: UserData
+  payload: User
 ): Promise<{
   success?: boolean;
   error?: string;

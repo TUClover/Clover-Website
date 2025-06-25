@@ -1,4 +1,4 @@
-import { UserData, UserRole } from "../api/types/user";
+import { User, UserRole } from "../api/types/user";
 import { Title } from "../components/ui/text";
 import UserDetailsPanel from "../components/UserDetailsPanel";
 import { useInstructorClasses } from "../hooks/useInstructorClasses";
@@ -11,7 +11,7 @@ import { useUserClasses } from "../hooks/useUserClasses";
  * @param userData - The user data to display in the settings page.
  * @returns
  */
-export const Settings = ({ userData }: { userData: UserData | null }) => {
+export const Settings = ({ userData }: { userData: User | null }) => {
   const { classes, loading: userClassesLoading } = useUserClasses(userData?.id);
   const { classes: instructorClasses, loading: instructorClassesLoading } =
     useInstructorClasses(userData?.id);

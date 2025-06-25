@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { StudentStatus, UserClass, UserData } from "../api/types/user";
+import { StudentStatus, ClassData, User } from "../api/types/user";
 import {
   Carousel,
   CarouselContent,
@@ -20,12 +20,12 @@ import ProfileCard from "../components/ProfileCard";
  * @module Pages
  * @returns
  */
-export const StudentProfile = ({ userData }: { userData: UserData }) => {
+export const StudentProfile = ({ userData }: { userData: User }) => {
   const { originalClasses, loading: userClassLoading } = useUserClasses();
   const [selectedClass, setSelectedClass] = useState<{
-    userClass: UserClass;
+    userClass: ClassData;
     studentStatus?: StudentStatus;
-    instructorData?: UserData;
+    instructorData?: User;
     studentCount?: number;
   } | null>(null);
 
@@ -38,9 +38,9 @@ export const StudentProfile = ({ userData }: { userData: UserData }) => {
   }
 
   const handleClassSelect = (
-    userClass: UserClass,
+    userClass: ClassData,
     studentStatus?: StudentStatus,
-    instructorData?: UserData,
+    instructorData?: User,
     studentCount?: number
   ) => {
     setSelectedClass({
@@ -119,7 +119,7 @@ export const StudentProfile = ({ userData }: { userData: UserData }) => {
       {selectedClass && (
         <ClassDetails
           userClass={selectedClass.userClass}
-          instructorData={selectedClass.instructorData as UserData}
+          instructorData={selectedClass.instructorData as User}
           onClose={handleCloseDetails}
         />
       )}

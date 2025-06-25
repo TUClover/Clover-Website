@@ -8,7 +8,7 @@ import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../components/ui/card";
-import { UserClass } from "../api/types/user";
+import { ClassData } from "../api/types/user";
 import { Button } from "../components/ui/button";
 import { Paragraph, Title } from "../components/ui/text";
 
@@ -31,7 +31,7 @@ type QuizResult = {
  * Props for the QuizControls component.
  */
 type QuizControlsProps = {
-  classes: UserClass[];
+  classes: ClassData[];
   selectedClassId: string | null;
   onClassSelect: (selection: {
     id: string | null;

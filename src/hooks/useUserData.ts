@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "./useAuth";
-import { UserData } from "../api/types/user";
+import { User } from "../api/types/user";
 import { getUserData } from "../api/user";
 
 /**
@@ -10,7 +10,7 @@ import { getUserData } from "../api/user";
  */
 export const useUserData = (userId?: string) => {
   const { user } = useAuth();
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

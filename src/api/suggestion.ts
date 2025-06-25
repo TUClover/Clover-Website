@@ -1,4 +1,4 @@
-import { CodeSuggestion } from "./types/suggestion";
+import { Suggestion } from "./types/suggestion";
 import { AI_SUGGESTION_ENDPOINT } from "./endpoints";
 
 /**
@@ -8,7 +8,7 @@ import { AI_SUGGESTION_ENDPOINT } from "./endpoints";
  */
 export async function getSuggestionById(
   suggestionId: string
-): Promise<{ data?: CodeSuggestion; error?: string }> {
+): Promise<{ data?: Suggestion; error?: string }> {
   try {
     const response = await fetch(`${AI_SUGGESTION_ENDPOINT}/${suggestionId}`, {
       method: "GET",
@@ -25,18 +25,18 @@ export async function getSuggestionById(
       };
     }
 
-    if (!data.data) {
+    if (!data) {
       return { error: "Invalid response: expected suggestion data" };
     }
 
     return {
       data: {
-        id: data.data.id,
-        createdAt: data.data.created_at,
-        hasBug: data.data.has_bug,
-        suggestionArray: data.data.suggestion_array,
-        model: data.data.model,
-        prompt: data.data.prompt,
+        id: data.id,
+        created_at: data.created_at,
+        has_bug: data.has_bug,
+        suggestion_array: data.suggestion_array,
+        model: data.model,
+        prompt: data.prompt,
       },
     };
   } catch (err) {

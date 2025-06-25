@@ -1,9 +1,10 @@
 import { useState } from "react";
 import {
   UserActivityLogItem,
-  UserClass,
-  UserData,
+  ClassData,
+  User,
   UserRole,
+  UserClassInfo,
 } from "../api/types/user";
 import { deleteUser, updateUser, updateUserPassword } from "../api/user";
 import PaginatedTable from "./PaginatedTable";
@@ -38,22 +39,22 @@ import { supabase } from "../supabaseClient";
 /**
  * UserDetailsPanel component displays user details, activity, and settings.
  * It allows editing user information and deleting the user.
- * @param {UserData | UserData[] | null} user - The user data to display.
+ * @param {User | User[] | null} user - The user data to display.
  * @param {UserRole} userRole - The role of the user (e.g., admin, instructor).
  * @param {UserActivityLogItem[]} userActivity - The activity log of the user.
- * @param {UserClass[]} userClasses - The classes associated with the user.
- * @param {UserClass[]} instructorClasses - The classes the user is teaching.
+ * @param {ClassData[]} userClasses - The classes associated with the user.
+ * @param {ClassData[]} instructorClasses - The classes the user is teaching.
  * @param {boolean} isLoading - Indicates if the data is loading.
  * @returns {JSX.Element} - The rendered component.
  */
 export const UserDetailsPanel: React.FC<{
-  user: UserData | UserData[] | null;
+  user: User | User[] | null;
   userRole: UserRole;
   userActivity: UserActivityLogItem[];
-  userClasses?: UserClass[];
-  instructorClasses?: UserClass[];
+  userClasses: UserClassInfo[];
+  instructorClasses?: ClassData[];
   isLoading?: boolean;
-  setSelectedClass?: (cls: UserClass) => void;
+  setSelectedClass?: (cls: ClassData) => void;
   isSettingsPanel: boolean;
 }> = ({
   user,
@@ -92,7 +93,7 @@ export const UserDetailsPanel: React.FC<{
           <p className="mb-4 px-2">{singleUser.role}</p>
           <UserStats userRole={userRole} user={singleUser} />
           <div className="w-full mt-6">
-            <UserClassesSection
+            <ClassDataSection
               userClasses={userClasses}
               onClassClick={(cls) => setSelectedClass && setSelectedClass(cls)}
             />
@@ -256,12 +257,12 @@ const ResetPasswordButton: React.FC<{ userId?: string }> = ({ userId }) => {
 
 const EditUserButton: React.FC<{
   userRole: UserRole;
-  user: UserData;
+  user: User;
 }> = ({ user, userRole }) => {
   const [open, setOpen] = useState(false);
 
   const editUser = async () => {
-    const editedUser: UserData = {
+    const editedUser: User = {
       ...user,
       first_name: form.getValues("firstName"),
       last_name: form.getValues("lastName"),
@@ -437,7 +438,7 @@ const EditUserButton: React.FC<{
   );
 };
 
-const UserStats: React.FC<{ userRole: UserRole; user: UserData }> = ({
+const UserStats: React.FC<{ userRole: UserRole; user: User }> = ({
   userRole,
   user,
 }) => {
@@ -470,7 +471,7 @@ const UserStats: React.FC<{ userRole: UserRole; user: UserData }> = ({
 
 const UserSettingsSection: React.FC<{
   userRole: UserRole;
-  user: UserData | UserData[] | null;
+  user: User | User[] | null;
 }> = ({ user, userRole }) => {
   return (
     <>
@@ -485,10 +486,12 @@ const UserSettingsSection: React.FC<{
   );
 };
 
-const UserClassesSection: React.FC<{
-  userClasses: UserClass[] | undefined;
-  onClassClick: (cls: UserClass) => void;
+const ClassDataSection: React.FC<{
+  userClasses: UserClassInfo[];
+  onClassClick: (cls: ClassData) => void;
 }> = ({ userClasses, onClassClick }) => {
+  if (userClasses) {
+  }
   return (
     <div className="bg-gray-100 dark:bg-gray-900 rounded shadow-sm p-6 mb-4">
       <h2 className="text-md font-semibold text-[#50B498]">User Classes</h2>
@@ -497,24 +500,27 @@ const UserClassesSection: React.FC<{
           {userClasses.map((userClass) => (
             <div
               className="flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded cursor-pointer"
-              onClick={() => onClassClick(userClass)}
+              onClick={() => onClassClick(userClass.user_class)}
             >
-              {userClass.classHexColor && (
+              {userClass.user_class.class_hex_color && (
                 <div
                   className="w-3 h-3 rounded-full shrink-0"
-                  style={{ backgroundColor: userClass.classHexColor }}
+                  style={{
+                    backgroundColor: userClass.user_class.class_hex_color,
+                  }}
                 />
               )}
               <span>
-                {userClass.classTitle}{" "}
+                {userClass.user_class.class_title}{" "}
                 <span
                   className={
-                    userClass.id === "all" || userClass.id === "non-class"
+                    userClass.user_class.id === "all" ||
+                    userClass.user_class.id === "non-class"
                       ? "hidden"
                       : ""
                   }
                 >
-                  - {userClass.classCode}
+                  - {userClass.user_class.class_code}
                 </span>
               </span>
             </div>
@@ -552,8 +558,8 @@ const UserActivitySection: React.FC<{
 };
 
 const InstructorClassesSection: React.FC<{
-  user: UserData;
-  instructorClasses: UserClass[] | undefined;
+  user: User;
+  instructorClasses: ClassData[] | undefined;
 }> = ({ user, instructorClasses }) => {
   return (
     <>
@@ -567,14 +573,14 @@ const InstructorClassesSection: React.FC<{
           <ul className="mt-2">
             {instructorClasses.map((userClass) => (
               <div className="flex items-center gap-2">
-                {userClass.classHexColor && (
+                {userClass.class_hex_color && (
                   <div
                     className="w-3 h-3 rounded-full shrink-0"
-                    style={{ backgroundColor: userClass.classHexColor }}
+                    style={{ backgroundColor: userClass.class_hex_color }}
                   />
                 )}
                 <span>
-                  {userClass.classTitle}{" "}
+                  {userClass.class_title}{" "}
                   <span
                     className={
                       userClass.id === "all" || userClass.id === "non-class"
@@ -582,7 +588,7 @@ const InstructorClassesSection: React.FC<{
                         : ""
                     }
                   >
-                    - {userClass.classCode}
+                    - {userClass.class_code}
                   </span>
                 </span>
               </div>

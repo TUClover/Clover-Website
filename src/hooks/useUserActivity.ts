@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { UserActivityLogItem } from "../types";
 import { getUserActivity } from "../api/user";
 import { calculateProgress, ProgressData } from "../utils/calculateProgress";
 import { LogEvent } from "../api/types/event";
+import { UserActivityLogItem } from "../api/types/user";
 
 /**
  * Custom hook to fetch user activity logs and calculate progress data.
@@ -36,13 +36,13 @@ export const useUserActivity = (
         setError(null);
         const response = await getUserActivity(userId);
         if (response.error) throw new Error(response.error);
+        console.log(response.data);
 
         let filteredActivities = response.data?.filter(
           (activity) =>
-            activity.event === LogEvent.USER_ACCEPT ||
+            activity.event === LogEvent.SUGGESTION_ACCEPT ||
             activity.event === LogEvent.USER_REJECT
         );
-
         if (!filteredActivities) {
           setUserActivity([]);
           setLoading(false);
@@ -51,11 +51,11 @@ export const useUserActivity = (
 
         if (selectedClassType === "non-class") {
           filteredActivities = filteredActivities.filter(
-            (activity) => !activity.metadata.userClassId
+            (activity) => !activity.class_id
           );
         } else if (selectedClassType === "class" && selectedClassId) {
           filteredActivities = filteredActivities.filter(
-            (activity) => activity.metadata.userClassId === selectedClassId
+            (activity) => activity.class_id === selectedClassId
           );
         }
 
