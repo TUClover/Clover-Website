@@ -89,7 +89,7 @@ export const LineChart = ({
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
-        range.push(groupBy(date)!);
+        range.push(groupBy(date, interval)!);
       }
     }
 
@@ -97,7 +97,7 @@ export const LineChart = ({
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i * 7);
-        range.push(groupBy(date)!);
+        range.push(groupBy(date, interval)!);
       }
     }
 
@@ -105,7 +105,7 @@ export const LineChart = ({
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setMonth(today.getMonth() - i);
-        range.push(groupBy(date)!);
+        range.push(groupBy(date, interval)!);
       }
     }
 

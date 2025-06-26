@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "./useAuth";
-import { UserClass, User } from "../api/types/user";
+import { ClassData, User } from "../api/types/user";
 import { getClassesByInstructor } from "../api/classes";
 import { supabase } from "../supabaseClient";
 
@@ -11,7 +11,7 @@ import { supabase } from "../supabaseClient";
  */
 export const useInstructorClasses = (userID?: string | null) => {
   const { user } = useAuth();
-  const [classes, setClasses] = useState<UserClass[]>([]);
+  const [classes, setClasses] = useState<ClassData[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [selectedClassType, setSelectedClassType] = useState<
     "all" | "class" | "non-class"
@@ -19,18 +19,17 @@ export const useInstructorClasses = (userID?: string | null) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const modifiedClasses = useMemo(
-    () => [
-      {
-        id: "all",
-        classTitle: "All",
-        classCode: "",
-        classHexColor: "#e5e5e5",
-      },
-      ...classes,
-    ],
-    [classes]
-  );
+  const all_class: ClassData = {
+    id: "all",
+    class_title: "All",
+    class_code: "",
+    class_hex_color: "#e5e5e5",
+    class_description: "All class info",
+    class_image_cover: "",
+    students: [],
+  };
+
+  const modifiedClasses = useMemo(() => [all_class, ...classes], [classes]);
 
   const selectedClass = useMemo(
     () => modifiedClasses.find((c) => c.id === selectedClassId),

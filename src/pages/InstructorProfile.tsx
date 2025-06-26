@@ -1,5 +1,5 @@
 import { Loader2, Star } from "lucide-react";
-import { StudentStatus, UserClass, User, UserRole } from "../api/types/user";
+import { ClassData, StudentStatus, User, UserRole } from "../api/types/user";
 import {
   Carousel,
   CarouselContent,
@@ -23,7 +23,7 @@ import ProfileCard from "../components/ProfileCard";
 export const InstructorProfile = ({ userData }: { userData: User }) => {
   const { originalClasses, loading: userClassLoading } = useInstructorClasses();
   const [selectedClass, setSelectedClass] = useState<{
-    userClass: UserClass;
+    userClass: ClassData;
     studentStatus?: StudentStatus;
     instructorData?: User;
   } | null>(null);
@@ -37,7 +37,7 @@ export const InstructorProfile = ({ userData }: { userData: User }) => {
   }
 
   const handleClassSelect = (
-    userClass: UserClass,
+    userClass: ClassData,
     studentStatus?: StudentStatus,
     instructorData?: User
   ) => {

@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { useAllUsers } from "../../hooks/useAllUsers";
 import { getAllUsers } from "../../api/user";
-import { User, UserRole } from "../../api/types/user";
+import { User, UserMode, UserRole } from "../../api/types/user";
 
 jest.mock("../../api/user");
 const mockGetAllUsers = getAllUsers as jest.Mock;
@@ -27,12 +27,8 @@ describe("useAllUsers", () => {
       settings: {
         bug_percentage: 5,
         show_notifications: true,
-        give_suggestions: true,
         enable_quiz: true,
-        active_threshold: 5,
-        suspend_threshold: 10,
-        pass_rate: 80,
-        suspend_rate: 30,
+        mode: UserMode.BLOCK,
       },
     },
   ];

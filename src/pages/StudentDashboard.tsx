@@ -96,12 +96,14 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
                 : ""
             }
           >
-            <StudentStatusBadge status={selectedClass?.student_status || null} />
+            <StudentStatusBadge
+              status={selectedClass?.student_status || null}
+            />
           </span>
         </div>
         <div className="col-span-2 flex justify-end">
           <ClassesDropdownMenu
-            classes={classes}
+            classes={classes.map((info) => info.user_class)}
             onClassSelect={handleClassSelect}
             selectedId={selectedClassId}
           />

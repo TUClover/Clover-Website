@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { UserActivityLogItem } from "../types";
 import { getClassActivityByClassId } from "../api/classes";
 import { calculateProgress, ProgressData } from "../utils/calculateProgress";
-import { UserClass } from "../api/types/user";
+import { ClassData, UserActivityLogItem } from "../api/types/user";
 import { LogEvent } from "../api/types/event";
 
 /**
@@ -13,7 +12,7 @@ import { LogEvent } from "../api/types/event";
  * @returns An object containing the following properties:
  */
 export const useClassActivity = (
-  classes: UserClass[],
+  classes: ClassData[],
   selectedClassId: string | null
 ) => {
   const [allActivity, setAllActivity] = useState<UserActivityLogItem[]>([]);
@@ -49,7 +48,7 @@ export const useClassActivity = (
               return response.data;
             } catch (err) {
               console.error(
-                `Failed to fetch for class ${classInfo.classTitle}`,
+                `Failed to fetch for class ${classInfo.class_title}`,
                 err
               );
               return [];
@@ -83,9 +82,7 @@ export const useClassActivity = (
   useEffect(() => {
     const filtered =
       selectedClassId && selectedClassId !== "all"
-        ? allActivity.filter(
-            (log) => log.metadata.userClassId === selectedClassId
-          )
+        ? allActivity.filter((log) => log.class_id === selectedClassId)
         : allActivity;
 
     setClassActivity(filtered);

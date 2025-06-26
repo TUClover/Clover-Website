@@ -24,8 +24,12 @@ export const ClassDetails = ({
   onClose: () => void;
 }) => {
   const { userData } = useUserData();
-  const { classTitle, classCode, classDescription, classHexColor } =
-    userClass || {};
+  const {
+    class_title: classTitle,
+    class_code: classCode,
+    class_description: classDescription,
+    class_hex_color: classHexColor,
+  } = userClass || {};
 
   const {
     enrolledStudents,

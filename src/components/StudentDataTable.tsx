@@ -162,7 +162,7 @@ export const StudentDataTable = ({
   useEffect(() => {
     const fetchClassData = async () => {
       const uniqueClassIds = [
-        ...new Set(logs.map((log) => log.metadata.userClassId)),
+        ...new Set(logs.map((log) => log.class_id)),
       ].filter(Boolean);
 
       if (uniqueClassIds.length === 0) return;
@@ -193,8 +193,8 @@ export const StudentDataTable = ({
       const activityLogsMap = new Map<string, UserActivityLogItem[]>();
 
       for (const log of logs) {
-        const userId = log.metadata.userId ?? "Unknown";
-        const classId = log.metadata.userClassId ?? "Unknown";
+        const userId = log.user_id ?? "Unknown";
+        const classId = log.class_id ?? "Unknown";
         const compositeKey =
           classFilter === "all" ? `${userId}&${classId}` : userId;
 
@@ -209,17 +209,17 @@ export const StudentDataTable = ({
           const [userId, classId] =
             classFilter === "all"
               ? compositeKey.split("&")
-              : [compositeKey, userLogs[0]?.metadata.userClassId ?? "Unknown"];
+              : [compositeKey, userLogs[0]?.class_id ?? "Unknown"];
 
           const { percentageCorrect, correctSuggestions, totalAccepted } =
             calculateProgress(userLogs);
 
           const lastActivity = userLogs.reduce(
             (latest, log) =>
-              new Date(log.timestamp) > new Date(latest)
-                ? log.timestamp
+              new Date(log.log_created_at) > new Date(latest)
+                ? log.log_created_at
                 : latest,
-            userLogs[0].timestamp
+            userLogs[0].log_created_at
           );
 
           const classTitle = classDataMap[classId]?.classTitle || "Unknown";

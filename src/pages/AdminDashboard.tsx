@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { UserClass, User, UserRole } from "../api/types/user";
+import { ClassData, User, UserRole } from "../api/types/user";
 import "react-datepicker/dist/react-datepicker.css";
 import { useUserActivity } from "../hooks/useUserActivity";
 import UserSideBar from "../components/UsersSideBar";
@@ -40,7 +40,7 @@ export const AdminDashboard = () => {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedClass, setSelectedClass] = useState<UserClass | null>(null);
+  const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
   const selectedClassId = selectedClass?.id ?? "all";
   const selectedClassType =
     selectedClass?.id === "all"
@@ -121,7 +121,7 @@ export const AdminDashboard = () => {
         <StudentDashboardCard
           student={{
             fullName: `${selectedUsers[0].first_name} ${selectedUsers[0].last_name}`,
-            classTitle: selectedClass.classTitle,
+            classTitle: selectedClass.class_title,
             studentStatus:
               selectedClassId !== "all" && selectedClassId !== "non-class"
                 ? studentStatus

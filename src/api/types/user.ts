@@ -19,6 +19,13 @@ export enum EnrollmentStatus {
   REJECTED = "REJECTED",
 }
 
+export enum UserMode {
+  OFF = "OFF",
+  BLOCK = "CODE_BLOCK",
+  LINE = "LINE_BY_LINE",
+  SELECTION = "CODE_SELECTION",
+}
+
 export const AUTH_CONTEXT = "authContext";
 
 export interface User {
@@ -45,12 +52,8 @@ export type SettingsData = {
 export type UserSettings = {
   bug_percentage: number;
   show_notifications: boolean;
-  give_suggestions: boolean;
   enable_quiz: boolean;
-  active_threshold: number;
-  suspend_threshold: number;
-  pass_rate: number;
-  suspend_rate: number;
+  mode: UserMode;
 };
 
 export type UserActivityLogItem = {

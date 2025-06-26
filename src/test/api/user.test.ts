@@ -1,4 +1,4 @@
-import { UserRole, UserSettings } from "../../api/types/user";
+import { UserMode, UserRole, UserSettings } from "../../api/types/user";
 import {
   saveUserSettings,
   getUserData,
@@ -34,12 +34,8 @@ describe("user-api", () => {
       settings: {
         bug_percentage: 10,
         show_notifications: true,
-        give_suggestions: true,
         enable_quiz: true,
-        active_threshold: 3,
-        suspend_threshold: 2,
-        pass_rate: 80,
-        suspend_rate: 40,
+        mode: UserMode.BLOCK,
       },
     });
 
@@ -183,7 +179,7 @@ describe("user-api", () => {
     } as Response);
 
     const result = await getUserClasses("user-1");
-    expect(result.data?.[0].userClass.classTitle).toBe("Math");
+    expect(result.data?.[0].user_class.class_title).toBe("Math");
   });
 
   it("handles getUserClasses with 404", async () => {
@@ -273,12 +269,8 @@ describe("user-api", () => {
       settings: {
         bug_percentage: 10,
         show_notifications: true,
-        give_suggestions: true,
         enable_quiz: true,
-        active_threshold: 3,
-        suspend_threshold: 2,
-        pass_rate: 80,
-        suspend_rate: 40,
+        mode: UserMode.BLOCK,
       },
       status: "ACTIVE",
       last_updated_at: "now",

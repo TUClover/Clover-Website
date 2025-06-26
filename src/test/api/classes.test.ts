@@ -6,7 +6,7 @@ import {
   getClassActivityByClassId,
   updateStudentEnrollmentStatus,
 } from "../../api/classes";
-import { EnrollmentStatus } from "../../types";
+import { EnrollmentStatus } from "../../api/types/user";
 
 // Mock fetch and supabase
 const originalFetch = global.fetch;
@@ -77,7 +77,7 @@ describe("class-api", () => {
     global.fetch = jest.fn().mockResolvedValueOnce(mockResponse as Response);
     const result = await getClassesByInstructor("instructor-1");
 
-    expect(result.data?.[0].classTitle).toBe("Class 1");
+    expect(result.data?.[0].class_title).toBe("Class 1");
   });
 
   it("registers a user to a class", async () => {

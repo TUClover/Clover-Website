@@ -29,7 +29,7 @@ export const InstructorDashboard = ({ userData }: { userData: User }) => {
 
   const selectedClassTitle = classes.find(
     (classItem) => classItem.id === selectedClassId
-  )?.classTitle;
+  )?.class_title;
 
   return (
     <div className="space-y-8">

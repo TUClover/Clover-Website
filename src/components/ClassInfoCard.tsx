@@ -37,28 +37,28 @@ export const ClassInfoCard = ({
   const isUserClassInfo = (
     info: ClassData | UserClassInfo
   ): info is UserClassInfo => {
-    return (info as UserClassInfo).userClass !== undefined;
+    return (info as UserClassInfo).user_class !== undefined;
   };
 
   const userClass = isUserClassInfo(classInfo)
-    ? classInfo.userClass
+    ? classInfo.user_class
     : classInfo;
 
   const studentStatus = isUserClassInfo(classInfo)
-    ? classInfo.studentStatus
+    ? classInfo.student_status
     : undefined;
 
   const {
-    instructorId,
-    classTitle,
-    classDescription,
-    classImageCover,
-    classHexColor,
+    instructor_id,
+    class_title,
+    class_description,
+    class_image_cover,
+    class_hex_color,
     id,
   } = userClass;
 
   const { userData: instructorData, loading: userDataLoading } =
-    useUserData(instructorId);
+    useUserData(instructor_id);
   const { waitlistedStudents } = useClassStudentsInfo(id as string);
 
   if (userDataLoading) {
@@ -81,16 +81,16 @@ export const ClassInfoCard = ({
           {isInstructor &&
             waitlistedStudents &&
             waitlistedStudents.length > 0 && <PingDot />}
-          {classImageCover ? (
+          {class_image_cover ? (
             <img
-              src={classImageCover}
-              alt={classTitle}
+              src={class_image_cover}
+              alt={class_title}
               className="object-cover w-full h-full"
             />
           ) : (
             <div
               className="h-full w-full flex items-center justify-center"
-              style={{ backgroundColor: classHexColor || "#E5E7EB" }}
+              style={{ backgroundColor: class_hex_color || "#E5E7EB" }}
             />
           )}
           {!isInstructor && (
@@ -104,9 +104,9 @@ export const ClassInfoCard = ({
           )}
         </div>
         <div className="p-6 flex flex-col flex-1">
-          <h3 className="text-lg font-bold mb-2">{classTitle}</h3>
+          <h3 className="text-lg font-bold mb-2">{class_title}</h3>
           <p className="text-gray-500 mb-4 line-clamp-2 flex-1 text-sm">
-            {classDescription || "No description available."}
+            {class_description || "No description available."}
           </p>
           <div className="space-y-4 mt-auto">
             {instructorData && (
@@ -124,7 +124,7 @@ export const ClassInfoCard = ({
                     <div
                       className="size-8 rounded-full flex items-center justify-center font-medium text-white shrink-0"
                       style={{
-                        backgroundColor: classHexColor || "#E5E7EB",
+                        backgroundColor: class_hex_color || "#E5E7EB",
                       }}
                     >
                       {instructorData.first_name?.charAt(0).toUpperCase()}

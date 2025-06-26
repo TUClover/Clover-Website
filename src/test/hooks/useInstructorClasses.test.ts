@@ -5,7 +5,7 @@ import {
   useClassStudentsInfo,
 } from "../../hooks/useInstructorClasses";
 import { getClassesByInstructor } from "../../api/classes";
-import { UserClass } from "../../api/types/user";
+import { ClassData } from "../../api/types/user";
 
 beforeAll(() => {
   jest.spyOn(console, "error").mockImplementation(() => {});
@@ -46,9 +46,21 @@ const mockUseAuth = require("../../hooks/useAuth").useAuth as jest.Mock;
 const mockGetClassesByInstructor =
   getClassesByInstructor as jest.MockedFunction<typeof getClassesByInstructor>;
 
-const mockClasses: UserClass[] = [
-  { id: "1", classTitle: "Math", classCode: "M101" },
-  { id: "2", classTitle: "Science", classCode: "S202" },
+const mockClasses: ClassData[] = [
+  {
+    id: "1",
+    class_title: "Math",
+    class_code: "M101",
+    class_hex_color: "",
+    students: [],
+  },
+  {
+    id: "2",
+    class_title: "Science",
+    class_code: "S202",
+    class_hex_color: "",
+    students: [],
+  },
 ];
 
 describe("useInstructorClasses", () => {
@@ -75,7 +87,7 @@ describe("useInstructorClasses", () => {
 
     expect(result.current.classes.length).toBe(3);
     expect(result.current.classes[0].id).toBe("all");
-    expect(result.current.classes[1].classTitle).toBe("Math");
+    expect(result.current.classes[1].class_title).toBe("Math");
   });
 
   it("handles instructor fetch error", async () => {
@@ -107,7 +119,7 @@ describe("useInstructorClasses", () => {
 
     expect(result.current.selectedClassId).toBe("1");
     expect(result.current.selectedClassType).toBe("class");
-    expect(result.current.getSelectedClass()?.classTitle).toBe("Math");
+    expect(result.current.getSelectedClass()?.class_title).toBe("Math");
   });
 
   it("doesn't fetch when no user ID is available", () => {
@@ -132,7 +144,7 @@ describe("useInstructorClasses", () => {
     });
     expect(result.current.selectedClassId).toBe("all");
     expect(result.current.selectedClassType).toBe("all");
-    expect(result.current.getSelectedClass()?.classTitle).toBe("All");
+    expect(result.current.getSelectedClass()?.class_title).toBe("All");
 
     // Select "non-class"
     act(() => {

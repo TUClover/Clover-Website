@@ -8,7 +8,7 @@ import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../components/ui/card";
-import { ClassData } from "../api/types/user";
+import { UserClassInfo } from "../api/types/user";
 import { Button } from "../components/ui/button";
 import { Paragraph, Title } from "../components/ui/text";
 
@@ -31,7 +31,7 @@ type QuizResult = {
  * Props for the QuizControls component.
  */
 type QuizControlsProps = {
-  classes: ClassData[];
+  classes: UserClassInfo[];
   selectedClassId: string | null;
   onClassSelect: (selection: {
     id: string | null;
@@ -63,7 +63,7 @@ const QuizControls: React.FC<QuizControlsProps> = ({
         Select a class:
       </label>
       <ClassesDropdownMenu
-        classes={classes}
+        classes={classes.map((c) => c.user_class)}
         onClassSelect={onClassSelect}
         selectedId={selectedClassId}
       />
@@ -300,10 +300,10 @@ export const QuizPage: React.FC = () => {
           data.message?.includes("no sections that need review")
         ) {
           const selectedClass = classes.find(
-            (cls) => cls.id === selectedClassId
+            (cls) => cls.user_class.id === selectedClassId
           );
           toast.success(
-            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.classTitle}` : ""}.`
+            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.user_class.class_title}` : ""}.`
           );
         } else {
           throw new Error(data?.message || "Failed to generate quiz");

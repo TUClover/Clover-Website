@@ -3,7 +3,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useUserData } from "../../hooks/useUserData";
 import { getUserData } from "../../api/user";
-import { User, UserRole } from "../../api/types/user";
+import { User, UserMode, UserRole } from "../../api/types/user";
 
 // Mocks
 jest.mock("../../api/user", () => ({
@@ -27,12 +27,8 @@ const mockUser: User = {
   settings: {
     bug_percentage: 0,
     show_notifications: true,
-    give_suggestions: true,
     enable_quiz: true,
-    active_threshold: 0,
-    suspend_threshold: 0,
-    pass_rate: 0,
-    suspend_rate: 0,
+    mode: UserMode.BLOCK,
   },
 };
 

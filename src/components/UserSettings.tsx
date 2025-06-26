@@ -1,29 +1,34 @@
 import { useState, useEffect, useMemo } from "react";
 import { saveUserSettings } from "../api/user";
-import { User, UserSettings as UserSettingsType } from "../api/types/user";
+import {
+  User,
+  UserMode,
+  UserSettings as UserSettingsType,
+} from "../api/types/user";
+import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Slider } from "./ui/slider";
+import { Input } from "./ui/input";
+
+const defaultSettings: UserSettingsType = {
+  bug_percentage: 50,
+  show_notifications: false,
+  enable_quiz: true,
+  mode: UserMode.BLOCK,
+};
 
 type UserSettingsProps = {
   user: User | User[] | null;
 };
 
-const defaultSettings: UserSettingsType = {
-  bug_percentage: 50,
-  give_suggestions: false,
-  show_notifications: false,
-  enable_quiz: true,
-  active_threshold: 20,
-  suspend_threshold: 30,
-  pass_rate: 80,
-  suspend_rate: 50,
-};
-
-/**
- * UserSettings component allows users to view and modify their settings.
- * It supports both single user and bulk user settings.
- *
- * @param {User | User[] | null} user - The user data or an array of user data.
- * @returns {JSX.Element} The rendered component.
- */
 export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
   const isMulti = Array.isArray(user);
   const initialSettings: UserSettingsType = useMemo(() => {
@@ -35,48 +40,29 @@ export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
   const [bugPercentage, setBugPercentage] = useState(
     initialSettings.bug_percentage
   );
-  const [giveSuggestions, setGiveSuggestions] = useState(
-    initialSettings.give_suggestions
-  );
+  const [mode, setMode] = useState(initialSettings.mode);
   const [showNotifications, setShowNotifications] = useState(
     initialSettings.show_notifications
   );
   const [enableQuiz, setEnableQuiz] = useState(initialSettings.enable_quiz);
-  const [active_threshold, setActiveThreshold] = useState(
-    initialSettings.active_threshold
-  );
-  const [suspend_threshold, setSuspendThreshold] = useState(
-    initialSettings.suspend_threshold
-  );
-  const [pass_rate, setPassRate] = useState(initialSettings.pass_rate);
-  const [suspend_rate, setSuspendRate] = useState(initialSettings.suspend_rate);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">(
     "idle"
   );
 
   useEffect(() => {
     setBugPercentage(initialSettings.bug_percentage);
-    setGiveSuggestions(initialSettings.give_suggestions);
     setShowNotifications(initialSettings.show_notifications);
     setEnableQuiz(initialSettings.enable_quiz);
-    setActiveThreshold(initialSettings.active_threshold);
-    setSuspendThreshold(initialSettings.suspend_threshold);
-    setPassRate(initialSettings.pass_rate);
-    setSuspendRate(initialSettings.suspend_rate);
+    setMode(initialSettings.mode);
   }, [initialSettings]);
 
   const handleSave = async () => {
     setStatus("saving");
-
     const settings: UserSettingsType = {
       bug_percentage: bugPercentage,
       show_notifications: showNotifications,
-      give_suggestions: giveSuggestions,
       enable_quiz: enableQuiz,
-      active_threshold,
-      suspend_threshold,
-      pass_rate,
-      suspend_rate,
+      mode: mode,
     };
 
     try {
@@ -104,91 +90,86 @@ export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
   };
 
   return (
-    <div>
-      <h2 className="text-md font-semibold text-[#50B498] mb-4">
+    <div className="space-y-6">
+      <h2 className="text-md font-semibold text-[#50B498]">
         {isMulti ? "Bulk User Settings" : "User Settings"}
       </h2>
 
-      {/* Bug Percentage Slider */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-text mb-1">
-          Bug Threshold Percentage:
-        </label>
+      <div>
+        <Label className="mb-1 block">Bug Threshold Percentage</Label>
         <div className="flex items-center gap-4">
-          <input
-            type="range"
-            value={bugPercentage}
-            onChange={(e) => setBugPercentage(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-400 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-            style={{ accentColor: "#50B498" }}
+          <Slider
+            defaultValue={[bugPercentage]}
+            min={0}
+            max={100}
+            step={1}
+            onValueChange={([value]) => setBugPercentage(value)}
+            className="w-full"
           />
-          <input
+          <Input
             type="number"
-            min="0"
-            max="100"
             value={bugPercentage}
+            min={0}
+            max={100}
             onChange={(e) => {
               const value = parseInt(e.target.value);
               if (!isNaN(value) && value >= 0 && value <= 100) {
                 setBugPercentage(value);
               }
             }}
-            className="w-16 px-2 py-1 border border-black dark:border-white bg-transparent rounded text-center"
+            className="w-16"
           />
-          <span className="text-[#50B498] font-semibold">%</span>
         </div>
       </div>
 
-      <ToggleInput
-        label="Show Notifications"
-        value={showNotifications}
-        onChange={setShowNotifications}
-      />
-      <ToggleInput
-        label="Enable AI Suggestions"
-        value={giveSuggestions}
-        onChange={setGiveSuggestions}
-      />
-      <ToggleInput
-        label="Enable Quiz"
-        value={enableQuiz}
-        onChange={setEnableQuiz}
-      />
-      <NumberInput
-        label="Active Threshold"
-        value={active_threshold}
-        onChange={setActiveThreshold}
-      />
-      <NumberInput
-        label="Suspend Threshold"
-        value={suspend_threshold}
-        onChange={setSuspendThreshold}
-      />
-      <NumberInput label="Pass Rate" value={pass_rate} onChange={setPassRate} />
-      <NumberInput
-        label="Suspend Rate"
-        value={suspend_rate}
-        onChange={setSuspendRate}
-      />
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="show_notifications"
+          checked={showNotifications}
+          onCheckedChange={(checked) => setShowNotifications(Boolean(checked))}
+        />
+        <Label htmlFor="show_notifications">Show Notifications</Label>
+      </div>
 
-      {/* Save Button */}
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={handleSave}
-          className="bg-[#50B498] hover:bg-[#3a9b80] text-white px-4 py-2 rounded-md text-sm font-medium"
-        >
-          Save
-        </button>
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="enable_quiz"
+          checked={enableQuiz}
+          onCheckedChange={(checked) => setEnableQuiz(Boolean(checked))}
+        />
+        <Label htmlFor="enable_quiz">Enable Quiz</Label>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Label htmlFor="mode" className="mb-1 block">
+          User Mode
+        </Label>
+        <Select value={mode} onValueChange={(v) => setMode(v as UserMode)}>
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Select a mode" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.values(UserMode).map((m) => (
+              <SelectItem key={m} value={m}>
+                {m}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex justify-end">
+        <Button onClick={handleSave}>Save</Button>
       </div>
 
       {status === "saving" && (
-        <p className="text-sm text-gray-500 mt-2">Saving...</p>
+        <p className="text-sm text-gray-500">Saving...</p>
       )}
       {status === "saved" && (
-        <p className="text-sm text-green-500 mt-2">Settings saved!</p>
+        <p className="text-sm text-green-500">Settings saved!</p>
       )}
       {status === "error" && (
-        <p className="text-sm text-red-500 mt-2">
+        <p className="text-sm text-red-500">
           Error saving settings. Please try again.
         </p>
       )}
@@ -197,45 +178,3 @@ export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
 };
 
 export default UserSettings;
-
-const NumberInput = ({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  onChange: (v: number) => void;
-}) => (
-  <div className="flex items-center justify-between mb-6">
-    <span className="text-sm text-text">{label}</span>
-    <input
-      type="number"
-      min="0"
-      value={value}
-      onChange={(e) => onChange(parseInt(e.target.value))}
-      className="bg-transparent rounded w-16 px-2 py-1 border border-black dark:border-white text-center"
-    />
-  </div>
-);
-
-const ToggleInput = ({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: boolean;
-  onChange: (v: boolean) => void;
-}) => (
-  <div className="flex items-center justify-between mb-6">
-    <span className="text-sm text-text">{label}</span>
-    <input
-      type="checkbox"
-      checked={value}
-      onChange={(e) => onChange(e.target.checked)}
-      className="toggle toggle-success"
-      style={{ accentColor: "#50B498" }}
-    />
-  </div>
-);

@@ -85,7 +85,7 @@ export const RegisterClassDialog = () => {
           (classItem) => classItem.id === classId
         );
         const { data, error } = await getUserData(
-          foundClass?.instructorId || ""
+          foundClass?.instructor_id || ""
         );
 
         if (data) {
@@ -119,19 +119,7 @@ export const RegisterClassDialog = () => {
     if (error) {
       setResults([]);
     } else {
-      const camelCaseResults = (data ?? []).map((cls) => ({
-        id: cls.id,
-        classTitle: cls.class_title,
-        classCode: cls.class_code,
-        instructorId: cls.instructor_id,
-        classHexColor: cls.class_hex_color,
-        classImageCover: cls.class_image_cover,
-        createdAt: cls.created_at,
-        classDescription: cls.class_description,
-        students: [],
-      }));
-
-      setResults(camelCaseResults);
+      setResults(data);
     }
 
     setLoading(false);
@@ -153,8 +141,8 @@ export const RegisterClassDialog = () => {
       setOpen(false);
       setSearch("");
       setResults([]);
-      console.log("Registered to class:", cls.classTitle);
-      toast.success(`You have successfully registered for ${cls.classTitle}!`);
+      console.log("Registered to class:", cls.class_title);
+      toast.success(`You have successfully registered for ${cls.class_title}!`);
     } catch (error) {
       console.error("Error registering for class:", error);
       toast.error("Error registering for class. Please try again later.");
@@ -217,16 +205,16 @@ export const RegisterClassDialog = () => {
                   >
                     <div
                       className="p-4 rounded-lg border shadow cursor-pointer flex justify-between items-center"
-                      style={{ borderLeft: `6px solid ${cls.classHexColor}` }}
+                      style={{ borderLeft: `6px solid ${cls.class_hex_color}` }}
                     >
                       <CollapsibleTrigger asChild>
                         <div className="flex justify-between w-full items-center">
                           <div>
                             <div className="font-medium dark:text-white">
-                              {cls.classTitle}
+                              {cls.class_title}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {cls.classCode}
+                              {cls.class_code}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -267,7 +255,8 @@ export const RegisterClassDialog = () => {
                             Description
                           </h3>{" "}
                           <p>
-                            {cls.classDescription || "No description available"}
+                            {cls.class_description ||
+                              "No description available"}
                           </p>
                         </div>
                       </motion.div>

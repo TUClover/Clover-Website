@@ -59,12 +59,12 @@ export const CreateNewClassDialog = () => {
 
   const onSubmit = async () => {
     const newClass: ClassData = {
-      classTitle: form.getValues("classTitle"),
-      classCode: form.getValues("classCode"),
-      instructorId: userData?.id,
-      classHexColor: form.getValues("classHexColor"),
-      classImageCover: null,
-      classDescription: form.getValues("classDescription") || null,
+      class_title: form.getValues("classTitle"),
+      class_code: form.getValues("classCode"),
+      instructor_id: userData?.id,
+      class_hex_color: form.getValues("classHexColor"),
+      class_image_cover: null,
+      class_description: form.getValues("classDescription") || null,
       students: [],
     };
 
@@ -78,7 +78,7 @@ export const CreateNewClassDialog = () => {
     }
 
     toast.success(
-      `Your class ${newClass.classTitle} has been created successfully!`
+      `Your class ${newClass.class_title} has been created successfully!`
     );
 
     setOpen(false);

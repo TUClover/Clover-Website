@@ -2,8 +2,6 @@ import {
   User,
   SettingsData,
   UserActivityLogItem,
-  UserRole,
-  UserSettings,
   UserClassInfo,
 } from "./types/user";
 import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
@@ -56,6 +54,7 @@ export async function getUserData(
     });
 
     const data = await response.json();
+    console.log(JSON.stringify(data));
 
     if (!response.ok) {
       return {
@@ -65,28 +64,12 @@ export async function getUserData(
       };
     }
 
-    // console.log("Fetched user data:", data);
-
-    if (!data.user) {
+    if (!data) {
       return { error: "Invalid response: expected user data" };
     }
 
     return {
-      data: {
-        id: data.user.id,
-        created_at: data.user.created_at,
-        first_name: data.user.first_name,
-        last_name: data.user.last_name,
-        email: data.user.email,
-        status: data.user.status,
-        role: data.user.role,
-        settings: data.user.settings as UserSettings,
-        last_updated_at: data.user.last_updated_at,
-        auth_created_at: data.user.auth_created_at,
-        last_sign_in: data.user.last_sign_in,
-        source: data.user.source,
-        avatar_url: data.user.avatar_url,
-      } as User,
+      data: data,
     };
   } catch (err) {
     return {
@@ -152,8 +135,6 @@ export async function getUserClasses(userId: string): Promise<{
     });
     const data = await response.json();
 
-    console.log("classes for user " + userId + ": " + JSON.stringify(data));
-
     if (response.status === 404) {
       return { data: [] };
     }
@@ -194,6 +175,7 @@ export async function getAllUsers(): Promise<{
 
     const data = await response.json();
 
+    console.log("Response data:", data);
     if (!response.ok) {
       return {
         error:
@@ -201,48 +183,14 @@ export async function getAllUsers(): Promise<{
           `Failed to get all users: ${response.status} ${response.statusText}`,
       };
     }
-    console.log("Response data:", data);
 
     if (!Array.isArray(data)) {
       return { error: "Invalid response: expected an array of users" };
     }
 
-    console.log("Fetched users:", data);
-
-    const users = data.map(
-      (userItem: {
-        id: string;
-        created_at: string;
-        first_name: string;
-        last_name: string;
-        email: string;
-        status: string;
-        role: UserRole;
-        settings: UserSettings;
-        last_updated_at?: string;
-        auth_created_at?: string;
-        last_sign_in?: string;
-        source?: string;
-        avatar_url?: string;
-      }): User => ({
-        id: userItem.id,
-        created_at: userItem.created_at,
-        first_name: userItem.first_name,
-        last_name: userItem.last_name,
-        email: userItem.email,
-        status: userItem.status,
-        role: userItem.role,
-        settings: userItem.settings,
-        last_updated_at: userItem.last_updated_at,
-        auth_created_at: userItem.auth_created_at,
-        last_sign_in: userItem.last_sign_in,
-        source: userItem.source,
-        avatar_url: userItem.avatar_url,
-      })
-    );
-
-    return { data: users };
+    return { data: data };
   } catch (err) {
+    console.error(err);
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
     };

@@ -204,7 +204,7 @@ export async function getAllClasses(): Promise<{
 
     const data = await response.json();
 
-    console.log(data);
+    console.log("Classes :" + JSON.stringify(data));
 
     if (!response.ok) {
       return {
