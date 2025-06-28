@@ -44,11 +44,6 @@ export interface User {
   avatar_url?: string;
 }
 
-export type SettingsData = {
-  user_id: string;
-  settings: UserSettings;
-};
-
 export type UserSettings = {
   bug_percentage: number;
   show_notifications: boolean;

@@ -1,8 +1,8 @@
 import {
   User,
-  SettingsData,
   UserActivityLogItem,
   UserClassInfo,
+  UserSettings,
 } from "./types/user";
 import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
 
@@ -13,29 +13,34 @@ import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
  * @returns {Promise<boolean>} - Returns true if the settings were saved successfully, false otherwise
  */
 export async function saveUserSettings(
-  payload: SettingsData
-): Promise<boolean> {
+  user_id: string,
+  settings: UserSettings
+): Promise<{ data?: boolean; error?: string }> {
   try {
-    const response = await fetch(
-      `${USER_ENDPOINT}/${payload.user_id}/settings`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload.settings),
-      }
-    );
+    const response = await fetch(`${USER_ENDPOINT}/${user_id}/settings`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(settings),
+    });
+
+    const data = await response.json();
 
     if (!response.ok) {
-      console.error("Failed to save settings:", await response.text());
-      return false;
+      return {
+        error:
+          data.message ||
+          `Failed to get user data: ${response.status} ${response.statusText}`,
+      };
     }
 
-    return true;
+    return { data: true };
   } catch (err) {
-    console.error("Error saving settings:", err);
-    return false;
+    // console.error("Error saving settings:", err);
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
   }
 }
 
@@ -54,7 +59,6 @@ export async function getUserData(
     });
 
     const data = await response.json();
-    console.log(JSON.stringify(data));
 
     if (!response.ok) {
       return {
@@ -105,7 +109,6 @@ export async function getUserActivity(
     if (data == null) {
       return { data: [] };
     }
-    console.log(data);
 
     if (!Array.isArray(data)) {
       return { error: "Invalid response: expected an array of activity logs" };
@@ -149,7 +152,6 @@ export async function getUserClasses(userId: string): Promise<{
     if (!Array.isArray(data)) {
       return { error: "Invalid response: expected an array of classes" };
     }
-    console.log("Fetched user classes:", data);
 
     return { data: data };
   } catch (err) {
@@ -175,7 +177,6 @@ export async function getAllUsers(): Promise<{
 
     const data = await response.json();
 
-    console.log("Response data:", data);
     if (!response.ok) {
       return {
         error:

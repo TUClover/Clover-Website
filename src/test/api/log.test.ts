@@ -1,4 +1,4 @@
-import { fetchLogs } from "../../api/log";
+import { getLogsByUID } from "../../api/log";
 
 // Mock endpoints
 const originalFetch = global.fetch;
@@ -23,7 +23,7 @@ describe("fetchLogs", () => {
       json: async () => ({ noData: true }),
     } as Response);
 
-    const result = await fetchLogs("user-1");
+    const result = await getLogsByUID("user-1");
 
     expect(result.progressData?.suggestions).toEqual([]);
     expect(result.progressData?.progress.totalAccepted).toBe(0);
@@ -74,7 +74,7 @@ describe("fetchLogs", () => {
       json: async () => ({ data: mockLogs }),
     } as Response);
 
-    const result = await fetchLogs("user-2");
+    const result = await getLogsByUID("user-2");
 
     expect(result.progressData?.progress.totalAccepted).toBe(2);
     expect(result.progressData?.progress.totalWithBugs).toBe(1);
@@ -88,14 +88,14 @@ describe("fetchLogs", () => {
       json: async () => ({ data: "not-an-array" }),
     } as Response);
 
-    const result = await fetchLogs("user-3");
+    const result = await getLogsByUID("user-3");
     expect(result.error).toBe("Invalid logs data format");
   });
 
   it("handles fetch errors", async () => {
     global.fetch = jest.fn().mockRejectedValueOnce(new Error("Network error"));
 
-    const result = await fetchLogs("user-4");
+    const result = await getLogsByUID("user-4");
     expect(result.error).toBe("Network error");
   });
 });

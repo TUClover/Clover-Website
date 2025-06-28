@@ -1,10 +1,10 @@
-import { UserRole, User } from "../api/types/user";
-import InstructorDashboard from "./InstructorDashboard";
-import StudentDashboard from "./StudentDashboard";
-import DevDashboard from "./DevDashboard";
+import { UserRole, User } from "../../api/types/user";
 import AdminDashboard from "./AdminDashboard";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import InstructorDashboard from "./InstructorDashboard";
+import StudentDashboard from "./StudentDashboard";
+import DevDashboard from "./DevDashboard";
 
 /**
  * Dashboard component

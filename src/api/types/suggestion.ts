@@ -9,12 +9,6 @@ export interface Suggestion {
   accepted?: boolean;
 }
 
-export interface SuggestionResult {
-  suggestions: string[];
-  suggestionId: string;
-  hasBug: boolean;
-}
-
 export interface AIStats {
   id: string;
   created_at: string;

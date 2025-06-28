@@ -20,7 +20,7 @@ import { Input } from "./ui/input";
 
 const defaultSettings: UserSettingsType = {
   bug_percentage: 50,
-  show_notifications: false,
+  show_notifications: true,
   enable_quiz: true,
   mode: UserMode.BLOCK,
 };
@@ -73,15 +73,10 @@ export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
 
       const users = isMulti ? user : [user];
       const results = await Promise.all(
-        users.map((u) =>
-          saveUserSettings({
-            user_id: u.id,
-            settings,
-          })
-        )
+        users.map((u) => saveUserSettings(u.id, settings))
       );
 
-      const allSuccessful = results.every((r) => r === true);
+      const allSuccessful = results.every((r) => r.data === true);
       setStatus(allSuccessful ? "saved" : "error");
     } catch (err) {
       console.error(err);
@@ -90,7 +85,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gray-100 dark:bg-gray-900 rounded shadow-sm p-6 mb-4">
       <h2 className="text-md font-semibold text-[#50B498]">
         {isMulti ? "Bulk User Settings" : "User Settings"}
       </h2>

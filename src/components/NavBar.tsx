@@ -50,11 +50,11 @@ export const NavBar = () => {
   ];
 
   return (
-    <nav className="flex justify-between items-center py-3 pl-8 pr-4 md:pl-12 md:pr-6 bg-white dark:bg-black text-black dark:text-white fixed w-full top-0 z-50 border-b border-gray-200 dark:border-gray-800">
+    <nav className="flex justify-between items-center py-3 pl-8 pr-4 md:pl-12 md:pr-6 fixed w-full top-0 z-50 ">
       <div className="flex items-center space-x-4">
         <Link to="/" className="flex items-center space-x-2 md:space-x-3">
           <img src={cloverLogo} alt="Clover Logo" className="h-10" />
-          <span className="text-2xl font-bold tracking-wide text-[#50B498]">
+          <span className="text-2xl font-bold tracking-wide text-primary">
             CLOVER
           </span>
         </Link>

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useAllUsers } from "../hooks/useAllUsers";
-import { useUserClasses, useUserClassStatus } from "../hooks/useUserClasses";
+import { useAllUsers } from "../../hooks/useAllUsers";
+import { useUserClasses, useUserClassStatus } from "../../hooks/useUserClasses";
+import { useAIStats } from "../../hooks/useAIStats";
 import {
   Chart as ChartJS,
   LineElement,
@@ -10,15 +11,19 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { ClassData, User, UserRole } from "../api/types/user";
+import { ClassData, User, UserRole } from "../../api/types/user";
 import "react-datepicker/dist/react-datepicker.css";
-import { useUserActivity } from "../hooks/useUserActivity";
-import UserSideBar from "../components/UsersSideBar";
-import UserDetailsPanel from "../components/UserDetailsPanel";
-import DataDownload from "../components/DataDownload";
-import { useInstructorClasses } from "../hooks/useInstructorClasses";
+import { useUserActivity } from "../../hooks/useUserActivity";
+import UserSideBar from "../../components/UsersSideBar";
+import UserDetailsPanel from "../../components/UserDetailsPanel";
+import DataDownload from "../../components/DataDownload";
+import { useInstructorClasses } from "../../hooks/useInstructorClasses";
 import { toast } from "sonner";
-import StudentDashboardCard from "../components/StudentDashboardCard";
+import StudentDashboardCard from "../../components/StudentDashboardCard";
+import ClassSideBar from "../../components/ClassSideBar";
+import { AIStatGraph } from "../../components/AIStatGraph";
+import { useAllClasses } from "../../hooks/useAllClasses";
+import ClassDetailsPanel from "../../components/ClassDetailsPanel";
 
 ChartJS.register(
   LineElement,
@@ -30,14 +35,15 @@ ChartJS.register(
 );
 
 /**
- * AdminDashboard component
- * This component is responsible for rendering the admin dashboard.
- * It includes a sidebar for selecting users and a details panel for displaying user information.
- * It also includes a data download section for downloading user data.
- * @returns {JSX.Element} The AdminDashboard component.
+ * DevDashboard component
+ * This component is responsible for rendering the developer dashboard.
+ * It includes a sidebar for user selection, a details panel for user information,
+ * and a graph for AI statistics.
+ * @returns {JSX.Element} The DevDashboard component.
  */
-export const AdminDashboard = () => {
+export const DevDashboard = () => {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
@@ -50,25 +56,24 @@ export const AdminDashboard = () => {
         : "class";
 
   const { users, isLoading, error } = useAllUsers();
-
   const primaryUser = selectedUsers[0];
-
   const { classes, loading: userClassesLoading } = useUserClasses(
     primaryUser?.id
   );
-
   const { userActivity, loading: userActivityLoading } = useUserActivity(
     primaryUser?.id
   );
-
   const { classes: instructorClasses, loading: instructorLoading } =
     useInstructorClasses(primaryUser?.id);
+
+  const { classes: allClasses, isLoading: isLoadingClasses } = useAllClasses();
 
   const { userActivity: selectedActivity, progressData } = useUserActivity(
     selectedUserId,
     selectedClassId,
     selectedClassType
   );
+  const { aiStats } = useAIStats();
 
   const { studentStatus } = useUserClassStatus(
     selectedUsers[0]?.id || null,
@@ -82,6 +87,9 @@ export const AdminDashboard = () => {
 
   return (
     <div>
+      <div className="w-full mb-6 text-text">
+        <AIStatGraph aiStats={aiStats} />
+      </div>
       {/* User Section */}
       <div className="flex flex-col md:flex-row gap-6 mb-6">
         {/* Sidebar */}
@@ -113,7 +121,31 @@ export const AdminDashboard = () => {
           isSettingsPanel={false}
         />
       </div>
-      <div className="w-full mb-6 text-text">
+      <div className="flex flex-col md:flex-row gap-6 mb-6">
+        <ClassSideBar
+          classes={allClasses}
+          selectedClasses={selectedClasses}
+          onSelectClass={(classData) => {
+            setSelectedClasses([classData]);
+          }}
+          onSetSelectedClasses={setSelectedClasses}
+          loading={isLoadingClasses}
+          setSelectedClassId={(id) => {
+            const selected = allClasses.find((cls) => cls.id === id);
+            if (selected) {
+              setSelectedClasses([selected]);
+            }
+          }}
+        />
+        <ClassDetailsPanel
+          users={users}
+          classDetails={selectedClasses}
+          isLoading={isLoadingClasses}
+        />
+      </div>
+
+      {/* Data Download Section */}
+      <div className="w-full mb-3 text-text">
         <DataDownload />
       </div>
 
@@ -138,4 +170,4 @@ export const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default DevDashboard;

@@ -7,7 +7,7 @@ import { LOG_ENDPOINT } from "./endpoints";
  * @param {string} userId
  * @returns {Promise<{ progressData?: ProgressData; error?: string }>} - The response from the server or an error message.
  */
-export async function fetchLogs(userId: string): Promise<{
+export async function getLogsByUID(userId: string): Promise<{
   progressData?: ProgressData;
   error?: string;
 }> {

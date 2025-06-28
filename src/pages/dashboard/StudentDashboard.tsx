@@ -1,20 +1,20 @@
 import { Chart, registerables } from "chart.js";
-import LineChart from "../components/LineChart";
-import StatCard from "../components/StatCard";
-import StackedBarChart from "../components/StackedBarChart";
-import PieChart from "../components/PieChart";
-import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
-import { useUserActivity } from "../hooks/useUserActivity";
-import PaginatedTable from "../components/PaginatedTable";
-import SuggestionTable from "../components/SuggestionTable";
-import StudentStatusBadge from "../components/StudentStatusBadge";
+import LineChart from "../../components/LineChart";
+import StatCard from "../../components/StatCard";
+import StackedBarChart from "../../components/StackedBarChart";
+import PieChart from "../../components/PieChart";
+import ClassesDropdownMenu from "../../components/ClassesDropdownMenu";
+import { useUserActivity } from "../../hooks/useUserActivity";
+import PaginatedTable from "../../components/PaginatedTable";
+import SuggestionTable from "../../components/SuggestionTable";
+import StudentStatusBadge from "../../components/StudentStatusBadge";
 import { Loader2 } from "lucide-react";
-import { useUserClasses } from "../hooks/useUserClasses";
-import RegisterClassDialog from "../components/RegisterClassDialog";
-import { User } from "../api/types/user";
-import { LogEvent } from "../api/types/event";
-import InfoTooltip from "../components/InfoTooltip";
-import { Card } from "../components/ui/card";
+import { useUserClasses } from "../../hooks/useUserClasses";
+import RegisterClassDialog from "../../components/RegisterClassDialog";
+import { User } from "../../api/types/user";
+import { LogEvent } from "../../api/types/event";
+import InfoTooltip from "../../components/InfoTooltip";
+import { Card } from "../../components/ui/card";
 
 Chart.register(...registerables);
 

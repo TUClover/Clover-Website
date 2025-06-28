@@ -28,16 +28,14 @@ describe("user-api", () => {
 
   it("successfully saves user settings", async () => {
     global.fetch = jest.fn().mockResolvedValueOnce({ ok: true } as Response);
-
-    const result = await saveUserSettings({
-      user_id: "user-1",
-      settings: {
-        bug_percentage: 10,
-        show_notifications: true,
-        enable_quiz: true,
-        mode: UserMode.BLOCK,
-      },
-    });
+    const user_id = "user-1";
+    const settings = {
+      bug_percentage: 10,
+      show_notifications: true,
+      enable_quiz: true,
+      mode: UserMode.BLOCK,
+    };
+    const result = await saveUserSettings(user_id, settings);
 
     expect(result).toBe(true);
   });
@@ -47,11 +45,10 @@ describe("user-api", () => {
       ok: false,
       text: async () => "Failed",
     } as Response);
+    const user_id = "user-1";
+    const settings = {} as UserSettings;
 
-    const result = await saveUserSettings({
-      user_id: "user-1",
-      settings: {} as UserSettings,
-    });
+    const result = await saveUserSettings(user_id, settings);
 
     expect(result).toBe(false);
   });
@@ -298,11 +295,10 @@ describe("user-api", () => {
 
   it("handles saveUserSettings network error", async () => {
     global.fetch = jest.fn().mockRejectedValueOnce(new Error("Network error"));
+    const user_id = "user-1";
+    const settings = {} as UserSettings;
 
-    const result = await saveUserSettings({
-      user_id: "user-1",
-      settings: {} as UserSettings,
-    });
+    const result = await saveUserSettings(user_id, settings);
 
     expect(result).toBe(false);
   });

@@ -1,15 +1,15 @@
-import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
-import { useClassActivity } from "../hooks/useClassActivity";
-import StatCard from "../components/StatCard";
-import PieChart from "../components/PieChart";
-import LineChart from "../components/LineChart";
-import { useInstructorClasses } from "../hooks/useInstructorClasses";
-import StackedBarChart from "../components/StackedBarChart";
-import CreateNewClassDialog from "../components/CreateNewClassDialog";
-import StudentDataTable from "../components/StudentDataTable";
-import { User } from "../api/types/user";
-import InfoTooltip from "../components/InfoTooltip";
-import { Card } from "../components/ui/card";
+import ClassesDropdownMenu from "../../components/ClassesDropdownMenu";
+import { useClassActivity } from "../../hooks/useClassActivity";
+import StatCard from "../../components/StatCard";
+import PieChart from "../../components/PieChart";
+import LineChart from "../../components/LineChart";
+import { useInstructorClasses } from "../../hooks/useInstructorClasses";
+import StackedBarChart from "../../components/StackedBarChart";
+import CreateNewClassDialog from "../../components/CreateNewClassDialog";
+import StudentDataTable from "../../components/StudentDataTable";
+import { User } from "../../api/types/user";
+import InfoTooltip from "../../components/InfoTooltip";
+import { Card } from "../../components/ui/card";
 
 /**
  * InstructorDashboard component displays the instructor dashboard with class statistics and activity logs.
