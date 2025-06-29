@@ -53,7 +53,6 @@ export const useInstructorClasses = (userID?: string | null) => {
           setError(error);
           return;
         }
-        console.log("Fetched Classes:", data);
 
         setClasses(data || []);
       } catch (err) {

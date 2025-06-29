@@ -30,14 +30,7 @@ export async function getSuggestionById(
     }
 
     return {
-      data: {
-        id: data.id,
-        created_at: data.created_at,
-        has_bug: data.has_bug,
-        suggestion_array: data.suggestion_array,
-        model: data.model,
-        prompt: data.prompt,
-      },
+      data: data,
     };
   } catch (err) {
     return {

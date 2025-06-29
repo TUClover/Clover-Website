@@ -283,7 +283,7 @@ export const QuizPage: React.FC = () => {
     resetQuizState();
     setIsGenerating(true);
     try {
-      const response = await fetch(`${BASE_ENDPOINT}/quiz/generate`, {
+      const response = await fetch(`${BASE_ENDPOINT}/quiz/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

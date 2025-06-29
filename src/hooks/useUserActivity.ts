@@ -36,7 +36,6 @@ export const useUserActivity = (
         setError(null);
         const response = await getUserActivity(userId);
         if (response.error) throw new Error(response.error);
-        console.log(response.data);
 
         let filteredActivities = response.data?.filter(
           (activity) =>

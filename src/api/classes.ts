@@ -9,11 +9,9 @@ import { ClassData, EnrollmentStatus, UserActivityLogItem } from "./types/user";
  */
 export const createClass = async (
   newClass: ClassData
-): Promise<{ data?: { id: string }; error?: string }> => {
-  console.log("Creating class with data:", JSON.stringify(newClass));
-
+): Promise<{ data?: ClassData; error?: string }> => {
   try {
-    const response = await fetch(`${CLASS_ENDPOINT}/create`, {
+    const response = await fetch(`${CLASS_ENDPOINT}/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newClass),
@@ -29,11 +27,11 @@ export const createClass = async (
       };
     }
 
-    if (!data.data || !data.data.id) {
+    if (!data) {
       return { error: "Invalid response: expected class ID" };
     }
 
-    return { data: { id: data.data.id } };
+    return { data: data };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
@@ -118,7 +116,7 @@ export const registerUserToClass = async (
  */
 export async function getClassActivityByClassId(
   classId: string
-): Promise<{ data?: UserActivityLogItem[] | null; error?: string }> {
+): Promise<{ data: UserActivityLogItem[]; error?: string }> {
   try {
     const response = await fetch(`${LOG_ENDPOINT}/class/${classId}`, {
       method: "GET",
@@ -129,34 +127,21 @@ export async function getClassActivityByClassId(
 
     if (!response.ok) {
       return {
+        data: [],
         error:
-          data.message ||
+          data?.error ||
           `Failed to get logs by class: ${response.status} ${response.statusText}`,
       };
     }
 
-    if (!Array.isArray(data.data)) {
-      return { error: "Invalid response: expected an array of activity logs" };
+    if (!Array.isArray(data)) {
+      return { data: [] };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const activityLogs: UserActivityLogItem[] = data.data.map((item: any) => ({
-      id: item.id,
-      event: item.event,
-      timestamp: item.timestamp,
-      timeLapse: item.time_lapse,
-      metadata: {
-        userId: item.metadata.user_id,
-        hasBug: item.metadata.has_bug,
-        suggestionId: item.metadata.suggestion_id,
-        userSectionId: item.metadata.user_section_id,
-        userClassId: item.metadata.user_class_id,
-      },
-    }));
-
-    return { data: activityLogs };
+    return { data };
   } catch (err) {
     return {
+      data: [],
       error: err instanceof Error ? err.message : "Unknown error occurred",
     };
   }
@@ -180,7 +165,7 @@ export const updateStudentEnrollmentStatus = async (
   };
 
   const { error } = await supabase
-    .from("class_users")
+    .from("user_class")
     .update(updateFields)
     .eq("class_id", classId)
     .eq("student_id", studentId);
@@ -203,8 +188,6 @@ export async function getAllClasses(): Promise<{
     });
 
     const data = await response.json();
-
-    console.log("Classes :" + JSON.stringify(data));
 
     if (!response.ok) {
       return {

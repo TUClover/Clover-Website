@@ -87,14 +87,11 @@ export const useUserClasses = (userID?: string | null) => {
     },
   ];
 
-  console.log("Classes in hook: " + JSON.stringify(classes));
-
   const modifiedClasses: UserClassInfo[] = [
     specialClasses[0],
     ...classes,
     specialClasses[1],
   ];
-  // console.log("Modified Classes " + JSON.stringify(modifiedClasses));
 
   const handleClassSelect = (selection: {
     id: string | null;

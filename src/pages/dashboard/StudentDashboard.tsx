@@ -59,7 +59,6 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
       </div>
     );
   }
-  console.log(progressData.totalAccepted);
   if (progressData.totalAccepted === 0) {
     return (
       <div className="flex justify-center">

@@ -35,32 +35,24 @@ export const useClassActivity = (
         const classRequests = classes
           .filter((classInfo) => classInfo.id !== "all")
           .map(async (classInfo) => {
-            try {
-              const response = await getClassActivityByClassId(classInfo.id!);
-              if (response.error) throw new Error(response.error);
-
-              if (!Array.isArray(response.data)) {
-                throw new Error(
-                  "Invalid response: expected an array of activity logs"
-                );
-              }
-
-              return response.data;
-            } catch (err) {
+            const { data, error } = await getClassActivityByClassId(
+              classInfo.id!
+            );
+            if (error) {
               console.error(
-                `Failed to fetch for class ${classInfo.class_title}`,
-                err
+                `Failed to fetch for class ${classInfo.class_title}: ${error}`
               );
-              return [];
             }
+            return data;
           });
 
         const allLogsArrays = await Promise.all(classRequests);
         const allLogs = allLogsArrays.flat();
+
         const validLogs = allLogs.filter(
           (log) =>
-            log.event === LogEvent.USER_ACCEPT ||
-            log.event === LogEvent.USER_REJECT
+            log.event === LogEvent.SUGGESTION_ACCEPT ||
+            log.event === LogEvent.USER_REJECT // Update this later
         );
 
         setAllActivity(validLogs);
