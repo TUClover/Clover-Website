@@ -3,7 +3,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useUserData } from "../../hooks/useUserData";
 import { getUserData } from "../../api/user";
-import { UserData, UserRole } from "../../api/types/user";
+import { User, UserMode, UserRole } from "../../api/types/user";
 
 // Mocks
 jest.mock("../../api/user", () => ({
@@ -17,22 +17,18 @@ jest.mock("../../hooks/useAuth", () => ({
 const mockUseAuth = require("../../hooks/useAuth").useAuth as jest.Mock;
 const mockGetUserData = getUserData as jest.MockedFunction<typeof getUserData>;
 
-const mockUser: UserData = {
+const mockUser: User = {
   id: "u1",
   email: "test@example.com",
-  firstName: "Test",
-  lastName: "User",
-  createdAt: "2024-01-01T00:00:00Z",
+  first_name: "Test",
+  last_name: "User",
+  created_at: "2024-01-01T00:00:00Z",
   role: UserRole.STUDENT,
   settings: {
     bug_percentage: 0,
     show_notifications: true,
-    give_suggestions: true,
     enable_quiz: true,
-    active_threshold: 0,
-    suspend_threshold: 0,
-    pass_rate: 0,
-    suspend_rate: 0,
+    mode: UserMode.BLOCK,
   },
 };
 

@@ -1,4 +1,4 @@
-import { LOG_ENDPOINT } from "./endpoints";
+import { STAT_ENDPOINT } from "./endpoints";
 import { AIStats } from "./types/suggestion";
 
 /**
@@ -10,7 +10,7 @@ export async function getAIUsageStats(): Promise<{
   error?: string;
 }> {
   try {
-    const response = await fetch(`${LOG_ENDPOINT}/ai`, {
+    const response = await fetch(`${STAT_ENDPOINT}/ai`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -25,12 +25,11 @@ export async function getAIUsageStats(): Promise<{
       };
     }
 
-    if (!data.data) {
+    if (!data) {
       return { error: "Invalid response: expected usage data" };
     }
 
-    return { data: data.data as AIStats[] };
-
+    return { data: data as AIStats[] };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",

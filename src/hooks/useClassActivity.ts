@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { UserActivityLogItem } from "../types";
 import { getClassActivityByClassId } from "../api/classes";
 import { calculateProgress, ProgressData } from "../utils/calculateProgress";
-import { UserClass } from "../api/types/user";
+import { ClassData, UserActivityLogItem } from "../api/types/user";
 import { LogEvent } from "../api/types/event";
 
 /**
@@ -13,7 +12,7 @@ import { LogEvent } from "../api/types/event";
  * @returns An object containing the following properties:
  */
 export const useClassActivity = (
-  classes: UserClass[],
+  classes: ClassData[],
   selectedClassId: string | null
 ) => {
   const [allActivity, setAllActivity] = useState<UserActivityLogItem[]>([]);
@@ -36,32 +35,24 @@ export const useClassActivity = (
         const classRequests = classes
           .filter((classInfo) => classInfo.id !== "all")
           .map(async (classInfo) => {
-            try {
-              const response = await getClassActivityByClassId(classInfo.id!);
-              if (response.error) throw new Error(response.error);
-
-              if (!Array.isArray(response.data)) {
-                throw new Error(
-                  "Invalid response: expected an array of activity logs"
-                );
-              }
-
-              return response.data;
-            } catch (err) {
+            const { data, error } = await getClassActivityByClassId(
+              classInfo.id!
+            );
+            if (error) {
               console.error(
-                `Failed to fetch for class ${classInfo.classTitle}`,
-                err
+                `Failed to fetch for class ${classInfo.class_title}: ${error}`
               );
-              return [];
             }
+            return data;
           });
 
         const allLogsArrays = await Promise.all(classRequests);
         const allLogs = allLogsArrays.flat();
+
         const validLogs = allLogs.filter(
           (log) =>
-            log.event === LogEvent.USER_ACCEPT ||
-            log.event === LogEvent.USER_REJECT
+            log.event === LogEvent.SUGGESTION_ACCEPT ||
+            log.event === LogEvent.USER_REJECT // Update this later
         );
 
         setAllActivity(validLogs);
@@ -83,9 +74,7 @@ export const useClassActivity = (
   useEffect(() => {
     const filtered =
       selectedClassId && selectedClassId !== "all"
-        ? allActivity.filter(
-            (log) => log.metadata.userClassId === selectedClassId
-          )
+        ? allActivity.filter((log) => log.class_id === selectedClassId)
         : allActivity;
 
     setClassActivity(filtered);

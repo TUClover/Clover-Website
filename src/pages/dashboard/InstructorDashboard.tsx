@@ -1,15 +1,15 @@
-import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
-import { useClassActivity } from "../hooks/useClassActivity";
-import StatCard from "../components/StatCard";
-import PieChart from "../components/PieChart";
-import LineChart from "../components/LineChart";
-import { useInstructorClasses } from "../hooks/useInstructorClasses";
-import StackedBarChart from "../components/StackedBarChart";
-import CreateNewClassDialog from "../components/CreateNewClassDialog";
-import StudentDataTable from "../components/StudentDataTable";
-import { UserData } from "../api/types/user";
-import InfoTooltip from "../components/InfoTooltip";
-import { Card } from "../components/ui/card";
+import ClassesDropdownMenu from "../../components/ClassesDropdownMenu";
+import { useClassActivity } from "../../hooks/useClassActivity";
+import StatCard from "../../components/StatCard";
+import PieChart from "../../components/PieChart";
+import LineChart from "../../components/LineChart";
+import { useInstructorClasses } from "../../hooks/useInstructorClasses";
+import StackedBarChart from "../../components/StackedBarChart";
+import CreateNewClassDialog from "../../components/CreateNewClassDialog";
+import StudentDataTable from "../../components/StudentDataTable";
+import { User } from "../../api/types/user";
+import InfoTooltip from "../../components/InfoTooltip";
+import { Card } from "../../components/ui/card";
 
 /**
  * InstructorDashboard component displays the instructor dashboard with class statistics and activity logs.
@@ -17,7 +17,7 @@ import { Card } from "../components/ui/card";
  * @param { userData } - The user data of the instructor.
  * @returns
  */
-export const InstructorDashboard = ({ userData }: { userData: UserData }) => {
+export const InstructorDashboard = ({ userData }: { userData: User }) => {
   const { classes, selectedClassId, handleClassSelect } = useInstructorClasses(
     userData.id
   );
@@ -29,7 +29,7 @@ export const InstructorDashboard = ({ userData }: { userData: UserData }) => {
 
   const selectedClassTitle = classes.find(
     (classItem) => classItem.id === selectedClassId
-  )?.classTitle;
+  )?.class_title;
 
   return (
     <div className="space-y-8">

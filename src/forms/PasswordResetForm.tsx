@@ -19,8 +19,8 @@ export const PasswordResetForm: React.FC = () => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(
         email,
-        //{redirectTo: "https://clover.nickrucinski.com/resetform"}
-        { redirectTo: "http://localhost:5173/resetform" }
+        { redirectTo: "https://clover.nickrucinski.com/resetform" }
+        // { redirectTo: "http://localhost:5173/resetform" }
       );
 
       if (error) {

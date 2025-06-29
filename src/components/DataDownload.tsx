@@ -14,7 +14,7 @@ export const DataDownload = () => {
         <h2 className="text-lg pb-6">Download Data</h2>
         <div className="mb-4">
           <Button>
-            <a href={`${BASE_ENDPOINT}/export`}>Download All Data</a>
+            <a href={`${BASE_ENDPOINT}/data/`}>Download All Data</a>
           </Button>
         </div>
       </Card>

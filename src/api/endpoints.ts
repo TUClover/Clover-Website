@@ -1,6 +1,6 @@
 /** Gets the endpoint from the .env if it is available otherwise it uses localhost */
 export const BASE_ENDPOINT =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8001";
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8080/api/v1";
 /* Endpoint for creating new AI suggestions */
 export const AI_SUGGESTION_ENDPOINT: string = `${BASE_ENDPOINT}/suggestion`;
 
@@ -11,6 +11,8 @@ export const USER_ENDPOINT: string = `${BASE_ENDPOINT}/users`;
 
 /** Endpoint for logging information */
 export const LOG_ENDPOINT: string = `${BASE_ENDPOINT}/logs`;
+
+export const STAT_ENDPOINT: string = `${BASE_ENDPOINT}/status`;
 
 export const AUTH_ENDPOINT: string = `${BASE_ENDPOINT}/auth`;
 

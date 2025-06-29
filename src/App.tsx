@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import "./index.css";
 import RootLayout from "./RootLayout";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/dashboard/Dashboard";
 import { QuizPage } from "./pages/Quiz";
 import Landing from "./pages/Landing";
 import LogIn from "./pages/LogIn";

@@ -5,6 +5,7 @@ import TimeIntervalDropDown from "./TimeIntervalDropDown";
 import { parseISODate } from "../utils/timeConverter";
 import InfoTooltip from "./InfoTooltip";
 import { Card } from "./ui/card";
+import { LogEvent } from "../api/types/event";
 
 /**
  * LineChart component displays a line chart of user activity over time.
@@ -41,35 +42,40 @@ export const LineChart = ({
     return () => observer.disconnect();
   }, []);
 
-  const groupBy = (date: Date) => {
+  const groupBy = (date: Date, interval: "day" | "week" | "month") => {
     const year = date.getFullYear();
     const month = date.getMonth();
 
     if (interval === "day") return date.toISOString().split("T")[0];
+
     if (interval === "week") {
       const firstDay = new Date(date);
       firstDay.setDate(date.getDate() - date.getDay());
 
-      const year = firstDay.getFullYear();
-      const month = String(firstDay.getMonth() + 1).padStart(2, "0");
-      const day = String(firstDay.getDate()).padStart(2, "0");
+      const y = firstDay.getFullYear();
+      const m = String(firstDay.getMonth() + 1).padStart(2, "0");
+      const d = String(firstDay.getDate()).padStart(2, "0");
 
-      return `${year}-${month}-${day}`;
+      return `${y}-${m}-${d}`;
     }
+
     if (interval === "month")
       return `${year}-${String(month + 1).padStart(2, "0")}`;
+
+    return "";
   };
 
   const acceptedMap: Record<string, number> = {};
   const rejectedMap: Record<string, number> = {};
 
   activities.forEach((activity) => {
-    const date = new Date(activity.timestamp);
-    const key = groupBy(date);
+    const date = new Date(activity.log_created_at);
+    console.log(date);
+    const key = groupBy(date, interval);
     if (key) {
-      if (activity.event === "USER_ACCEPT") {
+      if (activity.event === LogEvent.SUGGESTION_ACCEPT) {
         acceptedMap[key] = (acceptedMap[key] || 0) + 1;
-      } else if (activity.event === "USER_REJECT") {
+      } else if (activity.event === LogEvent.USER_REJECT) {
         rejectedMap[key] = (rejectedMap[key] || 0) + 1;
       }
     }
@@ -83,7 +89,7 @@ export const LineChart = ({
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
-        range.push(groupBy(date)!);
+        range.push(groupBy(date, interval)!);
       }
     }
 
@@ -91,7 +97,7 @@ export const LineChart = ({
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i * 7);
-        range.push(groupBy(date)!);
+        range.push(groupBy(date, interval)!);
       }
     }
 
@@ -99,7 +105,7 @@ export const LineChart = ({
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setMonth(today.getMonth() - i);
-        range.push(groupBy(date)!);
+        range.push(groupBy(date, interval)!);
       }
     }
 

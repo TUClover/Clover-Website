@@ -1,6 +1,5 @@
-import { Loader2, User, Users, X } from "lucide-react";
-import { UserClass, UserData, UserRole } from "../api/types/user";
-import { EnrollmentStatus } from "../types";
+import { Loader2, User as LucidUser, Users, X } from "lucide-react";
+import { ClassData, EnrollmentStatus, User, UserRole } from "../api/types/user";
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import { useUserData } from "../hooks/useUserData";
 import { updateStudentEnrollmentStatus } from "../api/classes";
@@ -20,13 +19,17 @@ export const ClassDetails = ({
   instructorData,
   onClose,
 }: {
-  userClass: UserClass;
-  instructorData: UserData;
+  userClass: ClassData;
+  instructorData: User;
   onClose: () => void;
 }) => {
   const { userData } = useUserData();
-  const { classTitle, classCode, classDescription, classHexColor } =
-    userClass || {};
+  const {
+    class_title: classTitle,
+    class_code: classCode,
+    class_description: classDescription,
+    class_hex_color: classHexColor,
+  } = userClass || {};
 
   const {
     enrolledStudents,
@@ -92,7 +95,7 @@ export const ClassDetails = ({
               <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-700">
                 <img
                   src={instructorData.avatar_url ?? ""}
-                  alt={`${instructorData.firstName} ${instructorData.lastName}`}
+                  alt={`${instructorData.first_name} ${instructorData.last_name}`}
                   className="w-full h-full rounded-full object-cover"
                 />
               </div>
@@ -101,7 +104,7 @@ export const ClassDetails = ({
                 className="rounded-full flex items-center justify-center text-white text-4xl font-bold size-24 border-4 border-white dark:border-slate-700 bg-white dark:bg-slate-900"
                 style={{ backgroundColor: classHexColor || "#50B498" }}
               >
-                {instructorData?.firstName?.charAt(0).toUpperCase()}
+                {instructorData?.first_name?.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
@@ -125,7 +128,7 @@ export const ClassDetails = ({
             <span className="text-muted-foreground text-lg flex items-center gap-2 mt-1">
               {totalStudents === 1 ? (
                 <>
-                  <User className="size-5" /> 1 Student
+                  <LucidUser className="size-5" /> 1 Student
                 </>
               ) : (
                 <>
@@ -143,7 +146,7 @@ export const ClassDetails = ({
               <div className="flex items-center gap-4">
                 <div>
                   <h3 className="font-medium text-gray-600 dark:text-gray-300">
-                    {instructorData?.firstName} {instructorData?.lastName}
+                    {instructorData?.first_name} {instructorData?.last_name}
                   </h3>
                 </div>
               </div>

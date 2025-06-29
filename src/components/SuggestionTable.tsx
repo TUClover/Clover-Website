@@ -1,7 +1,7 @@
 import { getSuggestionById } from "../api/suggestion";
 import { LogEvent } from "../api/types/event";
 import { UserActivityLogItem } from "../api/types/user";
-import { CodeSuggestion } from "../api/types/suggestion";
+import { Suggestion } from "../api/types/suggestion";
 import { useEffect, useState } from "react";
 
 /**
@@ -21,23 +21,22 @@ export const SuggestionTable = ({
 }) => {
   const [selectedLogItem, setSelectedLogItem] =
     useState<UserActivityLogItem | null>(null);
-  const [suggestionDetail, setSuggestionDetail] =
-    useState<CodeSuggestion | null>(null);
+  const [suggestionDetail, setSuggestionDetail] = useState<Suggestion | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSuggestion = async () => {
-      console.log(JSON.stringify(selectedLogItem?.metadata, null, 2));
-
-      if (!selectedLogItem?.metadata?.suggestionId) return;
+      if (!selectedLogItem?.suggestion_id) return;
 
       setLoading(true);
       setFetchError(null);
 
       try {
         const result = await getSuggestionById(
-          selectedLogItem.metadata.suggestionId as unknown as string
+          selectedLogItem.suggestion_id as unknown as string
         );
 
         console.log("result from getSuggestionById:", result);
@@ -48,9 +47,9 @@ export const SuggestionTable = ({
         }
 
         if (result.data) {
-          const modifiedResult: CodeSuggestion = {
+          const modifiedResult: Suggestion = {
             ...result.data,
-            timeLapse: selectedLogItem.timeLapse,
+            time_lapse: selectedLogItem.duration,
             accepted: selectedLogItem.event === LogEvent.USER_ACCEPT,
           };
 
@@ -83,20 +82,18 @@ export const SuggestionTable = ({
         <tbody className="divide-y divide-gray-400 dark:divide-gray-100">
           {logItems.map((logItem, index) => (
             <tr
-              key={logItem.id}
+              key={logItem.log_id}
               className="hover:bg-gray-400 dark:hover:bg-gray-700 transition cursor-pointer"
               onClick={() => setSelectedLogItem(logItem)}
             >
               <td className="p-2">{startIndex + index + 1}</td>
               <td className="px-4 py-2">
-                {new Date(logItem.timestamp).toLocaleDateString()}
+                {new Date(logItem.log_created_at).toLocaleDateString()}
               </td>
               <td className="px-4 py-2">
                 {logItem.event === LogEvent.USER_ACCEPT ? "Yes" : "No"}
               </td>
-              <td className="px-4 py-2">
-                {logItem.metadata.hasBug ? "Yes" : "No"}
-              </td>
+              <td className="px-4 py-2">{logItem.has_bug ? "Yes" : "No"}</td>
             </tr>
           ))}
         </tbody>
@@ -152,13 +149,13 @@ export default SuggestionTable;
 export const SuggestionDetailCard = ({
   suggestion,
 }: {
-  suggestion: CodeSuggestion;
+  suggestion: Suggestion;
 }) => {
   return (
     <div className="space-y-4 h-full flex flex-col">
       {/* Suggested Code Section */}
       <div className="flex-1 flex flex-col min-h-0">
-        {suggestion.hasBug ? (
+        {suggestion.has_bug ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
               <h4 className="font-semibold text-gray-700 dark:text-gray-300">
@@ -170,10 +167,10 @@ export const SuggestionDetailCard = ({
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
               <pre className="bg-gray-300 dark:bg-gray-700 p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
-                {suggestion.suggestionArray[0] || "No code provided"}
+                {suggestion.suggestion_array[0] || "No code provided"}
               </pre>
               <pre className="bg-gray-300 dark:bg-gray-700 p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
-                {suggestion.suggestionArray[1] || "No code provided"}
+                {suggestion.suggestion_array[1] || "No code provided"}
               </pre>
             </div>
           </>
@@ -183,7 +180,7 @@ export const SuggestionDetailCard = ({
               Suggested Code
             </h4>
             <pre className="bg-gray-300 dark:bg-gray-700 p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
-              {suggestion.suggestionArray[0] || "No code provided"}
+              {suggestion.suggestion_array[0] || "No code provided"}
             </pre>
           </>
         )}
@@ -206,7 +203,7 @@ export const SuggestionDetailCard = ({
           <h4 className="font-semibold text-gray-700 dark:text-gray-300">
             Bug Detected
           </h4>
-          <p>{suggestion.hasBug ? "Yes" : "No"}</p>
+          <p>{suggestion.has_bug ? "Yes" : "No"}</p>
         </div>
 
         <div>
@@ -220,7 +217,7 @@ export const SuggestionDetailCard = ({
           <h4 className="font-semibold text-gray-700 dark:text-gray-300">
             Response Time
           </h4>
-          <p>{suggestion.timeLapse} ms</p>
+          <p>{suggestion.time_lapse} ms</p>
         </div>
 
         <div className="md:col-span-2 overflow-auto max-h-64">

@@ -30,8 +30,8 @@ describe("getSuggestionById", () => {
     const result = await getSuggestionById("123");
 
     expect(result.data?.id).toBe("123");
-    expect(result.data?.hasBug).toBe(true);
-    expect(result.data?.suggestionArray.length).toBe(2);
+    expect(result.data?.has_bug).toBe(true);
+    expect(result.data?.suggestion_array.length).toBe(2);
   });
 
   it("returns an error when response.ok is false", async () => {

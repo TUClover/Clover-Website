@@ -1,20 +1,20 @@
 import { Chart, registerables } from "chart.js";
-import LineChart from "../components/LineChart";
-import StatCard from "../components/StatCard";
-import StackedBarChart from "../components/StackedBarChart";
-import PieChart from "../components/PieChart";
-import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
-import { useUserActivity } from "../hooks/useUserActivity";
-import PaginatedTable from "../components/PaginatedTable";
-import SuggestionTable from "../components/SuggestionTable";
-import StudentStatusBadge from "../components/StudentStatusBadge";
+import LineChart from "../../components/LineChart";
+import StatCard from "../../components/StatCard";
+import StackedBarChart from "../../components/StackedBarChart";
+import PieChart from "../../components/PieChart";
+import ClassesDropdownMenu from "../../components/ClassesDropdownMenu";
+import { useUserActivity } from "../../hooks/useUserActivity";
+import PaginatedTable from "../../components/PaginatedTable";
+import SuggestionTable from "../../components/SuggestionTable";
+import StudentStatusBadge from "../../components/StudentStatusBadge";
 import { Loader2 } from "lucide-react";
-import { useUserClasses } from "../hooks/useUserClasses";
-import RegisterClassDialog from "../components/RegisterClassDialog";
-import { UserData } from "../api/types/user";
-import { LogEvent } from "../api/types/event";
-import InfoTooltip from "../components/InfoTooltip";
-import { Card } from "../components/ui/card";
+import { useUserClasses } from "../../hooks/useUserClasses";
+import RegisterClassDialog from "../../components/RegisterClassDialog";
+import { User } from "../../api/types/user";
+import { LogEvent } from "../../api/types/event";
+import InfoTooltip from "../../components/InfoTooltip";
+import { Card } from "../../components/ui/card";
 
 Chart.register(...registerables);
 
@@ -23,7 +23,7 @@ Chart.register(...registerables);
  * @param userData - The user data to display in the dashboard.
  * @returns StudentDashboard component that displays user activity and progress.
  */
-export const StudentDashboard = ({ userData }: { userData: UserData }) => {
+export const StudentDashboard = ({ userData }: { userData: User }) => {
   const {
     classes,
     selectedClassId,
@@ -42,12 +42,14 @@ export const StudentDashboard = ({ userData }: { userData: UserData }) => {
   const loading = userClassLoading || userActivityLoading;
   const filteredLogItems = userActivity.filter(
     (logItem) =>
-      logItem.event === LogEvent.USER_ACCEPT ||
+      logItem.event === LogEvent.SUGGESTION_ACCEPT ||
       logItem.event === LogEvent.USER_REJECT
   );
 
   const sortedLogItems = filteredLogItems.sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    (a, b) =>
+      new Date(b.log_created_at).getTime() -
+      new Date(a.log_created_at).getTime()
   );
 
   if (loading) {
@@ -57,7 +59,6 @@ export const StudentDashboard = ({ userData }: { userData: UserData }) => {
       </div>
     );
   }
-
   if (progressData.totalAccepted === 0) {
     return (
       <div className="flex justify-center">
@@ -94,12 +95,14 @@ export const StudentDashboard = ({ userData }: { userData: UserData }) => {
                 : ""
             }
           >
-            <StudentStatusBadge status={selectedClass?.studentStatus || null} />
+            <StudentStatusBadge
+              status={selectedClass?.student_status || null}
+            />
           </span>
         </div>
         <div className="col-span-2 flex justify-end">
           <ClassesDropdownMenu
-            classes={classes}
+            classes={classes.map((info) => info.user_class)}
             onClassSelect={handleClassSelect}
             selectedId={selectedClassId}
           />

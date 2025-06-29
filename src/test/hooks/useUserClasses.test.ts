@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { renderHook, waitFor, act } from "@testing-library/react";
-import {
-  UserClassInfo,
-  useUserClasses,
-  useUserClassStatus,
-} from "../../hooks/useUserClasses";
+import { useUserClasses, useUserClassStatus } from "../../hooks/useUserClasses";
 import { getUserClasses } from "../../api/user";
-import { StudentStatus } from "../../api/types/user";
+import {
+  EnrollmentStatus,
+  StudentStatus,
+  UserClassInfo,
+} from "../../api/types/user";
 
 // Mocks
 jest.mock("../../api/user", () => ({
@@ -31,17 +31,20 @@ const mockGetUserClasses = getUserClasses as jest.MockedFunction<
 const mockFrom = require("../../supabaseClient").supabase.from as jest.Mock;
 
 const mockClassInfo: UserClassInfo = {
-  userClass: {
+  user_class: {
     id: "class-1",
-    classTitle: "Physics",
-    classCode: "PHY101",
-    instructorId: "instructor-1",
-    classHexColor: "#abc123",
-    classImageCover: null,
-    classDescription: "Intro to Physics",
-    createdAt: "2024-01-01T00:00:00Z",
+    class_title: "Physics",
+    class_code: "PHY101",
+    instructor_id: "instructor-1",
+    class_hex_color: "#abc123",
+    class_image_cover: null,
+    class_description: "Intro to Physics",
+    created_at: "2024-01-01T00:00:00Z",
+    students: [],
   },
-  studentStatus: StudentStatus.ACTIVE,
+  joined_at: "2024-01-01T00:00:00Z",
+  enrollment_status: EnrollmentStatus.ENROLLED,
+  student_status: StudentStatus.ACTIVE,
 };
 
 describe("useUserClasses", () => {
@@ -62,9 +65,9 @@ describe("useUserClasses", () => {
 
     expect(result.current.originalClasses).toHaveLength(1);
     expect(result.current.classes.length).toBe(3); // all + 1 + non-class
-    expect(result.current.classes[0].id).toBe("all");
-    expect(result.current.classes[1].id).toBe("class-1");
-    expect(result.current.classes[2].id).toBe("non-class");
+    expect(result.current.classes[0].user_class.id).toBe("all");
+    expect(result.current.classes[1].user_class.id).toBe("class-1");
+    expect(result.current.classes[2].user_class.id).toBe("non-class");
   });
 
   it("handles missing user ID", async () => {
@@ -93,7 +96,9 @@ describe("useUserClasses", () => {
 
     expect(result.current.selectedClassId).toBe("class-1");
     expect(result.current.selectedClassType).toBe("class");
-    expect(result.current.selectedClass?.userClass.classTitle).toBe("Physics");
+    expect(result.current.selectedClass?.user_class.class_title).toBe(
+      "Physics"
+    );
   });
 
   it("handles API error", async () => {
@@ -206,7 +211,7 @@ describe("useUserClassStatus", () => {
     });
     expect(result.current.selectedClassId).toBe("all");
     expect(result.current.selectedClassType).toBe("all");
-    expect(result.current.selectedClass?.userClass.classTitle).toBe("All");
+    expect(result.current.selectedClass?.user_class.class_title).toBe("All");
 
     // Select "non-class"
     act(() => {
@@ -214,7 +219,7 @@ describe("useUserClassStatus", () => {
     });
     expect(result.current.selectedClassId).toBe("non-class");
     expect(result.current.selectedClassType).toBe("non-class");
-    expect(result.current.selectedClass?.userClass.classTitle).toBe(
+    expect(result.current.selectedClass?.user_class.class_title).toBe(
       "Non-class Activities"
     );
   });

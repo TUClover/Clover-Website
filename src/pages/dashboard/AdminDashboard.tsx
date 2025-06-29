@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAllUsers } from "../hooks/useAllUsers";
-import { useUserClasses, useUserClassStatus } from "../hooks/useUserClasses";
+import { useAllUsers } from "../../hooks/useAllUsers";
+import { useUserClasses, useUserClassStatus } from "../../hooks/useUserClasses";
 import {
   Chart as ChartJS,
   LineElement,
@@ -10,15 +10,15 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { UserClass, UserData, UserRole } from "../api/types/user";
+import { ClassData, User, UserRole } from "../../api/types/user";
 import "react-datepicker/dist/react-datepicker.css";
-import { useUserActivity } from "../hooks/useUserActivity";
-import UserSideBar from "../components/UsersSideBar";
-import UserDetailsPanel from "../components/UserDetailsPanel";
-import DataDownload from "../components/DataDownload";
-import { useInstructorClasses } from "../hooks/useInstructorClasses";
+import { useUserActivity } from "../../hooks/useUserActivity";
+import UserSideBar from "../../components/UsersSideBar";
+import UserDetailsPanel from "../../components/UserDetailsPanel";
+import DataDownload from "../../components/DataDownload";
+import { useInstructorClasses } from "../../hooks/useInstructorClasses";
 import { toast } from "sonner";
-import StudentDashboardCard from "../components/StudentDashboardCard";
+import StudentDashboardCard from "../../components/StudentDashboardCard";
 
 ChartJS.register(
   LineElement,
@@ -37,10 +37,10 @@ ChartJS.register(
  * @returns {JSX.Element} The AdminDashboard component.
  */
 export const AdminDashboard = () => {
-  const [selectedUsers, setSelectedUsers] = useState<UserData[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedClass, setSelectedClass] = useState<UserClass | null>(null);
+  const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
   const selectedClassId = selectedClass?.id ?? "all";
   const selectedClassType =
     selectedClass?.id === "all"
@@ -120,8 +120,8 @@ export const AdminDashboard = () => {
       {selectedClass && selectedUserId && (
         <StudentDashboardCard
           student={{
-            fullName: `${selectedUsers[0].firstName} ${selectedUsers[0].lastName}`,
-            classTitle: selectedClass.classTitle,
+            fullName: `${selectedUsers[0].first_name} ${selectedUsers[0].last_name}`,
+            classTitle: selectedClass.class_title,
             studentStatus:
               selectedClassId !== "all" && selectedClassId !== "non-class"
                 ? studentStatus

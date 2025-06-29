@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllUsers } from "../api/user";
-import { UserData } from "../api/types/user";
+import { User } from "../api/types/user";
 
 /**
  * Custom hook to fetch all users.
@@ -8,7 +8,7 @@ import { UserData } from "../api/types/user";
  * @returns { users: UserData[], isLoading: boolean, error: string | null }
  */
 export const useAllUsers = () => {
-  const [users, setUsers] = useState<UserData[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

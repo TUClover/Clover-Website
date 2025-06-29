@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
-import { StudentStatus, UserClass } from "../api/types/user";
+import {
+  EnrollmentStatus,
+  StudentStatus,
+  UserClassInfo,
+} from "../api/types/user";
 import { useAuth } from "./useAuth";
 import { getUserClasses } from "../api/user";
 import { supabase } from "../supabaseClient";
-
-/**
- * UserClassInfo interface represents the structure of user class information.
- * It contains the user class and the student's status in that class.
- */
-export interface UserClassInfo {
-  userClass: UserClass;
-  studentStatus: StudentStatus;
-}
 
 /**
  * Custom hook to fetch user classes based on user ID or authenticated user.
@@ -32,10 +27,14 @@ export const useUserClasses = (userID?: string | null) => {
     const currentUserId = userID ?? user?.id;
     if (!currentUserId) {
       setLoading(false);
+      setClasses([]);
       return;
     }
 
     const fetchClasses = async () => {
+      setLoading(true);
+      setClasses([]);
+
       try {
         const { data, error } = await getUserClasses(currentUserId);
         if (error) {
@@ -53,24 +52,44 @@ export const useUserClasses = (userID?: string | null) => {
     fetchClasses();
   }, [userID, user?.id]);
 
-  const specialClasses = [
+  const specialClasses: UserClassInfo[] = [
     {
-      id: "all",
-      classTitle: "All",
-      classCode: "",
-      classHexColor: "#e5e5e5",
+      user_class: {
+        id: "all",
+        created_at: "",
+        class_title: "All",
+        class_code: "",
+        instructor_id: "",
+        class_hex_color: "#e5e5e5",
+        class_image_cover: "",
+        class_description: "",
+        students: [],
+      },
+      joined_at: "",
+      enrollment_status: EnrollmentStatus.ENROLLED,
+      student_status: StudentStatus.ACTIVE,
     },
     {
-      id: "non-class",
-      classTitle: "Non-class Activities",
-      classCode: "",
-      classHexColor: "#404040",
+      user_class: {
+        id: "non-class",
+        created_at: "",
+        class_title: "Non-class Activities",
+        class_code: "",
+        instructor_id: "",
+        class_hex_color: "#404040",
+        class_image_cover: "",
+        class_description: "",
+        students: [],
+      },
+      joined_at: "",
+      enrollment_status: EnrollmentStatus.ENROLLED,
+      student_status: StudentStatus.ACTIVE,
     },
   ];
 
-  const modifiedClasses = [
+  const modifiedClasses: UserClassInfo[] = [
     specialClasses[0],
-    ...classes.map((c) => c.userClass),
+    ...classes,
     specialClasses[1],
   ];
 
@@ -86,12 +105,8 @@ export const useUserClasses = (userID?: string | null) => {
 
   const selectedClass =
     selectedClassType === "class"
-      ? classes.find((c) => c.userClass.id === selectedClassId) || null
-      : {
-          userClass: specialClasses.find((c) => c.id === selectedClassType)!,
-          studentStatus: null,
-        };
-
+      ? classes.find((c) => c.user_class.id === selectedClassId) || null
+      : specialClasses.find((c) => c.user_class.id === selectedClassType)!;
   return {
     classes: modifiedClasses,
     originalClasses: classes,

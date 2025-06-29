@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserData, UserRole } from "../api/types/user";
+import { User, UserRole } from "../api/types/user";
 import AdminProfile from "./AdminProfile";
 import InstructorProfile from "./InstructorProfile";
 import StudentProfile from "./StudentProfile";
@@ -14,7 +14,7 @@ export const Profile = ({
   userData,
   loading,
 }: {
-  userData: UserData | null;
+  userData: User | null;
   loading: boolean;
 }) => {
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
@@ -81,7 +81,7 @@ export const EmptyProfileView = () => {
 };
 
 type ProfileHeaderProps = {
-  userData: UserData | null;
+  userData: User | null;
   selectedRole?: UserRole | null;
   onRoleChange?: (role: UserRole) => void;
 };

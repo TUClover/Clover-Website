@@ -22,7 +22,7 @@ import { Plus } from "lucide-react";
 import { createClass } from "../api/classes";
 import { Textarea } from "../components/ui/textarea";
 import { toast } from "sonner";
-import { UserClass } from "../api/types/user";
+import { ClassData } from "../api/types/user";
 
 // Color Options for the class color picker
 const colorOptions = [
@@ -58,13 +58,14 @@ export const CreateNewClassDialog = () => {
   });
 
   const onSubmit = async () => {
-    const newClass: UserClass = {
-      classTitle: form.getValues("classTitle"),
-      classCode: form.getValues("classCode"),
-      instructorId: userData?.id,
-      classHexColor: form.getValues("classHexColor"),
-      classImageCover: null,
-      classDescription: form.getValues("classDescription") || null,
+    const newClass: ClassData = {
+      class_title: form.getValues("classTitle"),
+      class_code: form.getValues("classCode"),
+      instructor_id: userData?.id,
+      class_hex_color: form.getValues("classHexColor"),
+      class_image_cover: null,
+      class_description: form.getValues("classDescription") || null,
+      students: [],
     };
 
     const result = await createClass(newClass);
@@ -77,7 +78,7 @@ export const CreateNewClassDialog = () => {
     }
 
     toast.success(
-      `Your class ${newClass.classTitle} has been created successfully!`
+      `Your class ${newClass.class_title} has been created successfully!`
     );
 
     setOpen(false);

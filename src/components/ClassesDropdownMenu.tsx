@@ -6,10 +6,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { UserClass } from "../api/types/user";
+import { ClassData } from "../api/types/user";
 
 interface ClassesDropdownMenuProps {
-  classes: UserClass[];
+  classes: ClassData[];
   onClassSelect: (selection: {
     id: string | null;
     type: "all" | "class" | "non-class";
@@ -62,20 +62,20 @@ export const ClassesDropdownMenu = ({
           {classes.map((cls) => (
             <SelectItem key={cls.id} value={cls.id || "all"}>
               <div className="flex items-center gap-2">
-                {cls.classHexColor && (
+                {cls.class_hex_color && (
                   <div
                     className="w-3 h-3 rounded-full shrink-0"
-                    style={{ backgroundColor: cls.classHexColor }}
+                    style={{ backgroundColor: cls.class_hex_color }}
                   />
                 )}
                 <span>
-                  {cls.classTitle}{" "}
+                  {cls.class_title}{" "}
                   <span
                     className={
                       cls.id === "all" || cls.id === "non-class" ? "hidden" : ""
                     }
                   >
-                    - {cls.classCode}
+                    - {cls.class_code}
                   </span>
                 </span>
               </div>

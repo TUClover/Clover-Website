@@ -1,17 +1,21 @@
 import { useUserData } from "../hooks/useUserData";
 import { Loader2 } from "lucide-react";
 import StudentStatusBadge from "./StudentStatusBadge";
-import { UserClassInfo } from "../hooks/useUserClasses";
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import PingDot from "./PingDot";
-import { StudentStatus, UserClass, UserData } from "../api/types/user";
+import {
+  StudentStatus,
+  ClassData,
+  User,
+  UserClassInfo,
+} from "../api/types/user";
 
 type ClassCardProps = {
-  classInfo: UserClass | UserClassInfo;
+  classInfo: ClassData | UserClassInfo;
   onSelect: (
-    userClass: UserClass,
+    userClass: ClassData,
     studentStatus?: StudentStatus,
-    instructorData?: UserData
+    instructorData?: User
   ) => void;
   isInstructor?: boolean;
 };
@@ -31,30 +35,30 @@ export const ClassInfoCard = ({
   isInstructor = false,
 }: ClassCardProps) => {
   const isUserClassInfo = (
-    info: UserClass | UserClassInfo
+    info: ClassData | UserClassInfo
   ): info is UserClassInfo => {
-    return (info as UserClassInfo).userClass !== undefined;
+    return (info as UserClassInfo).user_class !== undefined;
   };
 
   const userClass = isUserClassInfo(classInfo)
-    ? classInfo.userClass
+    ? classInfo.user_class
     : classInfo;
 
   const studentStatus = isUserClassInfo(classInfo)
-    ? classInfo.studentStatus
+    ? classInfo.student_status
     : undefined;
 
   const {
-    instructorId,
-    classTitle,
-    classDescription,
-    classImageCover,
-    classHexColor,
+    instructor_id,
+    class_title,
+    class_description,
+    class_image_cover,
+    class_hex_color,
     id,
   } = userClass;
 
   const { userData: instructorData, loading: userDataLoading } =
-    useUserData(instructorId);
+    useUserData(instructor_id);
   const { waitlistedStudents } = useClassStudentsInfo(id as string);
 
   if (userDataLoading) {
@@ -77,16 +81,16 @@ export const ClassInfoCard = ({
           {isInstructor &&
             waitlistedStudents &&
             waitlistedStudents.length > 0 && <PingDot />}
-          {classImageCover ? (
+          {class_image_cover ? (
             <img
-              src={classImageCover}
-              alt={classTitle}
+              src={class_image_cover}
+              alt={class_title}
               className="object-cover w-full h-full"
             />
           ) : (
             <div
               className="h-full w-full flex items-center justify-center"
-              style={{ backgroundColor: classHexColor || "#E5E7EB" }}
+              style={{ backgroundColor: class_hex_color || "#E5E7EB" }}
             />
           )}
           {!isInstructor && (
@@ -100,9 +104,9 @@ export const ClassInfoCard = ({
           )}
         </div>
         <div className="p-6 flex flex-col flex-1">
-          <h3 className="text-lg font-bold mb-2">{classTitle}</h3>
+          <h3 className="text-lg font-bold mb-2">{class_title}</h3>
           <p className="text-gray-500 mb-4 line-clamp-2 flex-1 text-sm">
-            {classDescription || "No description available."}
+            {class_description || "No description available."}
           </p>
           <div className="space-y-4 mt-auto">
             {instructorData && (
@@ -112,7 +116,7 @@ export const ClassInfoCard = ({
                     <div className="size-8 rounded-full overflow-hidden border-white dark:border-slate-700">
                       <img
                         src={instructorData.avatar_url ?? ""}
-                        alt={`${instructorData.firstName} ${instructorData.lastName}`}
+                        alt={`${instructorData.first_name} ${instructorData.last_name}`}
                         className="w-full h-full rounded-full object-cover"
                       />
                     </div>
@@ -120,14 +124,14 @@ export const ClassInfoCard = ({
                     <div
                       className="size-8 rounded-full flex items-center justify-center font-medium text-white shrink-0"
                       style={{
-                        backgroundColor: classHexColor || "#E5E7EB",
+                        backgroundColor: class_hex_color || "#E5E7EB",
                       }}
                     >
-                      {instructorData.firstName?.charAt(0).toUpperCase()}
+                      {instructorData.first_name?.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <span className="text-sm text-muted-foreground ml-3">
-                    by {instructorData.firstName} {instructorData.lastName}
+                    by {instructorData.first_name} {instructorData.last_name}
                   </span>
                 </div>
               </div>

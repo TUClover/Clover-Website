@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { EnrollmentStatus } from "../types";
 import {
   Collapsible,
   CollapsibleContent,
@@ -7,11 +6,11 @@ import {
 } from "./ui/collapsible";
 import { ChevronDownCircle, ChevronUpCircle } from "lucide-react";
 import { Button } from "./ui/button";
-import { UserData } from "../api/types/user";
+import { EnrollmentStatus, User } from "../api/types/user";
 
 type StudentListSectionProps = {
   title: string;
-  students: UserData[];
+  students: User[];
   variant: EnrollmentStatus;
   onRemove?: (id: string) => void;
   onAccept?: (id: string) => void;
@@ -24,7 +23,7 @@ type StudentListSectionProps = {
  * with their details and actions based on the enrollment status.
  * @param {StudentListSectionProps} param0 - The props for the StudentListSection component
  * @param {string} param0.title - The title of the section
- * @param {UserData[]} param0.students - The list of students to display
+ * @param {User[]} param0.students - The list of students to display
  * @param {EnrollmentStatus} param0.variant - The variant of the section (enrolled or waitlisted)
  * @param {(string) => void} param0.onRemove - The function to call when removing a student
  * @param {(string) => void} param0.onAccept - The function to call when accepting a student
@@ -88,7 +87,7 @@ export const StudentListSection = ({
                   <tr key={student.id}>
                     <td className="px-4 py-2 w-12">{index + 1}</td>
                     <td className="px-4 py-2 w-1/4 truncate">
-                      {student.firstName} {student.lastName}
+                      {student.first_name} {student.last_name}
                     </td>
                     <td className="px-4 py-2 w-1/3 truncate">
                       {student.email}

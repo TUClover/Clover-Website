@@ -1,4 +1,4 @@
-import { UserRole, UserSettings } from "../../api/types/user";
+import { UserMode, UserRole, UserSettings } from "../../api/types/user";
 import {
   saveUserSettings,
   getUserData,
@@ -28,20 +28,14 @@ describe("user-api", () => {
 
   it("successfully saves user settings", async () => {
     global.fetch = jest.fn().mockResolvedValueOnce({ ok: true } as Response);
-
-    const result = await saveUserSettings({
-      user_id: "user-1",
-      settings: {
-        bug_percentage: 10,
-        show_notifications: true,
-        give_suggestions: true,
-        enable_quiz: true,
-        active_threshold: 3,
-        suspend_threshold: 2,
-        pass_rate: 80,
-        suspend_rate: 40,
-      },
-    });
+    const user_id = "user-1";
+    const settings = {
+      bug_percentage: 10,
+      show_notifications: true,
+      enable_quiz: true,
+      mode: UserMode.BLOCK,
+    };
+    const result = await saveUserSettings(user_id, settings);
 
     expect(result).toBe(true);
   });
@@ -51,11 +45,10 @@ describe("user-api", () => {
       ok: false,
       text: async () => "Failed",
     } as Response);
+    const user_id = "user-1";
+    const settings = {} as UserSettings;
 
-    const result = await saveUserSettings({
-      user_id: "user-1",
-      settings: {} as UserSettings,
-    });
+    const result = await saveUserSettings(user_id, settings);
 
     expect(result).toBe(false);
   });
@@ -183,7 +176,7 @@ describe("user-api", () => {
     } as Response);
 
     const result = await getUserClasses("user-1");
-    expect(result.data?.[0].userClass.classTitle).toBe("Math");
+    expect(result.data?.[0].user_class.class_title).toBe("Math");
   });
 
   it("handles getUserClasses with 404", async () => {
@@ -265,20 +258,16 @@ describe("user-api", () => {
 
     const result = await updateUser("u1", {
       id: "u1",
-      createdAt: "now",
-      firstName: "New",
-      lastName: "Name",
+      created_at: "now",
+      first_name: "New",
+      last_name: "Name",
       email: "new@example.com",
       role: UserRole.STUDENT,
       settings: {
         bug_percentage: 10,
         show_notifications: true,
-        give_suggestions: true,
         enable_quiz: true,
-        active_threshold: 3,
-        suspend_threshold: 2,
-        pass_rate: 80,
-        suspend_rate: 40,
+        mode: UserMode.BLOCK,
       },
       status: "ACTIVE",
       last_updated_at: "now",
@@ -306,11 +295,10 @@ describe("user-api", () => {
 
   it("handles saveUserSettings network error", async () => {
     global.fetch = jest.fn().mockRejectedValueOnce(new Error("Network error"));
+    const user_id = "user-1";
+    const settings = {} as UserSettings;
 
-    const result = await saveUserSettings({
-      user_id: "user-1",
-      settings: {} as UserSettings,
-    });
+    const result = await saveUserSettings(user_id, settings);
 
     expect(result).toBe(false);
   });

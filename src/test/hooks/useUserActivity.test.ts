@@ -4,7 +4,7 @@ import { useUserActivity } from "../../hooks/useUserActivity";
 import { getUserActivity } from "../../api/user";
 import { calculateProgress } from "../../utils/calculateProgress";
 import { LogEvent } from "../../api/types/event";
-import { UserActivityLogItem } from "../../types";
+import { UserActivityLogItem } from "../../api/types/user";
 
 // Mocks
 jest.mock("../../api/user", () => ({
@@ -22,27 +22,57 @@ const mockCalculateProgress = calculateProgress as jest.MockedFunction<
   typeof calculateProgress
 >;
 
-const mockActivities: UserActivityLogItem[] = [
+export const mockActivities: UserActivityLogItem[] = [
   {
-    id: 1,
-    event: LogEvent.USER_ACCEPT,
-    timestamp: "2024-01-01T00:00:00Z",
-    timeLapse: 1000,
-    metadata: { userClassId: "class-1", userId: "user-123", hasBug: false },
+    log_id: 1,
+    log_created_at: "2024-01-01T00:00:00Z",
+    event: "USER_ACCEPT",
+    duration: 1000,
+    user_id: "user-123",
+    class_id: "class-1",
+    suggestion_id: 101,
+    suggestion_created_at: "2023-12-31T23:59:00Z",
+    prompt: "How do I write a for loop in Python?",
+    suggestion_array: ["for i in range(10):", "    print(i)"],
+    has_bug: false,
+    model: "gpt-4",
+    explanation: "This prints numbers 0-9 using a Python for-loop.",
+    vendor: "openai",
+    language: "python",
   },
   {
-    id: 2,
-    event: LogEvent.USER_REJECT,
-    timestamp: "2024-01-02T00:00:00Z",
-    timeLapse: 1200,
-    metadata: { userClassId: "class-2", userId: "user-123", hasBug: true },
+    log_id: 2,
+    log_created_at: "2024-01-02T00:00:00Z",
+    event: "USER_REJECT",
+    duration: 1200,
+    user_id: "user-123",
+    class_id: "class-2",
+    suggestion_id: 102,
+    suggestion_created_at: "2024-01-01T23:58:00Z",
+    prompt: "What's the syntax for a function in JavaScript?",
+    suggestion_array: ["function greet() {", "  console.log('Hi');", "}"],
+    has_bug: true,
+    model: "gemini-pro",
+    explanation: null,
+    vendor: "google",
+    language: "javascript",
   },
   {
-    id: 3,
-    event: "SOME_OTHER_EVENT",
-    timestamp: "2024-01-03T00:00:00Z",
-    timeLapse: 900,
-    metadata: { userId: "user-123" },
+    log_id: 3,
+    log_created_at: "2024-01-03T00:00:00Z",
+    event: "SYSTEM_EVENT",
+    duration: 900,
+    user_id: "user-456",
+    class_id: "class-3",
+    suggestion_id: 103,
+    suggestion_created_at: "2024-01-03T00:10:00Z",
+    prompt: "Explain list comprehensions in Python.",
+    suggestion_array: ["[x for x in range(5)]"],
+    has_bug: false,
+    model: "claude-3",
+    explanation: "Generates a list with numbers 0-4 using list comprehension.",
+    vendor: "anthropic",
+    language: "python",
   },
 ];
 
@@ -87,7 +117,6 @@ describe("useUserActivity", () => {
       data: [
         {
           ...mockActivities[0],
-          metadata: { ...mockActivities[0].metadata, userClassId: undefined },
         },
       ],
       error: undefined,
@@ -99,7 +128,7 @@ describe("useUserActivity", () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.userActivity).toHaveLength(1);
-    expect(result.current.userActivity[0].metadata.userClassId).toBeUndefined();
+    expect(result.current.userActivity[0].class_id).toBeUndefined();
   });
 
   it("filters by selectedClassType = 'class' and selectedClassId", async () => {
@@ -114,7 +143,7 @@ describe("useUserActivity", () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.userActivity).toHaveLength(1);
-    expect(result.current.userActivity[0].metadata.userClassId).toBe("class-1");
+    expect(result.current.userActivity[0].class_id).toBe("class-1");
   });
 
   it("handles error from API", async () => {

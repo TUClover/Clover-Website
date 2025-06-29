@@ -21,7 +21,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { toast } from "sonner";
-import { UserClass, UserData } from "../api/types/user";
+import { ClassData, User } from "../api/types/user";
 
 /**
  * RegisterClassDialog component allows users to search and register for classes.
@@ -34,10 +34,10 @@ export const RegisterClassDialog = () => {
   const { userData } = useUserData();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [results, setResults] = useState<UserClass[]>([]);
+  const [results, setResults] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(false);
   const [classId, setClassId] = useState<string | null>(null);
-  const [instructor, setInstructor] = useState<UserData | null>(null);
+  const [instructor, setInstructor] = useState<User | null>(null);
 
   const [enrollmentStatus, setEnrollmentStatus] = useState<
     Record<string, string>
@@ -85,7 +85,7 @@ export const RegisterClassDialog = () => {
           (classItem) => classItem.id === classId
         );
         const { data, error } = await getUserData(
-          foundClass?.instructorId || ""
+          foundClass?.instructor_id || ""
         );
 
         if (data) {
@@ -119,24 +119,13 @@ export const RegisterClassDialog = () => {
     if (error) {
       setResults([]);
     } else {
-      const camelCaseResults = (data ?? []).map((cls) => ({
-        id: cls.id,
-        classTitle: cls.class_title,
-        classCode: cls.class_code,
-        instructorId: cls.instructor_id,
-        classHexColor: cls.class_hex_color,
-        classImageCover: cls.class_image_cover,
-        createdAt: cls.created_at,
-        classDescription: cls.class_description,
-      }));
-
-      setResults(camelCaseResults);
+      setResults(data);
     }
 
     setLoading(false);
   };
 
-  const registerForClass = async (cls: UserClass) => {
+  const registerForClass = async (cls: ClassData) => {
     setRegisterLoading(true);
 
     try {
@@ -152,8 +141,8 @@ export const RegisterClassDialog = () => {
       setOpen(false);
       setSearch("");
       setResults([]);
-      console.log("Registered to class:", cls.classTitle);
-      toast.success(`You have successfully registered for ${cls.classTitle}!`);
+      console.log("Registered to class:", cls.class_title);
+      toast.success(`You have successfully registered for ${cls.class_title}!`);
     } catch (error) {
       console.error("Error registering for class:", error);
       toast.error("Error registering for class. Please try again later.");
@@ -216,16 +205,16 @@ export const RegisterClassDialog = () => {
                   >
                     <div
                       className="p-4 rounded-lg border shadow cursor-pointer flex justify-between items-center"
-                      style={{ borderLeft: `6px solid ${cls.classHexColor}` }}
+                      style={{ borderLeft: `6px solid ${cls.class_hex_color}` }}
                     >
                       <CollapsibleTrigger asChild>
                         <div className="flex justify-between w-full items-center">
                           <div>
                             <div className="font-medium dark:text-white">
-                              {cls.classTitle}
+                              {cls.class_title}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {cls.classCode}
+                              {cls.class_code}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -258,7 +247,7 @@ export const RegisterClassDialog = () => {
                             Instructor
                           </h3>{" "}
                           <p>
-                            {instructor?.firstName} {instructor?.lastName}
+                            {instructor?.first_name} {instructor?.last_name}
                           </p>
                         </div>
                         <div className="space-y-1">
@@ -266,7 +255,8 @@ export const RegisterClassDialog = () => {
                             Description
                           </h3>{" "}
                           <p>
-                            {cls.classDescription || "No description available"}
+                            {cls.class_description ||
+                              "No description available"}
                           </p>
                         </div>
                       </motion.div>

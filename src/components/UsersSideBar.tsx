@@ -1,12 +1,12 @@
 import { useState, useMemo, useRef } from "react";
-import { UserData } from "../api/types/user";
+import { User } from "../api/types/user";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
 type UserSideBarProps = {
-  users: UserData[];
-  selectedUsers: UserData[];
-  onSelectUser: (user: UserData) => void;
-  onSetSelectedUsers?: (users: UserData[]) => void;
+  users: User[];
+  selectedUsers: User[];
+  onSelectUser: (user: User) => void;
+  onSetSelectedUsers?: (users: User[]) => void;
   loading?: boolean;
   setSelectedUserId?: (userId: string) => void;
 };
@@ -16,10 +16,10 @@ type UserSideBarProps = {
  * It allows users to search for specific users and select/deselect them.
  * It also supports selecting a range of users using Shift+Click.
  * The component is styled with Tailwind CSS and includes loading states.
- * @param {UserData[]} users - The list of users to display.
- * @param {UserData[]} selectedUsers - The list of currently selected users.
- * @param {(user: UserData) => void} onSelectUser - Callback function to handle user selection.
- * @param {(users: UserData[]) => void} [onSetSelectedUsers] - Optional callback to set selected users.
+ * @param {User[]} users - The list of users to display.
+ * @param {User[]} selectedUsers - The list of currently selected users.
+ * @param {(user: User) => void} onSelectUser - Callback function to handle user selection.
+ * @param {(users: User[]) => void} [onSetSelectedUsers] - Optional callback to set selected users.
  * @param {boolean} [loading=false] - Optional loading state for the component.
  * @returns {JSX.Element} The rendered UserSideBar component.
  */
@@ -38,14 +38,14 @@ export const UserSideBar: React.FC<UserSideBarProps> = ({
     if (!searchQuery) return users;
 
     const tokens = searchQuery.trim().split(/\s+/);
-    const filters: Partial<Record<keyof UserData, string>> = {};
+    const filters: Partial<Record<keyof User, string>> = {};
     const keywords: string[] = [];
 
     for (const token of tokens) {
       if (token.startsWith("/")) {
         const [key, value] = token.slice(1).split(":");
         if (key && value) {
-          filters[key as keyof UserData] = value.toLowerCase();
+          filters[key as keyof User] = value.toLowerCase();
         }
       } else {
         keywords.push(token.toLowerCase());
@@ -57,12 +57,12 @@ export const UserSideBar: React.FC<UserSideBarProps> = ({
         keywords.length === 0 ||
         keywords.some(
           (kw) =>
-            `${user.firstName} ${user.lastName}`.toLowerCase().includes(kw) ||
+            `${user.first_name} ${user.last_name}`.toLowerCase().includes(kw) ||
             user.email?.toLowerCase().includes(kw)
         );
 
       const allFiltersMatch = (
-        Object.entries(filters) as [keyof UserData, string][]
+        Object.entries(filters) as [keyof User, string][]
       ).every(([key, value]) => {
         const userValue = user[key];
         return (
@@ -184,18 +184,18 @@ export const UserSideBar: React.FC<UserSideBarProps> = ({
                       {user.avatar_url ? (
                         <img
                           src={user.avatar_url ?? ""}
-                          alt={`${user.firstName} ${user.lastName}`}
+                          alt={`${user.first_name} ${user.last_name}`}
                           className="w-full h-full rounded-full"
                         />
                       ) : (
                         <AvatarFallback className="bg-[#50B498] text-white text-lg font-semibold">
-                          {user?.firstName.charAt(0).toUpperCase()}
+                          {user?.first_name.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate">
-                        {user.firstName} {user.lastName}
+                        {user.first_name} {user.last_name}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
                         {user.email}

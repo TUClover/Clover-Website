@@ -1,10 +1,5 @@
 import { Loader2, Star } from "lucide-react";
-import {
-  StudentStatus,
-  UserClass,
-  UserData,
-  UserRole,
-} from "../api/types/user";
+import { ClassData, StudentStatus, User, UserRole } from "../api/types/user";
 import {
   Carousel,
   CarouselContent,
@@ -25,12 +20,12 @@ import ProfileCard from "../components/ProfileCard";
  * @param { userData } - The user data of the instructor.
  * @returns {JSX.Element} - The rendered component.
  */
-export const InstructorProfile = ({ userData }: { userData: UserData }) => {
+export const InstructorProfile = ({ userData }: { userData: User }) => {
   const { originalClasses, loading: userClassLoading } = useInstructorClasses();
   const [selectedClass, setSelectedClass] = useState<{
-    userClass: UserClass;
+    userClass: ClassData;
     studentStatus?: StudentStatus;
-    instructorData?: UserData;
+    instructorData?: User;
   } | null>(null);
 
   if (userClassLoading) {
@@ -42,9 +37,9 @@ export const InstructorProfile = ({ userData }: { userData: UserData }) => {
   }
 
   const handleClassSelect = (
-    userClass: UserClass,
+    userClass: ClassData,
     studentStatus?: StudentStatus,
-    instructorData?: UserData
+    instructorData?: User
   ) => {
     setSelectedClass({
       userClass,
@@ -132,7 +127,7 @@ export const InstructorProfile = ({ userData }: { userData: UserData }) => {
       {selectedClass && (
         <ClassDetails
           userClass={selectedClass.userClass}
-          instructorData={selectedClass.instructorData as UserData}
+          instructorData={selectedClass.instructorData as User}
           onClose={handleCloseDetails}
         />
       )}

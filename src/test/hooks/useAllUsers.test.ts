@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { useAllUsers } from "../../hooks/useAllUsers";
 import { getAllUsers } from "../../api/user";
-import { UserData, UserRole } from "../../api/types/user";
+import { User, UserMode, UserRole } from "../../api/types/user";
 
 jest.mock("../../api/user");
 const mockGetAllUsers = getAllUsers as jest.Mock;
@@ -16,23 +16,19 @@ describe("useAllUsers", () => {
     jest.clearAllMocks();
   });
 
-  const mockUsers: UserData[] = [
+  const mockUsers: User[] = [
     {
       id: "1",
-      createdAt: "2025-01-01T00:00:00Z",
-      firstName: "Jane",
-      lastName: "Doe",
+      created_at: "2025-01-01T00:00:00Z",
+      first_name: "Jane",
+      last_name: "Doe",
       email: "jane.doe@example.com",
       role: UserRole.STUDENT,
       settings: {
         bug_percentage: 5,
         show_notifications: true,
-        give_suggestions: true,
         enable_quiz: true,
-        active_threshold: 5,
-        suspend_threshold: 10,
-        pass_rate: 80,
-        suspend_rate: 30,
+        mode: UserMode.BLOCK,
       },
     },
   ];

@@ -5,6 +5,7 @@ import { parseISODate } from "../utils/timeConverter";
 import TimeIntervalDropDown from "./TimeIntervalDropDown";
 import InfoTooltip from "./InfoTooltip";
 import { Card } from "./ui/card";
+import { LogEvent } from "../api/types/event";
 
 /**
  * StackedBarChart component displays a stacked bar chart of user activity log items.
@@ -62,7 +63,7 @@ export const StackedBarChart = ({
   const dateMap: Record<string, { correct: number; incorrect: number }> = {};
 
   activities.forEach((activity) => {
-    const date = new Date(activity.timestamp);
+    const date = new Date(activity.log_created_at);
     const key = groupBy(date);
 
     if (!dateMap[key]) {
@@ -70,13 +71,12 @@ export const StackedBarChart = ({
     }
 
     const isCorrectCase1 =
-      activity.event === "USER_ACCEPT" && !activity.metadata.hasBug;
-    const isCorrectCase2 =
-      activity.event === "USER_REJECT" && activity.metadata.hasBug;
+      activity.event === LogEvent.SUGGESTION_ACCEPT && !activity.has_bug;
+    const isCorrectCase2 = activity.event === "USER_REJECT" && activity.has_bug;
     const isIncorrectCase1 =
-      activity.event === "USER_ACCEPT" && activity.metadata.hasBug;
+      activity.event === "USER_ACCEPT" && activity.has_bug;
     const isIncorrectCase2 =
-      activity.event === "USER_REJECT" && !activity.metadata.hasBug;
+      activity.event === "USER_REJECT" && !activity.has_bug;
 
     if (isCorrectCase1 || isCorrectCase2) {
       dateMap[key].correct += 1;

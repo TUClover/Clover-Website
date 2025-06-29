@@ -1,5 +1,5 @@
 import { AUTH_ENDPOINT } from "./endpoints";
-import { UserData } from "./types/user";
+import { User } from "./types/user";
 
 /**
  * Function to log in a user
@@ -16,7 +16,7 @@ export async function registerUser(
   lastName: string,
   email: string,
   password: string
-): Promise<{ userData?: UserData; error?: string }> {
+): Promise<{ userData?: User; error?: string }> {
   try {
     const response = await fetch(`${AUTH_ENDPOINT}/signup`, {
       method: "POST",
@@ -38,7 +38,7 @@ export async function registerUser(
       return { error: data.message };
     }
 
-    return { userData: data as UserData };
+    return { userData: data as User };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",

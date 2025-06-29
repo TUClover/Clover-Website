@@ -9,7 +9,7 @@ import { Toaster } from "./components/ui/sonner";
  */
 const RootLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-green-100 dark:bg-gradient-to-b dark:from-black dark:to-gray-800 text-black dark:text-white">
+    <div className="flex flex-col dark:bg-[#0a0a0a] min-h-screen text-text">
       {/* Navbar - Always at the top */}
       <NavBar />
 
@@ -23,7 +23,7 @@ const RootLayout = () => {
       </div>
 
       {/* Footer - Always at the bottom */}
-      <footer className="py-6 bg-gradient-to-t from-white to-green-100 dark:bg-gradient-to-t dark:from-black dark:to-gray-800 text-center text-sm text-gray-600 dark:text-gray-400">
+      <footer className="py-6 text-center text-sm text-gray-600 dark:text-gray-400">
         <p>© 2025 CLOVER</p>
         <p className="text-primary">TEAM 2</p>
       </footer>

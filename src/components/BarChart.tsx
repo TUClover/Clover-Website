@@ -1,5 +1,5 @@
 import { Bar } from "react-chartjs-2";
-import { AISuggestion } from "../api/types/suggestion";
+import { Suggestion } from "../api/types/suggestion";
 import { useEffect, useState } from "react";
 
 /**
@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
  * @param {AISuggestion[]} props.activities - The user activity data to be displayed in the chart.
  * @return {JSX.Element} - A React component that renders a bar chart of user activity.
  **/
-export const BarChart = ({ activities }: { activities: AISuggestion[] }) => {
+export const BarChart = ({ activities }: { activities: Suggestion[] }) => {
   // Aggregate user activity per day
   const activityMap: Record<string, number> = {};
 
