@@ -2,7 +2,7 @@ import { User, UserRole } from "../api/types/user";
 import { DeleteUserButton } from "../components/DeleteUserButton";
 import { EditUserButton } from "../components/EditUserButton";
 import { ResetPasswordButton } from "../components/ResetPasswordButton";
-import { Card, CardHeader, CardTitle } from "../components/ui/card";
+import { Card, CardTitle } from "../components/ui/card";
 import { Title } from "../components/ui/text";
 import UserSettings from "../components/UserSettings";
 
