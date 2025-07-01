@@ -1,5 +1,6 @@
 import React from "react";
 import { CLOVER, Paragraph, Title } from "../components/ui/text";
+import NavBar from "../components/NavBar";
 
 /**
  * About page component.
@@ -9,7 +10,8 @@ import { CLOVER, Paragraph, Title } from "../components/ui/text";
 export const About: React.FC = () => {
   return (
     <div className="flex-grow flex flex-col items-center justify-center width-container">
-      <section className="w-full flex flex-col items-center justify-center text-center px-6 pt-6 pb-12">
+      <NavBar />
+      <section className="w-full flex flex-col items-center justify-center text-center px-6 pt-24 pb-12">
         <Title>
           About <CLOVER />
         </Title>

@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import NavBar from "./components/NavBar";
 import { Toaster } from "./components/ui/sonner";
 
 /**
@@ -10,14 +9,11 @@ import { Toaster } from "./components/ui/sonner";
 const RootLayout = () => {
   return (
     <div className="flex flex-col dark:bg-[#0a0a0a] min-h-screen text-text">
-      {/* Navbar - Always at the top */}
-      <NavBar />
-
       <Toaster richColors position="top-right" />
 
       {/* Main Content - Takes up remaining space */}
-      <div className="flex-grow mt-24 p-6">
-        <div className="max-w-6xl mx-auto w-full">
+      <div className="flex-grow p-6">
+        <div className="mx-auto w-full">
           <Outlet />
         </div>
       </div>

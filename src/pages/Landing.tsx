@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardTitle } from "../components/ui/card";
 import { CLOVER, Header, Paragraph, Title } from "../components/ui/text";
 import { Button } from "../components/ui/button";
+import NavBar from "../components/NavBar";
 
 /**
  * Landing component for the CLOVER website.
@@ -10,8 +11,9 @@ import { Button } from "../components/ui/button";
 export const Landing: React.FC = () => {
   return (
     <div className="flex-grow flex flex-col items-center justify-center width-container">
+      <NavBar />
       {/* Hero Section */}
-      <section className="max-w-6xl flex flex-col items-center justify-center text-center px-6 pb-12">
+      <section className="max-w-6xl mt-24 flex flex-col items-center justify-center text-center px-6 pb-12">
         <br />
         <Title>
           Welcome to <CLOVER />
