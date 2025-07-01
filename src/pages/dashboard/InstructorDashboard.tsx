@@ -7,9 +7,10 @@ import { useInstructorClasses } from "../../hooks/useInstructorClasses";
 import StackedBarChart from "../../components/StackedBarChart";
 import CreateNewClassDialog from "../../components/CreateNewClassDialog";
 import StudentDataTable from "../../components/StudentDataTable";
-import { User } from "../../api/types/user";
+import { User, UserActivityLogItem } from "../../api/types/user";
 import InfoTooltip from "../../components/InfoTooltip";
 import { Card } from "../../components/ui/card";
+import { ProgressData } from "../../utils/calculateProgress";
 
 /**
  * InstructorDashboard component displays the instructor dashboard with class statistics and activity logs.
@@ -27,18 +28,18 @@ export const InstructorDashboard = ({ userData }: { userData: User }) => {
     selectedClassId
   );
 
-  const selectedClassTitle = classes.find(
-    (classItem) => classItem.id === selectedClassId
-  )?.class_title;
+  const selectedClassTitle =
+    classes.find((classItem) => classItem.id === selectedClassId)
+      ?.class_title ?? "";
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-4 gap-6">
+    <div>
+      <div className="grid grid-cols-4 gap-6 mb-8">
         <div className="col-span-1">
           <CreateNewClassDialog />
         </div>
         <div className="col-span-1" />
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-2 flex items-center justify-end">
           <ClassesDropdownMenu
             classes={classes}
             selectedId={selectedClassId}
@@ -46,160 +47,98 @@ export const InstructorDashboard = ({ userData }: { userData: User }) => {
           />
         </div>
       </div>
-      {classes.length > 1 ? (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <StatCard
-              title="Accepted"
-              value={progressData.totalAccepted}
-              tooltipContent="Total suggestions accepted by the user, including both correct and incorrect suggestions."
-            />
-            <StatCard
-              title="Correct"
-              value={progressData.correctSuggestions}
-              tooltipContent="Number of accepted suggestions that were actually correct (without bugs)."
-            />
-            <StatCard
-              title="Accuracy"
-              value={`${progressData.percentageCorrect.toFixed(2)}%`}
-              tooltipContent={`${progressData.percentageCorrect.toFixed(2)}% of accepted suggestions were correct (${progressData.correctSuggestions}/${progressData.totalAccepted})`}
-            />
-          </div>
-          <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-            <PieChart
-              correct={progressData.correctSuggestions}
-              incorrect={
-                progressData.totalAccepted - progressData.correctSuggestions
-              }
-            />
-            <LineChart
-              activities={
-                selectedClassId === "all" ? allActivity : classActivity
-              }
-            />
-          </div>
-          <StackedBarChart
-            activities={selectedClassId === "all" ? allActivity : classActivity}
-          />
-          <Card className="p-6">
-            <div className="flex items-center mb-2 gap-3">
-              <h2 className="text-md font-semibold text-primary">
-                Insights About Students
-              </h2>
-              <InfoTooltip>
-                <div className="text-sm space-y-2">
-                  <p>
-                    The table shows insights from{" "}
-                    <span className="text-primary font-semibold">
-                      {selectedClassId === "all"
-                        ? "all classes"
-                        : selectedClassTitle}
-                    </span>
-                    , summarizing student decisions on code suggestions and
-                    their accuracy.
-                  </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                    <StatCard
-                      title="Accepted"
-                      value={progressData.totalAccepted}
-                      tooltipContent="Total suggestions accepted by the user, including both correct and incorrect suggestions."
-                    />
-                    <StatCard
-                      title="Correct"
-                      value={progressData.correctSuggestions}
-                      tooltipContent="Number of accepted suggestions that were actually correct (without bugs)."
-                    />
-                    <StatCard
-                      title="Accuracy"
-                      value={`${progressData.percentageCorrect.toFixed(2)}%`}
-                      tooltipContent={`${progressData.percentageCorrect.toFixed(2)}% of accepted suggestions were correct (${progressData.correctSuggestions}/${progressData.totalAccepted})`}
-                    />
-                  </div>
-
-                  {/* Charts Row */}
-                  <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <PieChart
-                      correct={progressData.correctSuggestions}
-                      incorrect={
-                        progressData.totalAccepted -
-                        progressData.correctSuggestions
-                      }
-                    />
-                    <LineChart
-                      activities={
-                        selectedClassId === "all" ? allActivity : classActivity
-                      }
-                    />
-                  </div>
-
-                  <StackedBarChart
-                    activities={
-                      selectedClassId === "all" ? allActivity : classActivity
-                    }
-                  />
-                  <Card className="p-6">
-                    <div className="flex items-center mb-2 gap-3">
-                      <h2 className="text-md font-semibold text-primary">
-                        Insights About Students
-                      </h2>
-                      <InfoTooltip>
-                        <div className="text-sm space-y-2">
-                          <p>
-                            The table shows insights from{" "}
-                            <span className="text-primary font-semibold">
-                              {selectedClassId === "all"
-                                ? "all classes"
-                                : selectedClassTitle}
-                            </span>
-                            , summarizing student decisions on code suggestions
-                            and their accuracy.
-                          </p>
-
-                          <p className="text-xs text-muted-foreground">
-                            Click on any row to view student-specific
-                            suggestions and performance details.
-                          </p>
-                        </div>
-                      </InfoTooltip>
-                    </div>
-                    <StudentDataTable
-                      logs={
-                        selectedClassId === "all" ? allActivity : classActivity
-                      }
-                      classFilter={selectedClassId === "all" ? "all" : "class"}
-                    />
-                  </Card>
-                  <p className="text-xs text-muted-foreground">
-                    Click on any row to view student-specific suggestions and
-                    performance details.
-                  </p>
-                </div>
-              </InfoTooltip>
-            </div>
-            <StudentDataTable
-              logs={selectedClassId === "all" ? allActivity : classActivity}
-              classFilter={selectedClassId === "all" ? "all" : "class"}
-            />
-          </Card>
-        </>
+      {classes.length > 0 ? (
+        <ClassAnalytics
+          activities={selectedClassId === "all" ? allActivity : classActivity}
+          progressData={progressData}
+          classInfo={
+            selectedClassId === "all" ? "all classes" : selectedClassTitle
+          }
+        />
       ) : (
-        <>
-          <div className="flex justify-center ">
-            <div className="text-center card">
-              <h2 className="text-lg font-semibold text mb-4">
-                No activity found
-              </h2>
-              <p className="text-gray-500">
-                You have not created any classes yet. Please create a class to
-                view activity and insights.
-              </p>
-            </div>
+        <div className="flex justify-center mt-10">
+          <div className="text-center p-6 border rounded-lg">
+            <h2 className="text-lg font-semibold text mb-4">
+              No Activity Found
+            </h2>
+            <p className="text-muted-foreground">
+              You have not created any classes yet. Please create a class to
+              view activity and insights.
+            </p>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
 };
 
 export default InstructorDashboard;
+
+// You could place this in the same file or a new one.
+const ClassAnalytics = ({
+  activities,
+  progressData,
+  classInfo,
+}: {
+  activities: UserActivityLogItem[];
+  progressData: ProgressData;
+  classInfo: string;
+}) => (
+  <>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+      <StatCard
+        title="Accepted"
+        value={progressData.totalAccepted}
+        tooltipContent="Total suggestions accepted by the user, including both correct and incorrect suggestions."
+      />
+      <StatCard
+        title="Correct"
+        value={progressData.correctSuggestions}
+        tooltipContent="Number of accepted suggestions that were actually correct (without bugs)."
+      />
+      <StatCard
+        title="Accuracy"
+        value={`${progressData.percentageCorrect.toFixed(2)}%`}
+        tooltipContent={`${progressData.percentageCorrect.toFixed(
+          2
+        )}% of accepted suggestions were correct (${
+          progressData.correctSuggestions
+        }/${progressData.totalAccepted})`}
+      />
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+      <PieChart
+        correct={progressData.correctSuggestions}
+        incorrect={progressData.totalAccepted - progressData.correctSuggestions}
+      />
+      <LineChart activities={activities} />
+    </div>
+    <StackedBarChart activities={activities} />
+    <Card className="p-6 mt-8">
+      <div className="flex items-center mb-2 gap-3">
+        <h2 className="text-md font-semibold text-primary">
+          Insights About Students
+        </h2>
+        <InfoTooltip>
+          <div className="text-sm space-y-2">
+            <p>
+              The table shows insights from{" "}
+              <span className="text-primary font-semibold">{classInfo}</span>,
+              summarizing student decisions on code suggestions and their
+              accuracy.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Click on any row to view student-specific suggestions and
+              performance details.
+            </p>
+          </div>
+        </InfoTooltip>
+      </div>
+      <StudentDataTable
+        logs={activities}
+        classFilter={classInfo === "all classes" ? "all" : "class"}
+      />
+    </Card>
+  </>
+);

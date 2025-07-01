@@ -73,7 +73,7 @@ export async function getUserData(
     }
 
     return {
-      data: data,
+      data: data.user,
     };
   } catch (err) {
     return {

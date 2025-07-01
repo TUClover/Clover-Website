@@ -12,7 +12,7 @@ const RootLayout = () => {
       <Toaster richColors position="top-right" />
 
       {/* Main Content - Takes up remaining space */}
-      <div className="flex-grow p-6">
+      <div className="flex-grow">
         <div className="mx-auto w-full">
           <Outlet />
         </div>

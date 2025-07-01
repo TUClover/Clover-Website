@@ -25,16 +25,16 @@ export const useUserData = (userId?: string) => {
     const fetchUserData = async () => {
       try {
         setError(null);
-        const response = await getUserData(idToFetch);
-        if (response.error) throw new Error(response.error);
+        const { data, error } = await getUserData(idToFetch);
+        if (error) throw new Error(error);
 
-        if (!response.data) {
+        if (!data) {
           setUserData(null);
           setLoading(false);
           return;
         }
 
-        setUserData(response.data);
+        setUserData(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {

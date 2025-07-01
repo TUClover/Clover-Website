@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import {
+  BarChart2,
+  BookOpenText,
+  Users,
+  Activity,
+  Loader2,
+  LucideIcon,
+} from "lucide-react";
 import { User, UserRole } from "../../api/types/user";
 import cloverLogo from "../../assets/CLOVER.svg";
 
@@ -13,6 +20,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
   useSidebar,
 } from "../../components/ui/sidebar";
 import { CLOVER } from "../../components/ui/text";
@@ -34,6 +42,64 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
+import { Separator } from "../../components/ui/separator";
+import { Button } from "../../components/ui/button";
+
+type SideBarItem = {
+  id: string;
+  icon: LucideIcon;
+  name: string;
+  subheading: string;
+  roles: UserRole[];
+};
+
+const sidebarItems = [
+  {
+    id: "user-stats",
+    icon: Activity,
+    name: "User Statistics",
+    subheading: "Students",
+    roles: [
+      UserRole.DEV,
+      UserRole.ADMIN,
+      UserRole.INSTRUCTOR,
+      UserRole.STUDENT,
+    ],
+  },
+  {
+    id: "user-classes",
+    icon: Activity,
+    name: "My Classes",
+    subheading: "Students",
+    roles: [
+      UserRole.DEV,
+      UserRole.ADMIN,
+      UserRole.INSTRUCTOR,
+      UserRole.STUDENT,
+    ],
+  },
+  {
+    id: "instructor-classes",
+    icon: BookOpenText,
+    name: "Instructor Classes",
+    subheading: "Teaching",
+    roles: [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR],
+  },
+  {
+    id: "admin-users",
+    icon: Users,
+    name: "Admin Users",
+    subheading: "Administration",
+    roles: [UserRole.DEV, UserRole.ADMIN],
+  },
+  {
+    id: "app-stats",
+    icon: BarChart2,
+    name: "Application Statistics",
+    subheading: "Development",
+    roles: [UserRole.DEV],
+  },
+];
 
 const Dashboard = ({
   userData,
@@ -55,88 +121,31 @@ const Dashboard = ({
 
   const effectiveRole = selectedRole ?? userData.role;
 
-  const tabsByRole = {
-    [UserRole.DEV]: [
-      "user-stats",
-      "instructor-classes",
-      "admin-users",
-      "app-stats",
-    ],
-    [UserRole.ADMIN]: ["user-stats", "instructor-classes", "admin-users"],
-    [UserRole.INSTRUCTOR]: ["user-stats", "instructor-classes"],
-    [UserRole.STUDENT]: ["user-stats"],
-  };
-
-  const tabLabels: Record<string, string> = {
-    "user-stats": "User Statistics",
-    "instructor-classes": "Instructor Classes",
-    "admin-users": "Admin Users",
-    "app-stats": "Application Statistics",
-  };
-
   const handleRoleChange = (role: UserRole) => {
     setSelectedRole(role);
-    setActiveTab(tabsByRole[role][0]);
-  };
 
-  const visibleTabs = tabsByRole[effectiveRole];
+    const firstVisibleTab = sidebarItems.find((item) =>
+      item.roles.includes(role)
+    )?.id;
+
+    if (firstVisibleTab) {
+      setActiveTab(firstVisibleTab);
+    }
+  };
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <Sidebar>
-          <SidebarHeader>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="!p-1.5">
-                  <a href="/">
-                    <img src={cloverLogo} alt="Clover Logo" className="h-5" />
-                    <span className="text-xl font-semibold">
-                      <CLOVER />
-                    </span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup>
-              {visibleTabs.map((tab) => (
-                <SidebarMenuItem key={tab}>
-                  <SidebarMenuButton
-                    className={`w-full text-left ${
-                      activeTab === tab ? "bg-muted" : ""
-                    }`}
-                    onClick={() => setActiveTab(tab)}
-                  >
-                    {tabLabels[tab]}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter>
-            <NavUser user={userData} />
-          </SidebarFooter>
-        </Sidebar>
-
-        <main className="flex-1 p-6 space-y-6">
-          <DashboardHeader
-            userData={userData}
-            selectedRole={effectiveRole}
-            onRoleChange={
-              userData.role !== UserRole.STUDENT ? handleRoleChange : undefined
-            }
-          />
-
-          {activeTab === "user-stats" && (
-            <StudentDashboard userData={userData} />
-          )}
-          {activeTab === "instructor-classes" && (
-            <InstructorDashboard userData={userData} />
-          )}
-          {activeTab === "admin-users" && <AdminDashboard />}
-          {activeTab === "app-stats" && <DevDashboard />}
+      <div className="flex h-screen w-full">
+        <SideBar
+          userData={userData}
+          sidebarItems={sidebarItems}
+          effectiveRole={effectiveRole}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onRoleChange={handleRoleChange}
+        />
+        <main className="flex-1 overflow-y-auto">
+          <DashboardContent userData={userData} activeTab={activeTab} />
         </main>
       </div>
     </SidebarProvider>
@@ -156,17 +165,19 @@ export const DashboardHeader = ({ userData }: DashboardHeaderProps) => {
 
   return (
     <div className="flex justify-between items-center w-full">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold">
-          Welcome{" "}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#50B498] to-[#9CDBA6]">
-            {userData.first_name}
-          </span>
-          👋
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Here are your CLOVER session insights.
-        </p>
+      <div className="flex items-center gap-4">
+        <div className="flex flex-col">
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            Welcome{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#50B498] to-[#9CDBA6]">
+              {userData.first_name}
+            </span>
+            👋
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Here are your CLOVER session insights.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -174,7 +185,6 @@ export const DashboardHeader = ({ userData }: DashboardHeaderProps) => {
 
 function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -235,5 +245,143 @@ function NavUser({ user }: { user: User }) {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
+  );
+}
+
+function SideBar({
+  userData,
+  sidebarItems,
+  effectiveRole,
+  activeTab,
+  setActiveTab,
+  onRoleChange,
+}: {
+  userData: User;
+  sidebarItems: SideBarItem[];
+  effectiveRole: UserRole;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  onRoleChange: (role: UserRole) => void;
+}) {
+  const visibleItems = sidebarItems.filter((item) =>
+    item.roles.includes(effectiveRole)
+  );
+
+  const groupedItems = visibleItems.reduce<Record<string, typeof sidebarItems>>(
+    (groups, item) => {
+      const group = item.subheading || "Other";
+      if (!groups[group]) groups[group] = [];
+      groups[group].push(item);
+      return groups;
+    },
+    {}
+  );
+  return (
+    <Sidebar>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild className="!p-1.5">
+              <a href="/">
+                <img src={cloverLogo} alt="Clover Logo" className="h-5" />
+                <span className="text-xl font-semibold">
+                  <CLOVER />
+                </span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        {Object.entries(groupedItems).map(([subheading, items]) => (
+          <SidebarGroup key={subheading}>
+            <h1>{subheading}</h1>
+            {items.map(({ id, icon: Icon, name }) => (
+              <SidebarMenuItem key={id}>
+                <SidebarMenuButton
+                  className={`w-full text-left ${
+                    activeTab === id ? "bg-muted" : ""
+                  }`}
+                  onClick={() => setActiveTab(id)}
+                >
+                  <Icon className="mr-2 h-4 w-4" />
+                  {name}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarGroup>
+        ))}
+      </SidebarContent>
+      <SidebarFooter>
+        {userData.role === UserRole.DEV && onRoleChange && (
+          <div className="px-4 pb-4">
+            <label className="text-xs font-semibold text-muted-foreground block mb-1">
+              Viewing as
+            </label>
+            <select
+              value={effectiveRole}
+              onChange={(e) => onRoleChange(e.target.value as UserRole)}
+              className="w-full rounded-md border px-2 py-1 text-sm bg-background"
+            >
+              {Object.values(UserRole).map((role) => (
+                <option key={role} value={role}>
+                  {role[0] + role.slice(1).toLowerCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <NavUser user={userData} />
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+
+function DashboardContent({
+  activeTab,
+  userData,
+}: {
+  activeTab: string;
+  userData: User;
+}) {
+  return (
+    <div className="w-full p-2">
+      <DashboardContentHeader />
+      <div className="px-6">
+        {activeTab === "user-stats" && <StudentDashboard userData={userData} />}
+        {activeTab === "instructor-classes" && (
+          <InstructorDashboard userData={userData} />
+        )}
+        {activeTab === "admin-users" && <AdminDashboard />}
+        {activeTab === "app-stats" && <DevDashboard />}
+      </div>
+    </div>
+  );
+}
+
+function DashboardContentHeader() {
+  return (
+    <header className="flex h-(--header-height) mb-6 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+        <SidebarTrigger className="-ml-1" />
+        <Separator
+          orientation="vertical"
+          className="mx-2 data-[orientation=vertical]:h-4"
+        />
+        <div className="ml-auto flex items-center gap-2">
+          <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
+            <a
+              href="https://github.com/Civic-Interactions-Lab/clover"
+              rel="noopener noreferrer"
+              target="_blank"
+              className="dark:text-foreground"
+            >
+              GitHub
+            </a>
+          </Button>
+        </div>
+      </div>
+    </header>
   );
 }
