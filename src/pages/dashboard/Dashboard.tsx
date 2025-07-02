@@ -44,6 +44,8 @@ import {
 } from "../../components/ui/dropdown-menu";
 import { Separator } from "../../components/ui/separator";
 import { Button } from "../../components/ui/button";
+import { supabase } from "../../supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 type SideBarItem = {
   id: string;
@@ -57,7 +59,7 @@ const sidebarItems = [
   {
     id: "user-stats",
     icon: Activity,
-    name: "User Statistics",
+    name: "My Statistics",
     subheading: "Students",
     roles: [
       UserRole.DEV,
@@ -79,16 +81,61 @@ const sidebarItems = [
     ],
   },
   {
+    id: "user-register-classes",
+    icon: Activity,
+    name: "Register For a Class",
+    subheading: "Students",
+    roles: [
+      UserRole.DEV,
+      UserRole.ADMIN,
+      UserRole.INSTRUCTOR,
+      UserRole.STUDENT,
+    ],
+  },
+  {
+    id: "user-logs",
+    icon: Activity,
+    name: "My Logs",
+    subheading: "Students",
+    roles: [
+      UserRole.DEV,
+      UserRole.ADMIN,
+      UserRole.INSTRUCTOR,
+      UserRole.STUDENT,
+    ],
+  },
+  {
+    id: "instructor-stats",
+    icon: BookOpenText,
+    name: "Student Statistics",
+    subheading: "Teaching",
+    roles: [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR],
+  },
+  {
+    id: "instructor-students",
+    icon: BookOpenText,
+    name: "Students",
+    subheading: "Teaching",
+    roles: [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR],
+  },
+  {
     id: "instructor-classes",
     icon: BookOpenText,
-    name: "Instructor Classes",
+    name: "Classes",
     subheading: "Teaching",
     roles: [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR],
   },
   {
     id: "admin-users",
     icon: Users,
-    name: "Admin Users",
+    name: "All Users",
+    subheading: "Administration",
+    roles: [UserRole.DEV, UserRole.ADMIN],
+  },
+  {
+    id: "admin-classes",
+    icon: Users,
+    name: "All Classes",
     subheading: "Administration",
     roles: [UserRole.DEV, UserRole.ADMIN],
   },
@@ -185,6 +232,13 @@ export const DashboardHeader = ({ userData }: DashboardHeaderProps) => {
 
 function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    supabase.auth.signOut();
+    navigate("/");
+  };
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -239,10 +293,12 @@ function NavUser({ user }: { user: User }) {
               <DropdownMenuItem>
                 <a href="/profile">Profile</a>
               </DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>
+                <a href="/settings">Settings</a>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
