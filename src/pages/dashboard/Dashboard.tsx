@@ -7,7 +7,7 @@ import {
   Loader2,
   LucideIcon,
 } from "lucide-react";
-import { ClassData, User, UserRole } from "../../api/types/user";
+import { ClassData, StudentStatus, User, UserRole } from "../../api/types/user";
 import cloverLogo from "../../assets/CLOVER.svg";
 
 import {
@@ -26,7 +26,7 @@ import {
 } from "../../components/ui/sidebar";
 import { CLOVER } from "../../components/ui/text";
 import InstructorDashboard from "./InstructorDashboard";
-import AdminDashboard from "./AdminDashboard";
+import { AdminClasses, AdminUsers } from "./AdminDashboard";
 import DevDashboard from "./DevDashboard";
 import StudentDashboard from "./StudentDashboard";
 import {
@@ -48,17 +48,18 @@ import { Button } from "../../components/ui/button";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "../../components/ThemeToggle";
-import ClassSideBar from "../../components/ClassSideBar";
-import { useAllClasses } from "../../hooks/useAllClasses";
-import ClassDetailsPanel from "../../components/ClassDetailsPanel";
-import { useAllUsers } from "../../hooks/useAllUsers";
-import { toast } from "sonner";
-import { useUserClasses, useUserClassStatus } from "../../hooks/useUserClasses";
-import { useUserActivity } from "../../hooks/useUserActivity";
-import { useInstructorClasses } from "../../hooks/useInstructorClasses";
-import UserSideBar from "../../components/UsersSideBar";
-import UserDetailsPanel from "../../components/UserDetailsPanel";
-import StudentDashboardCard from "../../components/StudentDashboardCard";
+
+import { useUserClasses } from "../../hooks/useUserClasses";
+import RegisterClassDialog from "../../components/RegisterClassDialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../../components/ui/carousel";
+import ClassInfoCard from "../../components/ClassInfoCard";
+import ClassDetails from "../../components/ClassDetails";
 
 type SideBarItem = {
   id: string;
@@ -423,6 +424,7 @@ function DashboardContent({
       <DashboardContentHeader />
       <div className="px-6">
         {activeTab === "user-stats" && <StudentDashboard userData={userData} />}
+        {activeTab === "user-classes" && <UserClasses />}
         {activeTab === "instructor-stats" && (
           <InstructorDashboard userData={userData} />
         )}
@@ -434,137 +436,97 @@ function DashboardContent({
   );
 }
 
-function AdminUsers() {
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+function UserClasses() {
+  const { originalClasses, loading: userClassLoading } = useUserClasses();
+  const [selectedClass, setSelectedClass] = useState<{
+    userClass: ClassData;
+    studentStatus?: StudentStatus;
+    instructorData?: User;
+    studentCount?: number;
+  } | null>(null);
 
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
-  const selectedClassId = selectedClass?.id ?? "all";
-  const selectedClassType =
-    selectedClass?.id === "all"
-      ? "all"
-      : selectedClass?.id === "non-class"
-        ? "non-class"
-        : "class";
-
-  const { users, isLoading, error } = useAllUsers();
-
-  const primaryUser = selectedUsers[0];
-
-  const { classes, loading: userClassesLoading } = useUserClasses(
-    primaryUser?.id
-  );
-
-  const { userActivity, loading: userActivityLoading } = useUserActivity(
-    primaryUser?.id
-  );
-
-  const { classes: instructorClasses, loading: instructorLoading } =
-    useInstructorClasses(primaryUser?.id);
-
-  const { userActivity: selectedActivity, progressData } = useUserActivity(
-    selectedUserId,
-    selectedClassId,
-    selectedClassType
-  );
-
-  const { studentStatus } = useUserClassStatus(
-    selectedUsers[0]?.id || null,
-    selectedClass?.id || null
-  );
-
-  if (error) {
-    toast.error("Error fetching users. Please try again later.");
-    return null;
+  if (userClassLoading) {
+    return (
+      <div className="flex min-h-screen justify-center items-center">
+        <Loader2 className="size-12 animate-spin" />
+      </div>
+    );
   }
 
-  return (
-    <div>
-      <div className="flex flex-col md:flex-row gap-6 mb-6">
-        {/* Sidebar */}
-        <UserSideBar
-          users={users}
-          selectedUsers={selectedUsers}
-          loading={isLoading}
-          onSelectUser={(user) => {
-            setSelectedUsers([user]);
-          }}
-          onSetSelectedUsers={setSelectedUsers}
-          setSelectedUserId={setSelectedUserId}
-        />
+  const handleClassSelect = (
+    userClass: ClassData,
+    studentStatus?: StudentStatus,
+    instructorData?: User,
+    studentCount?: number
+  ) => {
+    setSelectedClass({
+      userClass,
+      studentStatus,
+      instructorData,
+      studentCount,
+    });
+  };
 
-        {/* Details Panel */}
-        <UserDetailsPanel
-          user={selectedUsers}
-          userClasses={classes}
-          userRole={UserRole.DEV}
-          userActivity={userActivity}
-          instructorClasses={instructorClasses}
-          isLoading={
-            isLoading ||
-            userClassesLoading ||
-            userActivityLoading ||
-            instructorLoading
-          }
-          setSelectedClass={setSelectedClass}
-          isSettingsPanel={false}
-        />
+  const handleCloseDetails = () => {
+    setSelectedClass(null);
+  };
+
+  return (
+    <>
+      <div className="width-container grid grid-cols-1 md:grid-cols-5 lg:grid-cols-3 gap-6">
+        <div className="col-span-1 md:col-span-3 lg:col-span-2 space-y-4">
+          <div className="card flex w-full justify-center">
+            {originalClasses.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-2 p-16 text-center">
+                <p className="text-lg font-medium">
+                  You currently have no classes
+                </p>
+                <p className="text-muted-foreground mb-6">
+                  Please register a new class
+                </p>
+                <RegisterClassDialog />
+              </div>
+            ) : (
+              <Carousel
+                opts={{
+                  align: "start",
+                }}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {originalClasses.map((userClassInfo, index) => (
+                    <CarouselItem key={index} className="lg:basis-1/2">
+                      <div className="p-1">
+                        <ClassInfoCard
+                          classInfo={userClassInfo}
+                          onSelect={handleClassSelect}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {originalClasses.length > 1 && (
+                  <div
+                    className={`flex justify-between w-full ${originalClasses.length <= 2 && "lg:hidden"}`}
+                  >
+                    <CarouselPrevious className="ml-4" />
+                    <CarouselNext className="mr-4" />
+                  </div>
+                )}
+              </Carousel>
+            )}
+          </div>
+        </div>
       </div>
 
-      {selectedClass && selectedUserId && (
-        <StudentDashboardCard
-          student={{
-            fullName: `${selectedUsers[0].first_name} ${selectedUsers[0].last_name}`,
-            classTitle: selectedClass.class_title,
-            studentStatus:
-              selectedClassId !== "all" && selectedClassId !== "non-class"
-                ? studentStatus
-                : null,
-            totalAccepted: progressData.totalAccepted,
-            correctSuggestions: progressData.correctSuggestions,
-            percentageCorrect: progressData.percentageCorrect,
-            logs: selectedActivity,
-          }}
-          onClose={() => setSelectedClass(null)}
+      {selectedClass && (
+        <ClassDetails
+          userClass={selectedClass.userClass}
+          instructorData={selectedClass.instructorData as User}
+          onClose={handleCloseDetails}
         />
       )}
-    </div>
-  );
-}
-
-function AdminClasses() {
-  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
-  const { classes: allClasses, isLoading: isLoadingClasses } = useAllClasses();
-  const { users, error } = useAllUsers();
-
-  if (error) {
-    toast.error("Error fetching users. Please try again later.");
-    return null;
-  }
-
-  return (
-    <div className="flex flex-col md:flex-row gap-6 mb-6">
-      <ClassSideBar
-        classes={allClasses}
-        selectedClasses={selectedClasses}
-        onSelectClass={(classData) => {
-          setSelectedClasses([classData]);
-        }}
-        onSetSelectedClasses={setSelectedClasses}
-        loading={isLoadingClasses}
-        setSelectedClassId={(id) => {
-          const selected = allClasses.find((cls) => cls.id === id);
-          if (selected) {
-            setSelectedClasses([selected]);
-          }
-        }}
-      />
-      <ClassDetailsPanel
-        users={users}
-        classDetails={selectedClasses}
-        isLoading={isLoadingClasses}
-      />
-    </div>
+    </>
   );
 }
 
