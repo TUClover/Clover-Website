@@ -7,7 +7,7 @@ import {
   Loader2,
   LucideIcon,
 } from "lucide-react";
-import { User, UserRole } from "../../api/types/user";
+import { ClassData, User, UserRole } from "../../api/types/user";
 import cloverLogo from "../../assets/CLOVER.svg";
 
 import {
@@ -16,6 +16,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
+  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -46,6 +47,18 @@ import { Separator } from "../../components/ui/separator";
 import { Button } from "../../components/ui/button";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
+import ThemeToggle from "../../components/ThemeToggle";
+import ClassSideBar from "../../components/ClassSideBar";
+import { useAllClasses } from "../../hooks/useAllClasses";
+import ClassDetailsPanel from "../../components/ClassDetailsPanel";
+import { useAllUsers } from "../../hooks/useAllUsers";
+import { toast } from "sonner";
+import { useUserClasses, useUserClassStatus } from "../../hooks/useUserClasses";
+import { useUserActivity } from "../../hooks/useUserActivity";
+import { useInstructorClasses } from "../../hooks/useInstructorClasses";
+import UserSideBar from "../../components/UsersSideBar";
+import UserDetailsPanel from "../../components/UserDetailsPanel";
+import StudentDashboardCard from "../../components/StudentDashboardCard";
 
 type SideBarItem = {
   id: string;
@@ -191,9 +204,11 @@ const Dashboard = ({
           setActiveTab={setActiveTab}
           onRoleChange={handleRoleChange}
         />
-        <main className="flex-1 overflow-y-auto">
-          <DashboardContent userData={userData} activeTab={activeTab} />
-        </main>
+        <SidebarInset>
+          <main className="flex-1 overflow-y-auto">
+            <DashboardContent userData={userData} activeTab={activeTab} />
+          </main>
+        </SidebarInset>
       </div>
     </SidebarProvider>
   );
@@ -408,12 +423,147 @@ function DashboardContent({
       <DashboardContentHeader />
       <div className="px-6">
         {activeTab === "user-stats" && <StudentDashboard userData={userData} />}
-        {activeTab === "instructor-classes" && (
+        {activeTab === "instructor-stats" && (
           <InstructorDashboard userData={userData} />
         )}
-        {activeTab === "admin-users" && <AdminDashboard />}
+        {activeTab === "admin-users" && <AdminUsers />}
+        {activeTab == "admin-classes" && <AdminClasses />}
         {activeTab === "app-stats" && <DevDashboard />}
       </div>
+    </div>
+  );
+}
+
+function AdminUsers() {
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
+  const selectedClassId = selectedClass?.id ?? "all";
+  const selectedClassType =
+    selectedClass?.id === "all"
+      ? "all"
+      : selectedClass?.id === "non-class"
+        ? "non-class"
+        : "class";
+
+  const { users, isLoading, error } = useAllUsers();
+
+  const primaryUser = selectedUsers[0];
+
+  const { classes, loading: userClassesLoading } = useUserClasses(
+    primaryUser?.id
+  );
+
+  const { userActivity, loading: userActivityLoading } = useUserActivity(
+    primaryUser?.id
+  );
+
+  const { classes: instructorClasses, loading: instructorLoading } =
+    useInstructorClasses(primaryUser?.id);
+
+  const { userActivity: selectedActivity, progressData } = useUserActivity(
+    selectedUserId,
+    selectedClassId,
+    selectedClassType
+  );
+
+  const { studentStatus } = useUserClassStatus(
+    selectedUsers[0]?.id || null,
+    selectedClass?.id || null
+  );
+
+  if (error) {
+    toast.error("Error fetching users. Please try again later.");
+    return null;
+  }
+
+  return (
+    <div>
+      <div className="flex flex-col md:flex-row gap-6 mb-6">
+        {/* Sidebar */}
+        <UserSideBar
+          users={users}
+          selectedUsers={selectedUsers}
+          loading={isLoading}
+          onSelectUser={(user) => {
+            setSelectedUsers([user]);
+          }}
+          onSetSelectedUsers={setSelectedUsers}
+          setSelectedUserId={setSelectedUserId}
+        />
+
+        {/* Details Panel */}
+        <UserDetailsPanel
+          user={selectedUsers}
+          userClasses={classes}
+          userRole={UserRole.DEV}
+          userActivity={userActivity}
+          instructorClasses={instructorClasses}
+          isLoading={
+            isLoading ||
+            userClassesLoading ||
+            userActivityLoading ||
+            instructorLoading
+          }
+          setSelectedClass={setSelectedClass}
+          isSettingsPanel={false}
+        />
+      </div>
+
+      {selectedClass && selectedUserId && (
+        <StudentDashboardCard
+          student={{
+            fullName: `${selectedUsers[0].first_name} ${selectedUsers[0].last_name}`,
+            classTitle: selectedClass.class_title,
+            studentStatus:
+              selectedClassId !== "all" && selectedClassId !== "non-class"
+                ? studentStatus
+                : null,
+            totalAccepted: progressData.totalAccepted,
+            correctSuggestions: progressData.correctSuggestions,
+            percentageCorrect: progressData.percentageCorrect,
+            logs: selectedActivity,
+          }}
+          onClose={() => setSelectedClass(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function AdminClasses() {
+  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
+  const { classes: allClasses, isLoading: isLoadingClasses } = useAllClasses();
+  const { users, error } = useAllUsers();
+
+  if (error) {
+    toast.error("Error fetching users. Please try again later.");
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col md:flex-row gap-6 mb-6">
+      <ClassSideBar
+        classes={allClasses}
+        selectedClasses={selectedClasses}
+        onSelectClass={(classData) => {
+          setSelectedClasses([classData]);
+        }}
+        onSetSelectedClasses={setSelectedClasses}
+        loading={isLoadingClasses}
+        setSelectedClassId={(id) => {
+          const selected = allClasses.find((cls) => cls.id === id);
+          if (selected) {
+            setSelectedClasses([selected]);
+          }
+        }}
+      />
+      <ClassDetailsPanel
+        users={users}
+        classDetails={selectedClasses}
+        isLoading={isLoadingClasses}
+      />
     </div>
   );
 }
@@ -421,7 +571,7 @@ function DashboardContent({
 function DashboardContentHeader() {
   return (
     <header className="flex h-(--header-height) mb-6 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+      <div className="flex w-full items-center gap-1 px-4 py-2 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1" />
         <Separator
           orientation="vertical"
@@ -439,6 +589,7 @@ function DashboardContentHeader() {
             </a>
           </Button>
         </div>
+        <ThemeToggle />
       </div>
     </header>
   );
