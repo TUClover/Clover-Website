@@ -6,6 +6,8 @@ import {
   Activity,
   Loader2,
   LucideIcon,
+  Download,
+  FileQuestion,
 } from "lucide-react";
 import { ClassData, StudentStatus, User, UserRole } from "../../api/types/user";
 import cloverLogo from "../../assets/CLOVER.svg";
@@ -60,6 +62,21 @@ import {
 } from "../../components/ui/carousel";
 import ClassInfoCard from "../../components/ClassInfoCard";
 import ClassDetails from "../../components/ClassDetails";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../../components/ui/table";
+import { Badge } from "../../components/ui/badge";
+import { Skeleton } from "../../components/ui/skeleton";
+import { Card } from "../../components/ui/card";
+import InfoTooltip from "../../components/InfoTooltip";
+import StudentDataTable from "../../components/StudentDataTable";
+import { useInstructorClasses } from "../../hooks/useInstructorClasses";
+import { useClassActivity } from "../../hooks/useClassActivity";
 
 type SideBarItem = {
   id: string;
@@ -70,11 +87,12 @@ type SideBarItem = {
 };
 
 const sidebarItems = [
+  // Students
   {
     id: "user-stats",
     icon: Activity,
-    name: "My Statistics",
-    subheading: "Students",
+    name: "Statistics",
+    subheading: "My Dashboard",
     roles: [
       UserRole.DEV,
       UserRole.ADMIN,
@@ -85,8 +103,8 @@ const sidebarItems = [
   {
     id: "user-classes",
     icon: Activity,
-    name: "My Classes",
-    subheading: "Students",
+    name: "Classes",
+    subheading: "My Dashboard",
     roles: [
       UserRole.DEV,
       UserRole.ADMIN,
@@ -97,8 +115,8 @@ const sidebarItems = [
   {
     id: "user-register-classes",
     icon: Activity,
-    name: "Register For a Class",
-    subheading: "Students",
+    name: "Register",
+    subheading: "My Dashboard",
     roles: [
       UserRole.DEV,
       UserRole.ADMIN,
@@ -109,8 +127,8 @@ const sidebarItems = [
   {
     id: "user-logs",
     icon: Activity,
-    name: "My Logs",
-    subheading: "Students",
+    name: "Logs",
+    subheading: "My Dashboard",
     roles: [
       UserRole.DEV,
       UserRole.ADMIN,
@@ -118,6 +136,7 @@ const sidebarItems = [
       UserRole.STUDENT,
     ],
   },
+  // Instructor Views
   {
     id: "instructor-stats",
     icon: BookOpenText,
@@ -139,24 +158,26 @@ const sidebarItems = [
     subheading: "Teaching",
     roles: [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR],
   },
+  // Admin Views
   {
     id: "admin-users",
     icon: Users,
-    name: "All Users",
+    name: "Manage Users",
     subheading: "Administration",
     roles: [UserRole.DEV, UserRole.ADMIN],
   },
   {
     id: "admin-classes",
     icon: Users,
-    name: "All Classes",
+    name: "Manage Classes",
     subheading: "Administration",
     roles: [UserRole.DEV, UserRole.ADMIN],
   },
+  // Dev Views
   {
     id: "app-stats",
     icon: BarChart2,
-    name: "Application Statistics",
+    name: "App Stats",
     subheading: "Development",
     roles: [UserRole.DEV],
   },
@@ -196,7 +217,7 @@ const Dashboard = ({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="flex h-screen w-full">
         <SideBar
           userData={userData}
           sidebarItems={sidebarItems}
@@ -205,8 +226,8 @@ const Dashboard = ({
           setActiveTab={setActiveTab}
           onRoleChange={handleRoleChange}
         />
-        <SidebarInset>
-          <main className="flex-1 overflow-y-auto">
+        <SidebarInset className="flex-1 overflow-y-auto">
+          <main>
             <DashboardContent userData={userData} activeTab={activeTab} />
           </main>
         </SidebarInset>
@@ -351,7 +372,7 @@ function SideBar({
     {}
   );
   return (
-    <Sidebar>
+    <Sidebar variant="inset">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -405,7 +426,14 @@ function SideBar({
             </select>
           </div>
         )}
-
+        <SidebarMenuButton className={`w-full pl-4 text-left`}>
+          <Download className="mr-2 h-4 w-4" />
+          <a href="/download">Download</a>
+        </SidebarMenuButton>
+        <SidebarMenuButton className={`w-full text-left`}>
+          <FileQuestion className="mr-2 h-4 w-4" />
+          <a href="https://civic-interactions-lab.github.io/clover/">Docs</a>
+        </SidebarMenuButton>
         <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
@@ -431,12 +459,16 @@ function DashboardContent({
         {activeTab === "admin-users" && <AdminUsers />}
         {activeTab == "admin-classes" && <AdminClasses />}
         {activeTab === "app-stats" && <DevDashboard />}
+        {activeTab === "user-register-classes" && <RegisterClassPage />}
+        {activeTab === "instructor-students" && (
+          <InstructorStudents userData={userData} />
+        )}
       </div>
     </div>
   );
 }
 
-function UserClasses() {
+const UserClasses = () => {
   const { originalClasses, loading: userClassLoading } = useUserClasses();
   const [selectedClass, setSelectedClass] = useState<{
     userClass: ClassData;
@@ -528,7 +560,7 @@ function UserClasses() {
       )}
     </>
   );
-}
+};
 
 function DashboardContentHeader() {
   return (
@@ -556,3 +588,136 @@ function DashboardContentHeader() {
     </header>
   );
 }
+
+const RegisterClassPage = () => {
+  const { classes, loading } = useUserClasses();
+
+  return (
+    <div className="w-full p-4">
+      <div className="border rounded-md shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-1/3">Class</TableHead>
+              <TableHead className="w-1/3">Instructor</TableHead>
+              <TableHead className="w-1/3">Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <TableRow key={`loading-${i}`}>
+                  <TableCell colSpan={3}>
+                    <Skeleton className="h-5 w-full" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : classes.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center py-4">
+                  No classes registered. Please register a new class.
+                </TableCell>
+              </TableRow>
+            ) : (
+              classes.map((userClass) => {
+                const {
+                  user_class: c,
+                  enrollment_status,
+                  student_status,
+                } = userClass;
+
+                return (
+                  <TableRow key={c.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {c.class_image_cover ? (
+                          <img
+                            src={c.class_image_cover}
+                            alt="Class cover"
+                            className="w-10 h-10 rounded object-cover"
+                          />
+                        ) : (
+                          <div
+                            className="w-10 h-10 rounded"
+                            style={{ backgroundColor: c.class_hex_color }}
+                          />
+                        )}
+                        <div>
+                          <div className="font-medium">{c.class_title}</div>
+                          <div className="text-muted-foreground text-sm">
+                            {c.class_code}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      {/* You can fetch instructor name based on instructor_id or include it in `ClassData` */}
+                      <span className="text-sm text-muted-foreground">
+                        Instructor ID: {c.instructor_id}
+                      </span>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <Badge variant="outline">{enrollment_status}</Badge>
+                        <Badge variant="secondary">{student_status}</Badge>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+};
+
+const UserLogs = () => {};
+
+const InstructorStudents = ({ userData }: { userData: User }) => {
+  const { classes, selectedClassId, handleClassSelect } = useInstructorClasses(
+    userData.id
+  );
+
+  const { allActivity, classActivity, progressData } = useClassActivity(
+    classes,
+    selectedClassId
+  );
+
+  const selectedClassTitle =
+    classes.find((classItem) => classItem.id === selectedClassId)
+      ?.class_title ?? "";
+
+  return (
+    <Card className="p-6 mt-8">
+      <div className="flex items-center mb-2 gap-3">
+        <h2 className="text-md font-semibold text-primary">
+          Insights About Students
+        </h2>
+        <InfoTooltip>
+          <div className="text-sm space-y-2">
+            <p>
+              The table shows insights from{" "}
+              <span className="text-primary font-semibold">
+                {selectedClassTitle}
+              </span>
+              , summarizing student decisions on code suggestions and their
+              accuracy.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Click on any row to view student-specific suggestions and
+              performance details.
+            </p>
+          </div>
+        </InfoTooltip>
+      </div>
+      <StudentDataTable
+        logs={allActivity}
+        classFilter={selectedClassTitle === "all classes" ? "all" : "class"}
+      />
+    </Card>
+  );
+};
