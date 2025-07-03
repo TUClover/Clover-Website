@@ -120,7 +120,7 @@ export const useClassStudentsInfo = (classId: string | null) => {
 
     try {
       const { data: enrolledData, error: enrolledError } = await supabase
-        .from("class_users")
+        .from("user_class")
         .select("student_id")
         .eq("class_id", classId)
         .eq("enrollment_status", "ENROLLED");
@@ -146,7 +146,7 @@ export const useClassStudentsInfo = (classId: string | null) => {
       setEnrolledStudents(normalizedEnrolled);
 
       const { data: waitlistedData, error: waitlistedError } = await supabase
-        .from("class_users")
+        .from("user_class")
         .select("student_id")
         .eq("class_id", classId)
         .eq("enrollment_status", "WAITLISTED");

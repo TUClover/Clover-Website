@@ -3,7 +3,6 @@ import MiniPieChart from "./MiniPieChart";
 import { calculateProgress } from "../utils/calculateProgress";
 import { StudentStatus, UserActivityLogItem } from "../api/types/user";
 import { supabase } from "../supabaseClient";
-import StudentStatusBadge from "./StudentStatusBadge";
 import PaginatedTable from "./PaginatedTable";
 import { Input } from "./ui/input";
 import {
@@ -106,12 +105,12 @@ export const StudentRow = ({
       <td className="p-2">{index + 1}</td>
       <td className="p-2">{student.classTitle}</td>
       <td className="p-2">{student.fullName}</td>
-      <td className="p-2">
+      {/* <td className="p-2">
         <StudentStatusBadge
           status={student.studentStatus as StudentStatus}
           size="sm"
         />
-      </td>
+      </td> */}
       <td className="p-2">
         <div className="flex flex-col items-center sm:flex-row sm:items-center gap-1">
           <MiniPieChart
@@ -239,16 +238,16 @@ export const StudentDataTable = ({
 
       const additionalData = await Promise.all(
         baseData.map(async (student) => {
-          const [userData, studentStatus] = await Promise.all([
+          const [userData] = await Promise.all([
             fetchUserData(student.userId),
-            fetchStudentStatus(student.userId, student.classId),
+            // fetchStudentStatus(student.userId, student.classId),
           ]);
 
           return {
             ...student,
             fullName:
               `${userData?.firstName || ""} ${userData?.lastName || ""}`.trim(),
-            studentStatus: studentStatus,
+            // studentStatus: studentStatus,
           };
         })
       );
@@ -282,14 +281,14 @@ export const StudentDataTable = ({
       : null;
   };
 
-  const fetchStudentStatus = async (userId: string, classId: string) => {
-    const { data } = await supabase
-      .from("class_users")
-      .select("user_class_status")
-      .match({ student_id: userId, class_id: classId })
-      .single();
-    return data?.user_class_status ?? null;
-  };
+  // const fetchStudentStatus = async (userId: string, classId: string) => {
+  //   const { data } = await supabase
+  //     .from("class_users")
+  //     .select("user_class_status")
+  //     .match({ student_id: userId, class_id: classId })
+  //     .single();
+  //   return data?.user_class_status ?? null;
+  // };
 
   const handleRowClick = (student: StudentClassData) => {
     setSelectedStudent(student);
@@ -307,7 +306,7 @@ export const StudentDataTable = ({
             <th className="p-2 font-bold w-4">No.</th>
             <th className="p-2">Class</th>
             <th className="p-2">Name</th>
-            <th className="p-2">Status</th>
+            {/* <th className="p-2">Status</th> */}
             <th className="p-2">Accuracy</th>
             <th className="p-2 w-40">Last Active</th>
           </tr>
@@ -318,7 +317,7 @@ export const StudentDataTable = ({
               key={`loading-${index}`}
               student={{
                 classTitle: "",
-                studentStatus: undefined,
+                // studentStatus: undefined,
                 totalAccepted: 0,
                 correctSuggestions: 0,
                 percentageCorrect: 0,
@@ -361,7 +360,7 @@ export const StudentDataTable = ({
                 <th className="p-2 w-4">No.</th>
                 <th className="p-2">Class</th>
                 <th className="p-2">Name</th>
-                <th className="p-2">Status</th>
+                {/* <th className="p-2">Status</th> */}
                 <th className="p-2">Accuracy</th>
                 <th className="p-2 w-40">Last Active</th>
               </tr>

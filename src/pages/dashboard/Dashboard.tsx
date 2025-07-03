@@ -203,7 +203,7 @@ const Dashboard = ({
           setActiveTab={setActiveTab}
           onRoleChange={handleRoleChange}
         />
-        <SidebarInset className="flex-1 overflow-y-auto">
+        <SidebarInset className="flex-1 overflow-y-auto dark:bg-[#0a0a0a]">
           <main>
             <DashboardContent userData={userData} activeTab={activeTab} />
           </main>
@@ -214,35 +214,6 @@ const Dashboard = ({
 };
 
 export default Dashboard;
-
-type DashboardHeaderProps = {
-  userData: User | null;
-  selectedRole?: UserRole | null;
-  onRoleChange?: (role: UserRole) => void;
-};
-
-export const DashboardHeader = ({ userData }: DashboardHeaderProps) => {
-  if (!userData) return null;
-
-  return (
-    <div className="flex justify-between items-center w-full">
-      <div className="flex items-center gap-4">
-        <div className="flex flex-col">
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            Welcome{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#50B498] to-[#9CDBA6]">
-              {userData.first_name}
-            </span>
-            👋
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Here are your CLOVER session insights.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
