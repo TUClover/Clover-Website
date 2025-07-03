@@ -1,6 +1,5 @@
 import { useUserData } from "../hooks/useUserData";
 import { Loader2 } from "lucide-react";
-import StudentStatusBadge from "./StudentStatusBadge";
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import PingDot from "./PingDot";
 import {
@@ -9,6 +8,7 @@ import {
   User,
   UserClassInfo,
 } from "../api/types/user";
+import { Card } from "./ui/card";
 
 type ClassCardProps = {
   classInfo: ClassData | UserClassInfo;
@@ -76,7 +76,7 @@ export const ClassInfoCard = ({
         onSelect(userClass, studentStatus, instructorData!);
       }}
     >
-      <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-95 border border-border flex flex-col flex-1">
+      <Card className="pt-0 rounded-xl overflow-hidden shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-95 border border-border flex flex-col flex-1">
         <div className="relative h-36 w-full overflow-hidden">
           {isInstructor &&
             waitlistedStudents &&
@@ -95,11 +95,11 @@ export const ClassInfoCard = ({
           )}
           {!isInstructor && (
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/50 dark:to-black/30 opacity-50 justify-between">
-              <StudentStatusBadge
+              {/* <StudentStatusBadge
                 status={studentStatus as StudentStatus}
                 size="sm"
                 className="absolute bottom-6 left-6"
-              />
+              /> */}
             </div>
           )}
         </div>
@@ -138,7 +138,7 @@ export const ClassInfoCard = ({
             )}
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

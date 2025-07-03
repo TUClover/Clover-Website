@@ -52,7 +52,7 @@ export const RegisterClassDialog = () => {
       setEnrollmentStatusLoading(true);
       try {
         const { data } = await supabase
-          .from("class_users")
+          .from("user_class")
           .select("class_id, enrollment_status")
           .eq("student_id", userData.id)
           .in(
@@ -156,7 +156,7 @@ export const RegisterClassDialog = () => {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4" />
-          <span className="hidden sm:block ml-1">Register Class</span>
+          <span className="hidden sm:block ml-1">Register</span>
         </Button>
       </DialogTrigger>
 

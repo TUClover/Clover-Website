@@ -1,6 +1,7 @@
 import { User, UserRole } from "../api/types/user";
 import { DeleteUserButton } from "../components/DeleteUserButton";
 import { EditUserButton } from "../components/EditUserButton";
+import NavBar from "../components/NavBar";
 import { ResetPasswordButton } from "../components/ResetPasswordButton";
 import { Card, CardTitle } from "../components/ui/card";
 import { Title } from "../components/ui/text";
@@ -19,23 +20,26 @@ export const Settings = ({ userData }: { userData: User | null }) => {
     userData.role === UserRole.ADMIN || userData.role === UserRole.DEV;
 
   return (
-    <div className="flex min-h-screen flex-col items-center pb-8 text-text width-container">
-      <Title className="pb-6">Settings</Title>
-      <Card className="flex flex-col gap-4 p-6 width-container">
-        <div className="flex justify-between items-center mb-4">
-          <CardTitle>
-            {userData.first_name + " " + userData.last_name}
-          </CardTitle>
-          <EditUserButton user={userData} />
-        </div>
+    <div className="min-h-screen items-center text-text width-container space-y-10">
+      <NavBar />
+      <div className="p-10 flex flex-col items-center">
+        <Title className="pb-6">Settings</Title>
+        <Card className="flex flex-col gap-4 p-6 width-container">
+          <div className="flex justify-between items-center mb-4">
+            <CardTitle>
+              {userData.first_name + " " + userData.last_name}
+            </CardTitle>
+            <EditUserButton user={userData} />
+          </div>
 
-        {isPrivileged && <UserSettings user={userData} />}
+          {isPrivileged && <UserSettings user={userData} />}
 
-        <div className="flex gap-4">
-          <DeleteUserButton userId={userData.id} />
-          <ResetPasswordButton />
-        </div>
-      </Card>
+          <div className="flex gap-4">
+            <DeleteUserButton userId={userData.id} />
+            <ResetPasswordButton />
+          </div>
+        </Card>
+      </div>
     </div>
   );
 };

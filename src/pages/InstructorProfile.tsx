@@ -1,17 +1,6 @@
 import { Loader2, Star } from "lucide-react";
-import { ClassData, StudentStatus, User, UserRole } from "../api/types/user";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../components/ui/carousel";
-import ClassInfoCard from "../components/ClassInfoCard";
+import { User } from "../api/types/user";
 import { useInstructorClasses } from "../hooks/useInstructorClasses";
-import { useState } from "react";
-import ClassDetails from "../components/ClassDetails";
-import CreateNewClassDialog from "../components/CreateNewClassDialog";
 import ProfileCard from "../components/ProfileCard";
 
 /**
@@ -22,11 +11,6 @@ import ProfileCard from "../components/ProfileCard";
  */
 export const InstructorProfile = ({ userData }: { userData: User }) => {
   const { originalClasses, loading: userClassLoading } = useInstructorClasses();
-  const [selectedClass, setSelectedClass] = useState<{
-    userClass: ClassData;
-    studentStatus?: StudentStatus;
-    instructorData?: User;
-  } | null>(null);
 
   if (userClassLoading) {
     return (
@@ -35,22 +19,6 @@ export const InstructorProfile = ({ userData }: { userData: User }) => {
       </div>
     );
   }
-
-  const handleClassSelect = (
-    userClass: ClassData,
-    studentStatus?: StudentStatus,
-    instructorData?: User
-  ) => {
-    setSelectedClass({
-      userClass,
-      studentStatus,
-      instructorData,
-    });
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedClass(null);
-  };
 
   return (
     <>
@@ -75,62 +43,7 @@ export const InstructorProfile = ({ userData }: { userData: User }) => {
             ]}
           />
         </div>
-
-        <div className="col-span-1 md:col-span-3 lg:col-span-2 space-y-4">
-          <div className="card flex w-full justify-center">
-            {originalClasses.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 p-16 text-center">
-                <p className="text-lg font-medium">
-                  You currently have no classes
-                </p>
-                <p className="text-muted-foreground mb-6">
-                  Please create a new class
-                </p>
-                <CreateNewClassDialog />
-              </div>
-            ) : (
-              <Carousel
-                opts={{
-                  align: "start",
-                }}
-                className="w-full"
-              >
-                <CarouselContent>
-                  {originalClasses.map((userClass, index) => (
-                    <CarouselItem key={index} className="lg:basis-1/2">
-                      <div className="p-1">
-                        <ClassInfoCard
-                          classInfo={userClass}
-                          onSelect={handleClassSelect}
-                          isInstructor={
-                            userData.role === UserRole.INSTRUCTOR ||
-                            userData.role === UserRole.ADMIN
-                          }
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                {originalClasses.length > 1 && (
-                  <div
-                    className={`flex justify-between w-full ${originalClasses.length <= 2 && "lg:hidden"}`}
-                  >
-                    <CarouselPrevious className="ml-4" />
-                    <CarouselNext className="mr-4" />
-                  </div>
-                )}
-              </Carousel>
-            )}
-          </div>
-        </div>
       </div>
-      {selectedClass && (
-        <ClassDetails
-          userClass={selectedClass.userClass}
-          instructorData={selectedClass.instructorData as User}
-          onClose={handleCloseDetails}
-        />
-      )}
     </>
   );
 };

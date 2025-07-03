@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   EnrollmentStatus,
   StudentStatus,
@@ -23,7 +23,7 @@ export const useUserClasses = (userID?: string | null) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchAndSetClasses = useCallback(async () => {
     const currentUserId = userID ?? user?.id;
     if (!currentUserId) {
       setLoading(false);
@@ -31,26 +31,32 @@ export const useUserClasses = (userID?: string | null) => {
       return;
     }
 
-    const fetchClasses = async () => {
-      setLoading(true);
-      setClasses([]);
+    setLoading(true);
+    setError(null);
 
-      try {
-        const { data, error } = await getUserClasses(currentUserId);
-        if (error) {
-          setError(error);
-          return;
-        }
+    try {
+      const { data, error } = await getUserClasses(currentUserId);
+      if (error) {
+        setError(error);
+        setClasses([]);
+      } else {
         setClasses(data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error occurred");
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchClasses();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error occurred");
+      setClasses([]);
+    } finally {
+      setLoading(false);
+    }
   }, [userID, user?.id]);
+
+  useEffect(() => {
+    fetchAndSetClasses();
+  }, [fetchAndSetClasses]);
+
+  const mutate = useCallback(() => {
+    fetchAndSetClasses();
+  }, [fetchAndSetClasses]);
 
   const specialClasses: UserClassInfo[] = [
     {
@@ -107,15 +113,17 @@ export const useUserClasses = (userID?: string | null) => {
     selectedClassType === "class"
       ? classes.find((c) => c.user_class.id === selectedClassId) || null
       : specialClasses.find((c) => c.user_class.id === selectedClassType)!;
+
   return {
     classes: modifiedClasses,
-    originalClasses: classes,
+    originalClasses: classes, // It's good you return the original list too!
     selectedClassId:
       selectedClassType === "class" ? selectedClassId : selectedClassType,
     selectedClassType,
     selectedClass,
     loading,
     error,
+    mutate,
     handleClassSelect,
   };
 };

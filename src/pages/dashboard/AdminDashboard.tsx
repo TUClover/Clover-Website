@@ -1,6 +1,3 @@
-import { useState } from "react";
-import { useAllUsers } from "../../hooks/useAllUsers";
-import { useUserClasses, useUserClassStatus } from "../../hooks/useUserClasses";
 import {
   Chart as ChartJS,
   LineElement,
@@ -10,15 +7,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { ClassData, User, UserRole } from "../../api/types/user";
 import "react-datepicker/dist/react-datepicker.css";
-import { useUserActivity } from "../../hooks/useUserActivity";
-import UserSideBar from "../../components/UsersSideBar";
-import UserDetailsPanel from "../../components/UserDetailsPanel";
-import DataDownload from "../../components/DataDownload";
-import { useInstructorClasses } from "../../hooks/useInstructorClasses";
-import { toast } from "sonner";
-import StudentDashboardCard from "../../components/StudentDashboardCard";
 
 ChartJS.register(
   LineElement,
@@ -28,15 +17,21 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+import ClassSideBar from "../../components/ClassSideBar";
+import { useAllClasses } from "../../hooks/useAllClasses";
+import ClassDetailsPanel from "../../components/ClassDetailsPanel";
+import { useAllUsers } from "../../hooks/useAllUsers";
+import { toast } from "sonner";
+import { useUserActivity } from "../../hooks/useUserActivity";
+import { useInstructorClasses } from "../../hooks/useInstructorClasses";
+import UserSideBar from "../../components/UsersSideBar";
+import UserDetailsPanel from "../../components/UserDetailsPanel";
+import StudentDashboardCard from "../../components/StudentDashboardCard";
+import { useState } from "react";
+import { ClassData, User, UserRole } from "../../api/types/user";
+import { useUserClasses, useUserClassStatus } from "../../hooks/useUserClasses";
 
-/**
- * AdminDashboard component
- * This component is responsible for rendering the admin dashboard.
- * It includes a sidebar for selecting users and a details panel for displaying user information.
- * It also includes a data download section for downloading user data.
- * @returns {JSX.Element} The AdminDashboard component.
- */
-export const AdminDashboard = () => {
+export const AdminUsers = () => {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -82,7 +77,6 @@ export const AdminDashboard = () => {
 
   return (
     <div>
-      {/* User Section */}
       <div className="flex flex-col md:flex-row gap-6 mb-6">
         {/* Sidebar */}
         <UserSideBar
@@ -113,9 +107,6 @@ export const AdminDashboard = () => {
           isSettingsPanel={false}
         />
       </div>
-      <div className="w-full mb-6 text-text">
-        <DataDownload />
-      </div>
 
       {selectedClass && selectedUserId && (
         <StudentDashboardCard
@@ -138,4 +129,38 @@ export const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export const AdminClasses = () => {
+  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
+  const { classes: allClasses, isLoading: isLoadingClasses } = useAllClasses();
+  const { users, error } = useAllUsers();
+
+  if (error) {
+    toast.error("Error fetching users. Please try again later.");
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col md:flex-row gap-6 mb-6">
+      <ClassSideBar
+        classes={allClasses}
+        selectedClasses={selectedClasses}
+        onSelectClass={(classData) => {
+          setSelectedClasses([classData]);
+        }}
+        onSetSelectedClasses={setSelectedClasses}
+        loading={isLoadingClasses}
+        setSelectedClassId={(id) => {
+          const selected = allClasses.find((cls) => cls.id === id);
+          if (selected) {
+            setSelectedClasses([selected]);
+          }
+        }}
+      />
+      <ClassDetailsPanel
+        users={users}
+        classDetails={selectedClasses}
+        isLoading={isLoadingClasses}
+      />
+    </div>
+  );
+};

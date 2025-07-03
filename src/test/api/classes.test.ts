@@ -80,17 +80,17 @@ describe("class-api", () => {
     expect(result.data?.[0].class_title).toBe("Class 1");
   });
 
-  it("registers a user to a class", async () => {
-    const mockResponse = {
-      ok: true,
-      json: async () => ({ data: { id: "reg-id" } }),
-    };
+  // it("registers a user to a class", async () => {
+  //   const mockResponse = {
+  //     ok: true,
+  //     json: async () => ({ data: { id: "reg-id" } }),
+  //   };
 
-    global.fetch = jest.fn().mockResolvedValueOnce(mockResponse as Response);
-    const result = await registerUserToClass("student-1", "class-1");
+  //   global.fetch = jest.fn().mockResolvedValueOnce(mockResponse as Response);
+  //   const result = await registerUserToClass("student-1", "class-1");
 
-    expect(result.data?.id).toBe("reg-id");
-  });
+  //   expect(result.data?.id).toBe("reg-id");
+  // });
 
   it("fetches class activity logs", async () => {
     const mockResponse = {

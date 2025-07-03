@@ -16,6 +16,7 @@ export async function getSuggestionById(
     });
 
     const data = await response.json();
+    console.log("Response from getSuggestionById:", data);
 
     if (!response.ok) {
       return {

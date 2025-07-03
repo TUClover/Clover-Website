@@ -70,7 +70,6 @@ export const LineChart = ({
 
   activities.forEach((activity) => {
     const date = new Date(activity.log_created_at);
-    console.log(date);
     const key = groupBy(date, interval);
     if (key) {
       if (activity.event === LogEvent.SUGGESTION_ACCEPT) {

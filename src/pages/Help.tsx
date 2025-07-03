@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ChevronUp, ChevronDown, Plus, Minus } from "lucide-react";
 import InstallFromVSIX from "../assets/InstallFromVSIX.gif";
+import { Card } from "../components/ui/card";
+import NavBar from "../components/NavBar";
 
 // List of sections and subsections
 const sections = [
@@ -311,6 +313,35 @@ export const Help = () => {
     }));
   };
 
+  return (
+    <div>
+      <NavBar />
+      <div className="pt-16 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 width-container">
+        <SideBar
+          openSections={openSections}
+          toggleSection={toggleSection}
+          setOpenSection={setOpenSection}
+        />
+        <PageContent
+          openSections={openSections}
+          toggleSection={toggleSection}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default Help;
+
+const SideBar = ({
+  openSections,
+  setOpenSection,
+  toggleSection,
+}: {
+  openSections: Record<string, boolean>;
+  setOpenSection: (sections: Record<string, boolean>) => void;
+  toggleSection: (id: string) => void;
+}) => {
   const expandAll = () => {
     setOpenSection(
       Object.fromEntries(
@@ -350,121 +381,127 @@ export const Help = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 width-container">
-      <div className="sticky pt-8 top-16 hidden md:block h-[calc(100vh-6rem)]">
-        <h2 className="text-xl font-bold mb-4">Getting Started</h2>
-        <nav className="space-y-2">
-          {sections.map((section) => (
-            <div key={section.id}>
-              <button
-                onClick={() => handleNavClick(section.id)}
-                className="w-full text-left text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white py-2 transition-all"
-              >
-                {section.title}
-              </button>
-
-              {/* Subsection links if they exist */}
-              {section.subsections && (
-                <div className="ml-4 space-y-1">
-                  {section.subsections.map((sub) => (
-                    <button
-                      key={sub.id}
-                      onClick={() => handleNavClick(sub.id)}
-                      className="w-full text-left text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white py-1 transition-all"
-                    >
-                      {sub.title}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </nav>
-
-        <div className="absolute bottom-8 left-8 flex gap-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-lg z-10">
-          <button
-            onClick={expandAll}
-            className="text-blue-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Expand all"
-          >
-            <Plus size={20} />
-          </button>
-          <button
-            onClick={collapseAll}
-            className="text-red-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Collapse all"
-          >
-            <Minus size={20} />
-          </button>
-        </div>
-      </div>
-
-      <div className="flex-grow p-8 col-span-1 md:col-span-2 lg:col-span-3">
-        <h1 className="text-4xl font-extrabold text-center mb-6">
-          Getting Started
-        </h1>
-
+    <div className="sticky p-12 pt-20 top-20 hidden md:block h-[calc(100vh-6rem)]">
+      <h2 className="text-xl font-bold mb-4">Getting Started</h2>
+      <nav className="space-y-2">
         {sections.map((section) => (
-          <div
-            id={section.id}
-            key={section.id}
-            className="info-card p-6 rounded-lg shadow-lg mb-6 scroll-mt-24" // scroll-mt for sticky header offset
-          >
+          <div key={section.id}>
             <button
-              onClick={() => toggleSection(section.id)}
-              className="w-full text-left text-xl font-bold flex justify-between items-center"
+              onClick={() => handleNavClick(section.id)}
+              className="w-full text-left text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white py-2 transition-all"
             >
               {section.title}
-              <span className="text-gray-800 dark:text-gray-400">
-                {openSections[section.id] ? (
-                  <ChevronUp size={24} />
-                ) : (
-                  <ChevronDown size={24} />
-                )}
-              </span>
             </button>
 
-            <div
-              className={`transition-all duration-300 overflow-hidden ${openSections[section.id] ? "max-h-[2000px] mt-4" : "max-h-0"}`}
-            >
-              <div className="text-text">
-                {section.content}
-
-                {/* Subsections */}
-                {section.subsections?.map((sub) => (
-                  <div
-                    id={sub.id}
+            {/* Subsection links if they exist */}
+            {section.subsections && (
+              <div className="ml-4 space-y-1">
+                {section.subsections.map((sub) => (
+                  <button
                     key={sub.id}
-                    className="info-card-secondary p-4 mt-4 rounded-lg scroll-mt-24"
+                    onClick={() => handleNavClick(sub.id)}
+                    className="w-full text-left text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white py-1 transition-all"
                   >
-                    <button
-                      onClick={() => toggleSection(sub.id)}
-                      className="w-full text-left text-lg font-semibold flex justify-between items-center"
-                    >
-                      {sub.title}
-                      <span className="text-gray-800 dark:text-gray-400">
-                        {openSections[sub.id] ? (
-                          <ChevronUp size={20} />
-                        ) : (
-                          <ChevronDown size={20} />
-                        )}
-                      </span>
-                    </button>
-
-                    <div
-                      className={`transition-all duration-300 overflow-hidden ${openSections[sub.id] ? "max-h-[2000px] mt-2" : "max-h-0"}`}
-                    >
-                      {sub.content}
-                    </div>
-                  </div>
+                    {sub.title}
+                  </button>
                 ))}
               </div>
-            </div>
+            )}
           </div>
         ))}
+      </nav>
+
+      <div className="absolute bottom-8 left-8 flex gap-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-lg z-10">
+        <button
+          onClick={expandAll}
+          className="text-blue-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Expand all"
+        >
+          <Plus size={20} />
+        </button>
+        <button
+          onClick={collapseAll}
+          className="text-red-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Collapse all"
+        >
+          <Minus size={20} />
+        </button>
       </div>
     </div>
   );
 };
 
-export default Help;
+const PageContent = ({
+  openSections,
+  toggleSection,
+}: {
+  openSections: Record<string, boolean>;
+  toggleSection: (id: string) => void;
+}) => {
+  return (
+    <div className="flex-grow p-8 col-span-1 md:col-span-2 lg:col-span-3">
+      <h1 className="text-4xl font-extrabold text-center mb-6">
+        Getting Started
+      </h1>
+
+      {sections.map((section) => (
+        <Card
+          id={section.id}
+          key={section.id}
+          className="p-6 mb-6 scroll-mt-24"
+        >
+          <button
+            onClick={() => toggleSection(section.id)}
+            className="w-full text-left text-xl font-bold flex justify-between items-center"
+          >
+            {section.title}
+            <span className="text-gray-800 dark:text-gray-400">
+              {openSections[section.id] ? (
+                <ChevronUp size={24} />
+              ) : (
+                <ChevronDown size={24} />
+              )}
+            </span>
+          </button>
+
+          <div
+            className={`transition-all duration-300 overflow-hidden ${openSections[section.id] ? "max-h-[2000px] mt-4" : "max-h-0"}`}
+          >
+            <div className="text-text">
+              {section.content}
+
+              {/* Subsections */}
+              {section.subsections?.map((sub) => (
+                <Card
+                  id={sub.id}
+                  key={sub.id}
+                  className="border border-primary p-4 mt-4 scroll-mt-24"
+                >
+                  <button
+                    onClick={() => toggleSection(sub.id)}
+                    className="w-full text-left text-lg font-semibold flex justify-between items-center"
+                  >
+                    {sub.title}
+                    <span className="text-gray-800 dark:text-gray-400">
+                      {openSections[sub.id] ? (
+                        <ChevronUp size={20} />
+                      ) : (
+                        <ChevronDown size={20} />
+                      )}
+                    </span>
+                  </button>
+
+                  <div
+                    className={`transition-all duration-300 overflow-hidden ${openSections[sub.id] ? "max-h-[2000px] mt-2" : "max-h-0"}`}
+                  >
+                    {sub.content}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+};

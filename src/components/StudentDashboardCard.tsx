@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import PieChart from "./PieChart";
 import { StudentStatus, UserActivityLogItem } from "../api/types/user";
 import StudentStatusBadge from "./StudentStatusBadge";
+import { Card } from "./ui/card";
 
 interface StudentClassData {
   fullName?: string;
@@ -53,8 +54,8 @@ export const StudentDashboardCard = ({
         }
       }}
     >
-      <div
-        className="bg-white dark:bg-slate-700 rounded-2xl shadow-xl overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pt-8 pb-8"
+      <Card
+        className="overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pt-8 pb-8"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -107,7 +108,7 @@ export const StudentDashboardCard = ({
           {/* Stacked Bar Chart */}
           <StackedBarChart activities={logs as UserActivityLogItem[]} />
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

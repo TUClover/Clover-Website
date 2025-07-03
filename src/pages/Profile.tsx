@@ -4,6 +4,7 @@ import AdminProfile from "./AdminProfile";
 import InstructorProfile from "./InstructorProfile";
 import StudentProfile from "./StudentProfile";
 import { Loader2 } from "lucide-react";
+import NavBar from "../components/NavBar";
 
 /**
  * Profile component that renders different profile views based on user role.
@@ -37,22 +38,27 @@ export const Profile = ({
 
   return (
     <div className="space-y-8 width-container">
-      <ProfileHeader
-        userData={userData}
-        selectedRole={effectiveRole}
-        onRoleChange={
-          userData.role !== UserRole.STUDENT ? handleRoleChange : undefined
-        }
-      />
+      <NavBar />
+      <div className="p-10">
+        <ProfileHeader
+          userData={userData}
+          selectedRole={effectiveRole}
+          onRoleChange={
+            userData.role !== UserRole.STUDENT ? handleRoleChange : undefined
+          }
+        />
 
-      {effectiveRole === UserRole.ADMIN && <AdminProfile userData={userData} />}
-      {effectiveRole === UserRole.INSTRUCTOR && (
-        <InstructorProfile userData={userData} />
-      )}
-      {effectiveRole === UserRole.STUDENT && (
-        <StudentProfile userData={userData} />
-      )}
-      {effectiveRole === UserRole.DEV && <AdminProfile userData={userData} />}
+        {effectiveRole === UserRole.ADMIN && (
+          <AdminProfile userData={userData} />
+        )}
+        {effectiveRole === UserRole.INSTRUCTOR && (
+          <InstructorProfile userData={userData} />
+        )}
+        {effectiveRole === UserRole.STUDENT && (
+          <StudentProfile userData={userData} />
+        )}
+        {effectiveRole === UserRole.DEV && <AdminProfile userData={userData} />}
+      </div>
     </div>
   );
 };

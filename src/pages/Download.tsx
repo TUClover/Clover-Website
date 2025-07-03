@@ -8,6 +8,7 @@ import {
 import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
 import { CLOVER, Header, Paragraph, Title } from "../components/ui/text";
+import NavBar from "../components/NavBar";
 
 /**
  * CopyButton component that allows users to copy text to the clipboard.
@@ -54,8 +55,9 @@ export const CopyButton = ({ text }: { text: string }) => {
 export const Download = () => {
   return (
     <div className="flex-grow flex flex-col items-center justify-center width-container">
+      <NavBar />
       {/* Hero Section */}
-      <section className="w-full flex flex-col items-center justify-center text-center px-6 mt-6 pb-12">
+      <section className="w-full flex flex-col items-center justify-center text-center px-6 mt-24 pb-12">
         <Title>
           Download <CLOVER />
         </Title>
@@ -83,7 +85,7 @@ export const Download = () => {
               Marketplace.
             </CardDescription>
             <div className="flex flex-col items-center gap-4 mt-4">
-              <Button className="bg-blue-400 dark: bg-blue-600 hover:bg-blue-500 dark:hover:bg-blue-700 hover:scale-105 text-white font-bold py-2 px-4 rounded transition-all">
+              <Button className="bg-blue-400 dark:bg-blue-600 hover:bg-blue-500 dark:hover:bg-blue-700 hover:scale-105 text-white font-bold py-2 px-4 rounded transition-all">
                 <Link
                   to="vscode:extension/capstone-team-2.temple-capstone-clover"
                   target="_blank"
