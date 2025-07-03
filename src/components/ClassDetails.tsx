@@ -5,6 +5,7 @@ import { useUserData } from "../hooks/useUserData";
 import { updateStudentEnrollmentStatus } from "../api/classes";
 import StudentListSection from "./StudentListSection";
 import { toast } from "sonner";
+import { Card } from "./ui/card";
 
 /**
  * ClassDetails component displays the details of a class, including the instructor and enrolled students.
@@ -81,8 +82,8 @@ export const ClassDetails = ({
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
       onClick={onClose}
     >
-      <div
-        className="bg-white dark:bg-slate-700 rounded-2xl shadow-xl overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pb-8"
+      <Card
+        className="pt-0 overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pb-8"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative h-56 w-full flex-shrink-0">
@@ -189,7 +190,7 @@ export const ClassDetails = ({
               />
             )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

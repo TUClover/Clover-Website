@@ -27,7 +27,10 @@ import {
   useSidebar,
 } from "../../components/ui/sidebar";
 import { CLOVER } from "../../components/ui/text";
-import InstructorDashboard, { InstructorStudents } from "./InstructorDashboard";
+import InstructorDashboard, {
+  InstructorClasses,
+  InstructorStudents,
+} from "./InstructorDashboard";
 import { AdminClasses, AdminUsers } from "./AdminDashboard";
 import DevDashboard from "./DevDashboard";
 import StudentDashboard, {
@@ -424,6 +427,9 @@ function DashboardContent({
         {activeTab === "user-register-classes" && <RegisterClassPage />}
         {activeTab === "instructor-students" && (
           <InstructorStudents userData={userData} />
+        )}
+        {activeTab === "instructor-classes" && (
+          <InstructorClasses userData={userData} />
         )}
         {activeTab === "user-logs" && <UserLogs userData={userData} />}
       </div>

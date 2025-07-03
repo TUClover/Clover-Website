@@ -9,6 +9,7 @@ import {
   User,
   UserClassInfo,
 } from "../api/types/user";
+import { Card } from "./ui/card";
 
 type ClassCardProps = {
   classInfo: ClassData | UserClassInfo;
@@ -76,7 +77,7 @@ export const ClassInfoCard = ({
         onSelect(userClass, studentStatus, instructorData!);
       }}
     >
-      <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-95 border border-border flex flex-col flex-1">
+      <Card className="pt-0 rounded-xl overflow-hidden shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-95 border border-border flex flex-col flex-1">
         <div className="relative h-36 w-full overflow-hidden">
           {isInstructor &&
             waitlistedStudents &&
@@ -138,7 +139,7 @@ export const ClassInfoCard = ({
             )}
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };
