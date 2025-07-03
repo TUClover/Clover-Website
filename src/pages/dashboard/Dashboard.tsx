@@ -424,7 +424,9 @@ function DashboardContent({
         {activeTab === "admin-users" && <AdminUsers />}
         {activeTab == "admin-classes" && <AdminClasses />}
         {activeTab === "app-stats" && <DevDashboard />}
-        {activeTab === "user-register-classes" && <RegisterClassPage />}
+        {activeTab === "user-register-classes" && (
+          <RegisterClassPage user={userData} />
+        )}
         {activeTab === "instructor-students" && (
           <InstructorStudents userData={userData} />
         )}

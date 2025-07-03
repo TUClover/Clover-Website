@@ -6,11 +6,11 @@ import PieChart from "../../components/PieChart";
 import ClassesDropdownMenu from "../../components/ClassesDropdownMenu";
 import { useUserActivity } from "../../hooks/useUserActivity";
 import StudentStatusBadge from "../../components/StudentStatusBadge";
-import { Loader2 } from "lucide-react";
+import { Loader2, MoreHorizontal } from "lucide-react";
 import { useUserClasses } from "../../hooks/useUserClasses";
 import RegisterClassDialog from "../../components/RegisterClassDialog";
 import { ClassData, StudentStatus, User } from "../../api/types/user";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -35,6 +35,16 @@ import { Card } from "../../components/ui/card";
 import InfoTooltip from "../../components/InfoTooltip";
 import PaginatedTable from "../../components/PaginatedTable";
 import SuggestionTable from "../../components/SuggestionTable";
+import { useAllClasses } from "../../hooks/useAllClasses";
+import { Button } from "../../components/ui/button";
+import { registerUserToClass } from "../../api/classes";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
 
 Chart.register(...registerables);
 
@@ -93,9 +103,7 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-4 gap-6">
-        <div className="col-span-1">
-          <RegisterClassDialog />
-        </div>
+        <div className="col-span-1"></div>
         <div className="col-span-1 flex items-center justify-end">
           <span
             className={
@@ -251,80 +259,120 @@ export const UserClasses = () => {
   );
 };
 
-export const RegisterClassPage = () => {
-  const { classes, loading } = useUserClasses();
+export const RegisterClassPage = ({ user }: { user: User }) => {
+  const {
+    classes: userClasses,
+    loading,
+    mutate: mutateUserClasses,
+  } = useUserClasses();
+  const { classes, isLoading } = useAllClasses();
+
+  const userClassMap = useMemo(() => {
+    if (!userClasses) return new Map();
+    return userClasses.reduce((acc, userClass) => {
+      // Use the unique identifier for the class from your userClasses data
+      acc.set(userClass.user_class.id, userClass);
+      return acc;
+    }, new Map());
+  }, [userClasses]);
+
+  const registerUser = async (classId: string) => {
+    const { error } = await registerUserToClass(user.id, classId);
+    if (error) {
+      console.error("Error registering user to class:", error);
+      return;
+    }
+    mutateUserClasses();
+  };
 
   return (
-    <div className="w-full p-4">
+    <div className="w-full">
+      <div className="py-6">
+        <RegisterClassDialog />
+      </div>
       <div className="border rounded-md shadow-sm">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-[#f5f5f5] dark:bg-[#262626]">
             <TableRow>
-              <TableHead className="w-1/3">Class</TableHead>
-              <TableHead className="w-1/3">Instructor</TableHead>
-              <TableHead className="w-1/3">Status</TableHead>
+              <TableHead className="w-[30%]">Class</TableHead>
+              <TableHead>Instructor</TableHead>
+              <TableHead className="text-right">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading ? (
-              Array.from({ length: 3 }).map((_, i) => (
+            {isLoading || loading ? (
+              Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={`loading-${i}`}>
                   <TableCell colSpan={3}>
-                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-6 w-full" />
                   </TableCell>
                 </TableRow>
               ))
             ) : classes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-4">
-                  No classes registered. Please register a new class.
+                <TableCell colSpan={3} className="h-24 text-center">
+                  No classes found.
                 </TableCell>
               </TableRow>
             ) : (
-              classes.map((userClass) => {
-                const {
-                  user_class: c,
-                  enrollment_status,
-                  student_status,
-                } = userClass;
-
+              classes.map((allClass) => {
+                const userEnrollment = userClassMap.get(allClass.id);
                 return (
-                  <TableRow key={c.id}>
+                  <TableRow key={allClass.id}>
                     <TableCell>
-                      <div className="flex items-center gap-3">
-                        {c.class_image_cover ? (
+                      <div className="flex items-center gap-4">
+                        {allClass.class_image_cover ? (
                           <img
-                            src={c.class_image_cover}
+                            src={allClass.class_image_cover}
                             alt="Class cover"
-                            className="w-10 h-10 rounded object-cover"
+                            className="w-12 h-12 rounded-md object-cover"
                           />
                         ) : (
                           <div
-                            className="w-10 h-10 rounded"
-                            style={{ backgroundColor: c.class_hex_color }}
+                            className="w-12 h-12 rounded-md"
+                            style={{
+                              backgroundColor: allClass.class_hex_color,
+                            }}
                           />
                         )}
                         <div>
-                          <div className="font-medium">{c.class_title}</div>
-                          <div className="text-muted-foreground text-sm">
-                            {c.class_code}
+                          <div className="font-medium">
+                            {allClass.class_title}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {allClass.class_code}
                           </div>
                         </div>
                       </div>
                     </TableCell>
-
-                    <TableCell>
-                      {/* You can fetch instructor name based on instructor_id or include it in `ClassData` */}
-                      <span className="text-sm text-muted-foreground">
-                        Instructor ID: {c.instructor_id}
-                      </span>
+                    <TableCell className="text-muted-foreground">
+                      {allClass.instructor_id?.substring(0, 8)}...
                     </TableCell>
-
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <Badge variant="outline">{enrollment_status}</Badge>
-                        <Badge variant="secondary">{student_status}</Badge>
-                      </div>
+                    <TableCell className="text-right">
+                      {userEnrollment ? (
+                        <Badge variant="secondary">Enrolled</Badge>
+                      ) : (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              aria-haspopup="true"
+                              size="icon"
+                              variant="ghost"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Toggle menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                              onSelect={() => registerUser(allClass.id || "")}
+                            >
+                              Register
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
