@@ -190,6 +190,7 @@ export const InstructorClasses = ({ userData }: { userData: User }) => {
     studentStatus?: StudentStatus,
     instructorData?: User
   ) => {
+    console.log("Selected class:", userClass.class_description);
     setSelectedClass({
       userClass,
       studentStatus,

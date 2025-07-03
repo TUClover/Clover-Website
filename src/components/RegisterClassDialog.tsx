@@ -52,7 +52,7 @@ export const RegisterClassDialog = () => {
       setEnrollmentStatusLoading(true);
       try {
         const { data } = await supabase
-          .from("class_users")
+          .from("user_class")
           .select("class_id, enrollment_status")
           .eq("student_id", userData.id)
           .in(

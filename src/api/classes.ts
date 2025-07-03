@@ -81,14 +81,14 @@ export const getClassesByInstructor = async (
  * @returns {Promise<{ data?: UserClass[]; error?: string }>} - The response from the server or an error message.
  */
 export const registerUserToClass = async (
-  studentId: string,
-  classId: string
-): Promise<{ data?: { id: string }; error?: string }> => {
+  user_id: string,
+  class_id: string
+): Promise<{ error?: string }> => {
   try {
     const response = await fetch(`${CLASS_ENDPOINT}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ studentId, classId }),
+      body: JSON.stringify({ user_id, class_id }),
     });
 
     const data = await response.json();
@@ -96,12 +96,12 @@ export const registerUserToClass = async (
     if (!response.ok) {
       return {
         error:
-          data.message ||
+          data.error ||
           `Failed to register: ${response.status} ${response.statusText}`,
       };
     }
 
-    return { data: data.data };
+    return {};
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",

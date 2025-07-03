@@ -1,6 +1,5 @@
 import { useUserData } from "../hooks/useUserData";
 import { Loader2 } from "lucide-react";
-import StudentStatusBadge from "./StudentStatusBadge";
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import PingDot from "./PingDot";
 import {
@@ -96,11 +95,11 @@ export const ClassInfoCard = ({
           )}
           {!isInstructor && (
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/50 dark:to-black/30 opacity-50 justify-between">
-              <StudentStatusBadge
+              {/* <StudentStatusBadge
                 status={studentStatus as StudentStatus}
                 size="sm"
                 className="absolute bottom-6 left-6"
-              />
+              /> */}
             </div>
           )}
         </div>
