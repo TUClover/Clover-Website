@@ -8,6 +8,9 @@ import StackedBarChart from "../../components/StackedBarChart";
 import CreateNewClassDialog from "../../components/CreateNewClassDialog";
 import { User, UserActivityLogItem } from "../../api/types/user";
 import { ProgressData } from "../../utils/calculateProgress";
+import { Card } from "../../components/ui/card";
+import InfoTooltip from "../../components/InfoTooltip";
+import StudentDataTable from "../../components/StudentDataTable";
 
 /**
  * InstructorDashboard component displays the instructor dashboard with class statistics and activity logs.
@@ -113,3 +116,43 @@ const ClassAnalytics = ({
     <StackedBarChart activities={activities} />
   </>
 );
+
+export const InstructorStudents = ({ userData }: { userData: User }) => {
+  const { classes, selectedClassId } = useInstructorClasses(userData.id);
+
+  const { allActivity } = useClassActivity(classes, selectedClassId);
+
+  const selectedClassTitle =
+    classes.find((classItem) => classItem.id === selectedClassId)
+      ?.class_title ?? "";
+
+  return (
+    <Card className="p-6 mt-8">
+      <div className="flex items-center mb-2 gap-3">
+        <h2 className="text-md font-semibold text-primary">
+          Insights About Students
+        </h2>
+        <InfoTooltip>
+          <div className="text-sm space-y-2">
+            <p>
+              The table shows insights from{" "}
+              <span className="text-primary font-semibold">
+                {selectedClassTitle}
+              </span>
+              , summarizing student decisions on code suggestions and their
+              accuracy.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Click on any row to view student-specific suggestions and
+              performance details.
+            </p>
+          </div>
+        </InfoTooltip>
+      </div>
+      <StudentDataTable
+        logs={allActivity}
+        classFilter={selectedClassTitle === "all classes" ? "all" : "class"}
+      />
+    </Card>
+  );
+};
