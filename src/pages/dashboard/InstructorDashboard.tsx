@@ -52,9 +52,7 @@ export const InstructorDashboard = ({ userData }: { userData: User }) => {
   return (
     <div>
       <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="col-span-1">
-          <CreateNewClassDialog />
-        </div>
+        <div className="col-span-1"></div>
         <div className="col-span-1" />
         <div className="col-span-2 flex items-center justify-end">
           <ClassesDropdownMenu
@@ -206,29 +204,31 @@ export const InstructorClasses = ({ userData }: { userData: User }) => {
   }
 
   return (
-    <div className="width-container grid grid-cols-1 md:grid-cols-5 lg:grid-cols-3 gap-6">
-      <div className="col-span-1 md:col-span-3 lg:col-span-2 space-y-4">
-        <div className="card flex w-full justify-center">
+    <div className="w-full grid grid-cols-1 md:grid-cols-5 lg:grid-cols-3 gap-6">
+      <div className="col-span-11 space-y-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold tracking-tight">Your Classes</h2>
+          <CreateNewClassDialog />
+        </div>
+
+        <div className="w-full">
           {originalClasses.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 p-16 text-center">
-              <p className="text-lg font-medium">
-                You currently have no classes
+              <p className="text-lg font-medium">No classes yet</p>
+              <p className="text-muted-foreground">
+                Click "Create Class" to get started.
               </p>
-              <p className="text-muted-foreground mb-6">
-                Please create a new class
-              </p>
-              <CreateNewClassDialog />
             </div>
           ) : (
             <Carousel
               opts={{
-                align: "start",
+                align: "center",
               }}
               className="w-full"
             >
               <CarouselContent>
                 {originalClasses.map((userClass, index) => (
-                  <CarouselItem key={index} className="lg:basis-1/2">
+                  <CarouselItem key={index} className="lg:basis-1/3">
                     <div className="p-1">
                       <ClassInfoCard
                         classInfo={userClass}
@@ -244,16 +244,19 @@ export const InstructorClasses = ({ userData }: { userData: User }) => {
               </CarouselContent>
               {originalClasses.length > 1 && (
                 <div
-                  className={`flex justify-between w-full ${originalClasses.length <= 2 && "lg:hidden"}`}
+                  className={`flex justify-between w-full pt-4 ${
+                    originalClasses.length <= 2 && "lg:hidden"
+                  }`}
                 >
-                  <CarouselPrevious className="ml-4" />
-                  <CarouselNext className="mr-4" />
+                  <CarouselPrevious className="static translate-x-0 translate-y-0 ml-4" />
+                  <CarouselNext className="static translate-x-0 translate-y-0 mr-4" />
                 </div>
               )}
             </Carousel>
           )}
         </div>
       </div>
+
       {selectedClass && (
         <ClassDetails
           userClass={selectedClass.userClass}
