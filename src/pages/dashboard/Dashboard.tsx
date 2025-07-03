@@ -678,14 +678,9 @@ const RegisterClassPage = () => {
 const UserLogs = () => {};
 
 const InstructorStudents = ({ userData }: { userData: User }) => {
-  const { classes, selectedClassId, handleClassSelect } = useInstructorClasses(
-    userData.id
-  );
+  const { classes, selectedClassId } = useInstructorClasses(userData.id);
 
-  const { allActivity, classActivity, progressData } = useClassActivity(
-    classes,
-    selectedClassId
-  );
+  const { allActivity } = useClassActivity(classes, selectedClassId);
 
   const selectedClassTitle =
     classes.find((classItem) => classItem.id === selectedClassId)
