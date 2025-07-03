@@ -472,10 +472,10 @@ const PageContent = ({
 
               {/* Subsections */}
               {section.subsections?.map((sub) => (
-                <div
+                <Card
                   id={sub.id}
                   key={sub.id}
-                  className="info-card-secondary p-4 mt-4 rounded-lg scroll-mt-24"
+                  className="border border-primary p-4 mt-4 scroll-mt-24"
                 >
                   <button
                     onClick={() => toggleSection(sub.id)}
@@ -496,7 +496,7 @@ const PageContent = ({
                   >
                     {sub.content}
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           </div>

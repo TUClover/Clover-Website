@@ -5,16 +5,11 @@ import StackedBarChart from "../../components/StackedBarChart";
 import PieChart from "../../components/PieChart";
 import ClassesDropdownMenu from "../../components/ClassesDropdownMenu";
 import { useUserActivity } from "../../hooks/useUserActivity";
-import PaginatedTable from "../../components/PaginatedTable";
-import SuggestionTable from "../../components/SuggestionTable";
 import StudentStatusBadge from "../../components/StudentStatusBadge";
 import { Loader2 } from "lucide-react";
 import { useUserClasses } from "../../hooks/useUserClasses";
 import RegisterClassDialog from "../../components/RegisterClassDialog";
 import { User } from "../../api/types/user";
-import { LogEvent } from "../../api/types/event";
-import InfoTooltip from "../../components/InfoTooltip";
-import { Card } from "../../components/ui/card";
 
 Chart.register(...registerables);
 
@@ -40,17 +35,6 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
   } = useUserActivity(userData.id, selectedClassId, selectedClassType);
 
   const loading = userClassLoading || userActivityLoading;
-  const filteredLogItems = userActivity.filter(
-    (logItem) =>
-      logItem.event === LogEvent.SUGGESTION_ACCEPT ||
-      logItem.event === LogEvent.USER_REJECT
-  );
-
-  const sortedLogItems = filteredLogItems.sort(
-    (a, b) =>
-      new Date(b.log_created_at).getTime() -
-      new Date(a.log_created_at).getTime()
-  );
 
   if (loading) {
     return (
@@ -141,34 +125,6 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
 
         {/*Stacked Bar Graph*/}
         <StackedBarChart activities={userActivity} />
-
-        {/* Insights Table */}
-        <Card className="p-6">
-          <div className="flex items-center mb-3 gap-3">
-            <h2 className="text-lg font-semibold text-[#50B498]">
-              User Insights Table
-            </h2>
-            <InfoTooltip>
-              <div className="text-sm space-y-2">
-                <p>
-                  The table displays each student's individual decisions on code
-                  suggestions — including whether they accepted them and if the
-                  suggestions contained bugs.
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Click on any row to view detailed information about that
-                  specific suggestion.
-                </p>
-              </div>
-            </InfoTooltip>
-          </div>
-          <PaginatedTable
-            data={sortedLogItems}
-            renderTable={(items, startIndex) => (
-              <SuggestionTable logItems={items} startIndex={startIndex} />
-            )}
-          />
-        </Card>
       </div>
     </div>
   );

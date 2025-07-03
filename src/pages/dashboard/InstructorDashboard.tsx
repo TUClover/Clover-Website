@@ -6,10 +6,7 @@ import LineChart from "../../components/LineChart";
 import { useInstructorClasses } from "../../hooks/useInstructorClasses";
 import StackedBarChart from "../../components/StackedBarChart";
 import CreateNewClassDialog from "../../components/CreateNewClassDialog";
-import StudentDataTable from "../../components/StudentDataTable";
 import { User, UserActivityLogItem } from "../../api/types/user";
-import InfoTooltip from "../../components/InfoTooltip";
-import { Card } from "../../components/ui/card";
 import { ProgressData } from "../../utils/calculateProgress";
 
 /**
@@ -79,7 +76,6 @@ export default InstructorDashboard;
 const ClassAnalytics = ({
   activities,
   progressData,
-  classInfo,
 }: {
   activities: UserActivityLogItem[];
   progressData: ProgressData;
@@ -115,30 +111,5 @@ const ClassAnalytics = ({
       <LineChart activities={activities} />
     </div>
     <StackedBarChart activities={activities} />
-    <Card className="p-6 mt-8">
-      <div className="flex items-center mb-2 gap-3">
-        <h2 className="text-md font-semibold text-primary">
-          Insights About Students
-        </h2>
-        <InfoTooltip>
-          <div className="text-sm space-y-2">
-            <p>
-              The table shows insights from{" "}
-              <span className="text-primary font-semibold">{classInfo}</span>,
-              summarizing student decisions on code suggestions and their
-              accuracy.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Click on any row to view student-specific suggestions and
-              performance details.
-            </p>
-          </div>
-        </InfoTooltip>
-      </div>
-      <StudentDataTable
-        logs={activities}
-        classFilter={classInfo === "all classes" ? "all" : "class"}
-      />
-    </Card>
   </>
 );

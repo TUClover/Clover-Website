@@ -77,6 +77,10 @@ import InfoTooltip from "../../components/InfoTooltip";
 import StudentDataTable from "../../components/StudentDataTable";
 import { useInstructorClasses } from "../../hooks/useInstructorClasses";
 import { useClassActivity } from "../../hooks/useClassActivity";
+import PaginatedTable from "../../components/PaginatedTable";
+import SuggestionTable from "../../components/SuggestionTable";
+import { useUserActivity } from "../../hooks/useUserActivity";
+import { LogEvent } from "../../api/types/event";
 
 type SideBarItem = {
   id: string;
@@ -409,7 +413,7 @@ function SideBar({
       </SidebarContent>
       <SidebarFooter>
         {userData.role === UserRole.DEV && onRoleChange && (
-          <div className="px-4 pb-4">
+          <div className="px-2 pb-4">
             <label className="text-xs font-semibold text-muted-foreground block mb-1">
               Viewing as
             </label>
@@ -426,7 +430,7 @@ function SideBar({
             </select>
           </div>
         )}
-        <SidebarMenuButton className={`w-full pl-4 text-left`}>
+        <SidebarMenuButton className={`w-full text-left`}>
           <Download className="mr-2 h-4 w-4" />
           <a href="/download">Download</a>
         </SidebarMenuButton>
@@ -463,6 +467,7 @@ function DashboardContent({
         {activeTab === "instructor-students" && (
           <InstructorStudents userData={userData} />
         )}
+        {activeTab === "user-logs" && <UserLogs userData={userData} />}
       </div>
     </div>
   );
@@ -675,7 +680,68 @@ const RegisterClassPage = () => {
   );
 };
 
-const UserLogs = () => {};
+const UserLogs = ({ userData }: { userData: User }) => {
+  const {
+    selectedClassId,
+    selectedClassType,
+    loading: userClassLoading,
+  } = useUserClasses();
+  const { userActivity, loading: userActivityLoading } = useUserActivity(
+    userData.id,
+    selectedClassId,
+    selectedClassType
+  );
+
+  const filteredLogItems = userActivity.filter(
+    (logItem) =>
+      logItem.event === LogEvent.SUGGESTION_ACCEPT ||
+      logItem.event === LogEvent.USER_REJECT
+  );
+  const sortedLogItems = filteredLogItems.sort(
+    (a, b) =>
+      new Date(b.log_created_at).getTime() -
+      new Date(a.log_created_at).getTime()
+  );
+
+  const loading = userClassLoading || userActivityLoading;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="animate-spin h-10 w-10 dark:text-white" />
+      </div>
+    );
+  }
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center mb-3 gap-3">
+        <h2 className="text-lg font-semibold text-[#50B498]">
+          User Insights Table
+        </h2>
+        <InfoTooltip>
+          <div className="text-sm space-y-2">
+            <p>
+              The table displays each student's individual decisions on code
+              suggestions — including whether they accepted them and if the
+              suggestions contained bugs.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Click on any row to view detailed information about that specific
+              suggestion.
+            </p>
+          </div>
+        </InfoTooltip>
+      </div>
+      <PaginatedTable
+        data={sortedLogItems}
+        renderTable={(items, startIndex) => (
+          <SuggestionTable logItems={items} startIndex={startIndex} />
+        )}
+      />
+    </Card>
+  );
+};
 
 const InstructorStudents = ({ userData }: { userData: User }) => {
   const { classes, selectedClassId } = useInstructorClasses(userData.id);
