@@ -196,7 +196,7 @@ const Dashboard = ({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full">
+      <div className="flex h-screen">
         <SideBar
           userData={userData}
           sidebarItems={sidebarItems}
