@@ -366,6 +366,7 @@ function SideBar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+      <Separator />
       <SidebarContent>
         {Object.entries(groupedItems).map(([subheading, items]) => (
           <SidebarGroup key={subheading}>

@@ -3,6 +3,7 @@ import { LogEvent } from "../api/types/event";
 import { UserActivityLogItem } from "../api/types/user";
 import { Suggestion } from "../api/types/suggestion";
 import { useEffect, useState } from "react";
+import { Card } from "./ui/card";
 
 /**
  * SuggestionTable component displays a table of user activity log items and allows the user to view details of a selected suggestion.
@@ -39,8 +40,6 @@ export const SuggestionTable = ({
           selectedLogItem.suggestion_id as unknown as string
         );
 
-        console.log("result from getSuggestionById:", result);
-
         if (result.error) {
           setFetchError(result.error);
           setSuggestionDetail(null);
@@ -50,7 +49,7 @@ export const SuggestionTable = ({
           const modifiedResult: Suggestion = {
             ...result.data,
             time_lapse: selectedLogItem.duration,
-            accepted: selectedLogItem.event === LogEvent.USER_ACCEPT,
+            accepted: selectedLogItem.event === LogEvent.SUGGESTION_ACCEPT,
           };
 
           setSuggestionDetail(modifiedResult || null);
@@ -72,7 +71,7 @@ export const SuggestionTable = ({
     <>
       <table className="w-full text-sm text-left text-text">
         <thead className="text-text">
-          <tr className="border-b border-gray-900 dark:border-gray-100 fonr-semibold">
+          <tr className="border-b border-gray-900 dark:border-gray-100 font-semibold">
             <th className="w-4">No.</th>
             <th className="px-4 py-2">Date</th>
             <th className="px-4 py-2">Accepted?</th>
@@ -83,7 +82,7 @@ export const SuggestionTable = ({
           {logItems.map((logItem, index) => (
             <tr
               key={logItem.log_id}
-              className="hover:bg-gray-400 dark:hover:bg-gray-700 transition cursor-pointer"
+              className="hover:bg-gray-200 dark:hover:bg-gray-800 transition cursor-pointer"
               onClick={() => setSelectedLogItem(logItem)}
             >
               <td className="p-2">{startIndex + index + 1}</td>
@@ -91,7 +90,7 @@ export const SuggestionTable = ({
                 {new Date(logItem.log_created_at).toLocaleDateString()}
               </td>
               <td className="px-4 py-2">
-                {logItem.event === LogEvent.USER_ACCEPT ? "Yes" : "No"}
+                {logItem.event === LogEvent.SUGGESTION_ACCEPT ? "Yes" : "No"}
               </td>
               <td className="px-4 py-2">{logItem.has_bug ? "Yes" : "No"}</td>
             </tr>
@@ -107,7 +106,7 @@ export const SuggestionTable = ({
             }
           }}
         >
-          <div className="bg-gray-200 dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-3xl w-full relative">
+          <Card className="p-6 max-w-3xl w-full relative">
             {/* Close button */}
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-white text-xl"
@@ -126,11 +125,14 @@ export const SuggestionTable = ({
             ) : fetchError ? (
               <div className="text-red-500 p-4">{fetchError}</div>
             ) : suggestionDetail ? (
-              <SuggestionDetailCard suggestion={suggestionDetail} />
+              <SuggestionDetailCard
+                log={selectedLogItem}
+                suggestion={suggestionDetail}
+              />
             ) : (
               <p>No suggestion details available</p>
             )}
-          </div>
+          </Card>
         </div>
       )}
     </>
@@ -147,8 +149,10 @@ export default SuggestionTable;
  * @returns {JSX.Element} - JSX element representing the suggestion detail card
  */
 export const SuggestionDetailCard = ({
+  log,
   suggestion,
 }: {
+  log: UserActivityLogItem;
   suggestion: Suggestion;
 }) => {
   return (
@@ -166,10 +170,10 @@ export const SuggestionDetailCard = ({
               </h4>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
-              <pre className="bg-gray-300 dark:bg-gray-700 p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
+              <pre className="bg-background border border-primary p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
                 {suggestion.suggestion_array[0] || "No code provided"}
               </pre>
-              <pre className="bg-gray-300 dark:bg-gray-700 p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
+              <pre className="bg-background border border-primary p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
                 {suggestion.suggestion_array[1] || "No code provided"}
               </pre>
             </div>
@@ -179,7 +183,7 @@ export const SuggestionDetailCard = ({
             <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Suggested Code
             </h4>
-            <pre className="bg-gray-300 dark:bg-gray-700 p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
+            <pre className="bg-background border border-primary p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
               {suggestion.suggestion_array[0] || "No code provided"}
             </pre>
           </>
@@ -217,14 +221,14 @@ export const SuggestionDetailCard = ({
           <h4 className="font-semibold text-gray-700 dark:text-gray-300">
             Response Time
           </h4>
-          <p>{suggestion.time_lapse} ms</p>
+          <p>{log.duration} ms</p>
         </div>
 
-        <div className="md:col-span-2 overflow-auto max-h-64">
+        <div className="md:col-span-2 max-h-64">
           <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Prompt
           </h4>
-          <pre className="bg-gray-300 dark:bg-gray-700 p-4 rounded-md text-sm whitespace-pre-wrap">
+          <pre className="bg-background border border-primary p-4 rounded-md text-sm whitespace-pre-wrap">
             {suggestion.prompt}
           </pre>
         </div>

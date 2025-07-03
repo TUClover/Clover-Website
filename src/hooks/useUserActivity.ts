@@ -34,10 +34,10 @@ export const useUserActivity = (
     const fetchActivity = async () => {
       try {
         setError(null);
-        const response = await getUserActivity(userId);
-        if (response.error) throw new Error(response.error);
+        const { data, error } = await getUserActivity(userId);
+        if (error || !data) throw new Error(error);
 
-        let filteredActivities = response.data?.filter(
+        let filteredActivities = data.filter(
           (activity) =>
             activity.event === LogEvent.SUGGESTION_ACCEPT ||
             activity.event === LogEvent.USER_REJECT
