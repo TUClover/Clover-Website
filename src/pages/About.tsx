@@ -9,9 +9,9 @@ import NavBar from "../components/NavBar";
  */
 export const About: React.FC = () => {
   return (
-    <div className="flex-grow flex flex-col items-center justify-center width-container">
+    <div className="flex flex-col items-center justify-center width-container min-h-screen">
       <NavBar />
-      <section className="w-full flex flex-col items-center justify-center text-center px-6 pt-24 pb-12">
+      <section className="w-full flex flex-col flex-grow items-center justify-center text-center px-6 pt-24 pb-12">
         <Title>
           About <CLOVER />
         </Title>
@@ -30,6 +30,10 @@ export const About: React.FC = () => {
           ></iframe>
         </div>
       </section>
+      <footer className="py-6 text-center text-sm">
+        <p>© 2025 CLOVER</p>
+        <p className="text-primary">TEAM 2</p>
+      </footer>
     </div>
   );
 };

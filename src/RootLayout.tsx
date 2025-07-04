@@ -17,12 +17,6 @@ const RootLayout = () => {
           <Outlet />
         </div>
       </div>
-
-      {/* Footer - Always at the bottom */}
-      <footer className="py-6 text-center text-sm text-gray-600 dark:text-gray-400">
-        <p>© 2025 CLOVER</p>
-        <p className="text-primary">TEAM 2</p>
-      </footer>
     </div>
   );
 };

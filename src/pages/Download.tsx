@@ -54,10 +54,10 @@ export const CopyButton = ({ text }: { text: string }) => {
  */
 export const Download = () => {
   return (
-    <div className="flex-grow flex flex-col items-center justify-center width-container">
+    <div className="flex-grow flex flex-col items-center justify-center width-container min-h-screen">
       <NavBar />
       {/* Hero Section */}
-      <section className="w-full flex flex-col items-center justify-center text-center px-6 mt-24 pb-12">
+      <section className="w-full flex flex-col flex-grow items-center text-center px-6 mt-24 pb-12">
         <Title>
           Download <CLOVER />
         </Title>
@@ -130,6 +130,10 @@ export const Download = () => {
           </div>
         </div> */}
       </section>
+      <footer className="py-6 text-center text-sm">
+        <p>© 2025 CLOVER</p>
+        <p className="text-primary">TEAM 2</p>
+      </footer>
     </div>
   );
 };
