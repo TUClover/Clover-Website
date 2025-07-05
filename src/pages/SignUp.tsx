@@ -1,3 +1,4 @@
+import NavBar from "../components/NavBar";
 import SignUpForm from "../forms/SignUpForm";
 
 /**
@@ -7,6 +8,7 @@ import SignUpForm from "../forms/SignUpForm";
 export const SignUp = () => {
   return (
     <div className="flex flex-col justify-center items-center w-full text-text h-[calc(100vh-12rem)]">
+      <NavBar />
       <SignUpForm />
     </div>
   );
