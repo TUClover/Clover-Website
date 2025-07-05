@@ -11,7 +11,8 @@ export const AuthCallback: React.FC = () => {
 
   useEffect(() => {
     const handleAuthRedirect = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
+      const hash = window.location.hash;
+      const urlParams = new URLSearchParams(hash.substring(1));
       const access_token = urlParams.get("access_token");
       const refresh_token = urlParams.get("refresh_token");
 
@@ -22,7 +23,6 @@ export const AuthCallback: React.FC = () => {
       }
 
       try {
-        // Store session in Supabase
         const { error } = await supabase.auth.setSession({
           access_token,
           refresh_token,

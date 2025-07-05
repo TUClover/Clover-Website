@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { AUTH_ENDPOINT } from "../api/endpoints";
 
 /**
  * LoginForm component for user authentication.
@@ -21,9 +22,8 @@ export const LoginForm: React.FC = () => {
   // Handle GitHub Login
   const handleGitHubLogin = async () => {
     try {
-      window.location.href =
-        "https://backend-639487598928.us-east5.run.app/auth/login?provider=github&next=https://clover.nickrucinski.com/auth"; // Redirect user to GitHub OAuth
-      // window.location.href = `${AUTH_ENDPOINT}/login?provider=github&next=http://localhost:5173/auth`; // Redirect user to GitHub OAuth
+      window.location.href = `${AUTH_ENDPOINT}/provider/github?redirect_to=https://clover.nickrucinski.com/auth`; // Redirect user to GitHub OAuth
+      // `${AUTH_ENDPOINT}/provider/github?redirect_to=http://localhost:5173/auth`; // Redirect user to GitHub OAuth
     } catch (err) {
       setError("An error occurred while attempting GitHub login." + err);
     }

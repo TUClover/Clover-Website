@@ -1,3 +1,4 @@
+import NavBar from "../components/NavBar";
 import LoginForm from "../forms/LogInForm";
 
 /**
@@ -7,6 +8,7 @@ import LoginForm from "../forms/LogInForm";
 export const LogIn = () => {
   return (
     <div className="flex flex-col justify-center items-center w-full text-text h-[calc(100vh-12rem)]">
+      <NavBar />
       <LoginForm />
     </div>
   );
