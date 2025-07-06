@@ -1,58 +1,20 @@
-import { useEffect } from "react";
-import { supabase } from "../supabaseClient";
-import { checkAndRegisterUser } from "../api/auth";
+import { useEffect, useRef } from "react";
+import { handleAuthRedirect } from "../utils/handleAuth";
 
 export default function VSCodeAuthCallback() {
+  let called = useRef(false);
   useEffect(() => {
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
+    if (called.current) return;
+    called.current = true;
 
-    const accessToken = params.get("access_token");
-    const refreshToken = params.get("refresh_token");
-
-    if (!accessToken || !refreshToken) {
-      console.error("Missing authentication tokens.");
-      return;
-    }
-    supabase.auth
-      .setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      })
-      .then(async () => {
-        const { data: userData, error: userError } =
-          await supabase.auth.getUser();
-
-        if (userError || !userData.user) {
-          console.error("Error fetching user:", userError?.message);
-          return;
-        }
-
-        const userId = userData.user.id;
-        const email = userData.user.email;
-        const fullName = userData.user.user_metadata?.full_name || "";
-        const [firstName, ...rest] = fullName.trim().split(" ");
-        const lastName = rest.join(" ");
-
-        if (!firstName || !lastName || !email) {
-          console.error("User metadata does not contain full name.");
-          return;
-        }
-
-        const { error } = await checkAndRegisterUser(
-          firstName,
-          lastName,
-          email,
-          userId
-        );
-
-        if (error) {
-          console.error("Error checking and registering user:", error);
-          return;
-        }
-
+    handleAuthRedirect({
+      onComplete: (userId) => {
         window.location.href = `vscode://capstone-team-2.temple-capstone-clover/auth-complete?id=${userId}`;
-      });
+      },
+      onError: (message) => {
+        console.error("VSCode Auth Failed:", message);
+      },
+    });
   }, []);
 
   return (

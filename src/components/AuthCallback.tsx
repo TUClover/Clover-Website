@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient";
-import { checkAndRegisterUser } from "../api/auth";
+import { handleAuthRedirect } from "../utils/handleAuth";
 
 /**
  * AuthCallback component handles the authentication callback from Supabase.
@@ -9,69 +8,21 @@ import { checkAndRegisterUser } from "../api/auth";
  */
 export const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
+  let called = useRef(false);
 
   useEffect(() => {
-    const handleAuthRedirect = async () => {
-      const hash = window.location.hash;
-      const urlParams = new URLSearchParams(hash.substring(1));
-      const access_token = urlParams.get("access_token");
-      const refresh_token = urlParams.get("refresh_token");
+    if (called.current) return;
+    called.current = true;
 
-      if (!access_token || !refresh_token) {
-        console.error("Missing authentication tokens.");
+    handleAuthRedirect({
+      onComplete: () => {
+        navigate("/dashboard");
+      },
+      onError: (message) => {
+        console.error("Web Auth Failed:", message);
         navigate("/login");
-        return;
-      }
-
-      try {
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token,
-          refresh_token,
-        });
-
-        if (sessionError) {
-          throw new Error(sessionError.message);
-        }
-
-        const { data: userData, error: userError } =
-          await supabase.auth.getUser();
-
-        if (userError || !userData.user) {
-          console.error("Error fetching user:", userError?.message);
-          return;
-        }
-
-        const userId = userData.user.id;
-        const email = userData.user.email;
-        const fullName = userData.user.user_metadata?.full_name || "";
-        const [firstName, ...rest] = fullName.trim().split(" ");
-        const lastName = rest.join(" ");
-
-        if (!firstName || !lastName || !email) {
-          console.error("User metadata does not contain full name.");
-          return;
-        }
-
-        const { error } = await checkAndRegisterUser(
-          firstName,
-          lastName,
-          email,
-          userId
-        );
-
-        if (error) {
-          console.error("Error checking and registering user:", error);
-          return;
-        }
-
-        navigate("/dashboard"); // Redirect after login
-      } catch (err) {
-        console.error("Auth error:", err);
-        navigate("/login"); // Redirect to login on failure
-      }
-    };
-
-    handleAuthRedirect();
+      },
+    });
   }, [navigate]);
 
   return (

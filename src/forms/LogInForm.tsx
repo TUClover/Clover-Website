@@ -22,8 +22,8 @@ export const LoginForm: React.FC = () => {
   // Handle GitHub Login
   const handleGitHubLogin = async () => {
     try {
-      window.location.href = `${AUTH_ENDPOINT}/provider/github?redirect_to=https://clover.nickrucinski.com/auth`; // Redirect user to GitHub OAuth
-      // `${AUTH_ENDPOINT}/provider/github?redirect_to=http://localhost:5173/auth`; // Redirect user to GitHub OAuth
+      // window.location.href = `${AUTH_ENDPOINT}/provider/github?redirect_to=https://clover.nickrucinski.com/auth`; // Redirect user to GitHub OAuth
+      window.location.href = `${AUTH_ENDPOINT}/provider/github?redirect_to=http://localhost:5173/auth`; // Redirect user to GitHub OAuth
     } catch (err) {
       setError("An error occurred while attempting GitHub login." + err);
     }
