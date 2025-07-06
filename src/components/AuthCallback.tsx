@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient";
+import { handleAuthRedirect } from "../utils/handleAuth";
 
 /**
  * AuthCallback component handles the authentication callback from Supabase.
@@ -8,43 +8,26 @@ import { supabase } from "../supabaseClient";
  */
 export const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
+  let called = useRef(false);
 
   useEffect(() => {
-    const handleAuthRedirect = async () => {
-      const hash = window.location.hash;
-      const urlParams = new URLSearchParams(hash.substring(1));
-      const access_token = urlParams.get("access_token");
-      const refresh_token = urlParams.get("refresh_token");
+    if (called.current) return;
+    called.current = true;
 
-      if (!access_token || !refresh_token) {
-        console.error("Missing authentication tokens.");
+    handleAuthRedirect({
+      onComplete: () => {
+        navigate("/dashboard");
+      },
+      onError: (message) => {
+        console.error("Web Auth Failed:", message);
         navigate("/login");
-        return;
-      }
-
-      try {
-        const { error } = await supabase.auth.setSession({
-          access_token,
-          refresh_token,
-        });
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        navigate("/dashboard"); // Redirect after login
-      } catch (err) {
-        console.error("Auth error:", err);
-        navigate("/login"); // Redirect to login on failure
-      }
-    };
-
-    handleAuthRedirect();
+      },
+    });
   }, [navigate]);
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
-      <p>Processing login...</p>
+      <p>Logging you in...</p>
     </div>
   );
 };

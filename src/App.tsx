@@ -17,6 +17,7 @@ import { useUserData } from "./hooks/useUserData";
 import { Loader2 } from "lucide-react";
 import Reset from "./pages/PasswordReset";
 import PasswordCallback from "./pages/PasswordCallback";
+import VSCodeAuthCallback from "./components/VscodeAuth";
 
 /**
  * ProtectedRoute component that checks if the user is authenticated.
@@ -79,6 +80,7 @@ const App = () => {
           <Route path="/download" element={<Download />} />
           <Route path="/getting-started" element={<Help />} />
           <Route path="/auth" element={<AuthCallback />} />
+          <Route path="/auth/vscode" element={<VSCodeAuthCallback />} />
           <Route path="/passwordreset" element={<Reset />} />
           <Route path="/resetform" element={<PasswordCallback />} />
         </Route>
