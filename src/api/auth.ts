@@ -45,3 +45,37 @@ export async function registerUser(
     };
   }
 }
+
+export async function checkAndRegisterUser(
+  firstName: string,
+  lastName: string,
+  email: string,
+  id: string
+): Promise<{ error?: string }> {
+  try {
+    const response = await fetch(`${AUTH_ENDPOINT}/check`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        id,
+        first_name: firstName,
+        last_name: lastName,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { error: data.error };
+    }
+
+    return { error: undefined };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}
