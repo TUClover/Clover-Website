@@ -142,15 +142,14 @@ export const LineChart = ({
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-[#50B498]">{title}</h2>
+          <h2 className="text-lg font-semibold text-alpha">{title}</h2>
           <InfoTooltip>
             <div className="space-y-2">
               <p className="text-sm">
                 This line chart shows how many code suggestions users{" "}
-                <span className="font-semibold text-[#50B498]">accepted</span>{" "}
-                or{" "}
-                <span className="font-semibold text-[#F59E0B]">rejected</span>{" "}
-                over time.
+                <span className="font-semibold text-alpha">accepted</span> or{" "}
+                <span className="font-semibold text-beta">rejected</span> over
+                time.
               </p>
               <p className="text-xs text-muted-foreground">
                 Time range can be adjusted (daily/weekly/monthly)

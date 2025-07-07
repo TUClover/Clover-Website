@@ -64,3 +64,18 @@ export type UserActivityLogItem =
   | BlockSuggestionLogResponse
   | LineSuggestionLogResponse
   | SelectionSuggestionLogResponse;
+
+export function getSuggestionIdByMode(
+  logItem: UserActivityLogItem,
+  mode: ActiveUserMode
+) {
+  switch (mode) {
+    case "CODE_BLOCK":
+      return (logItem as BlockSuggestionLogResponse).suggestionId;
+    case "LINE_BY_LINE":
+      return (logItem as LineSuggestionLogResponse).lineSuggestionId;
+    case "CODE_SELECTION":
+      return (logItem as SelectionSuggestionLogResponse)
+        .selectionSuggestionItemId;
+  }
+}

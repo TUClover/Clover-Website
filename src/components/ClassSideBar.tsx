@@ -202,7 +202,7 @@ export const ClassSideBar: React.FC<ClassSideBarProps> = ({
                           className="w-full h-full rounded-full object-cover"
                         />
                       ) : (
-                        <AvatarFallback className="bg-[#50B498] text-white text-lg font-semibold">
+                        <AvatarFallback className="bg-alpha text-white text-lg font-semibold">
                           {" "}
                           {classItem.class_title?.charAt(0).toUpperCase()}
                         </AvatarFallback>

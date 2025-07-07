@@ -109,7 +109,7 @@ export const PieChart = ({
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-[#50B498]">{title}</h2>
+          <h2 className="text-lg font-semibold text-main">{title}</h2>
           <InfoTooltip>
             <div className="space-y-2">
               <p className="text-sm">
@@ -117,12 +117,11 @@ export const PieChart = ({
                 based on the selected view.
               </p>
               <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-[#50B498]">Correct</span>:{" "}
+                <span className="font-medium text-alpha">Correct</span>:{" "}
                 {chartData.correct} decisions ({correctPercentage.toFixed(1)}%)
                 <br />
-                <span className="font-medium text-[#F59E0B]">
-                  Incorrect
-                </span>: {chartData.incorrect} decisions (
+                <span className="font-medium text-beta">Incorrect</span>:{" "}
+                {chartData.incorrect} decisions (
                 {(100 - correctPercentage).toFixed(1)}%)
               </p>
             </div>

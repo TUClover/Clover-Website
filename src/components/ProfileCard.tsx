@@ -26,7 +26,7 @@ const ProfileCard = ({ userData, detailsContent }: ProfileCardProps) => {
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
-            <AvatarFallback className="bg-[#50B498] text-white text-2xl font-semibold">
+            <AvatarFallback className="bg-alpha text-white text-2xl font-semibold">
               {first_name.charAt(0).toUpperCase()}
             </AvatarFallback>
           )}

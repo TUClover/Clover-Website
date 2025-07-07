@@ -1,4 +1,3 @@
-import { getSuggestionById } from "../api/suggestion";
 import { Suggestion, UserActivityLogItem } from "../api/types/suggestion";
 import { useCallback, useEffect, useState } from "react";
 import { Card } from "./ui/card";
@@ -15,6 +14,7 @@ import {
 } from "./ui/table";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { getSuggestionByModeAndId } from "../api/suggestion";
 
 interface SuggestionTableProps {
   logItems: UserActivityLogItem[];
@@ -72,9 +72,7 @@ export const SuggestionTable = ({
       setFetchError(null);
 
       try {
-        const result = await getSuggestionById(
-          selectedLogItem.id as unknown as string
-        );
+        const result = await getSuggestionByModeAndId(selectedLogItem, mode);
 
         if (result.error) {
           setFetchError(result.error);
@@ -101,7 +99,8 @@ export const SuggestionTable = ({
     };
 
     fetchSuggestion();
-  }, [selectedLogItem, events, isAcceptEvent]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLogItem]);
 
   return (
     <>
@@ -169,14 +168,14 @@ export const SuggestionTable = ({
 
       {selectedLogItem && (
         <div
-          className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center p-4"
+          className="fixed inset-0 bg-black/20 z-50 flex justify-center items-center p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setSelectedLogItem(null);
             }
           }}
         >
-          <Card className="p-6 max-w-4xl w-full max-h-[90vh] overflow-auto relative">
+          <Card className="p-6 max-w-3xl lg:max-w-5xl w-full max-h-[90vh] relative bg-white dark:bg-black">
             <Button
               variant="ghost"
               size="icon"
@@ -246,10 +245,10 @@ export const SuggestionDetailCard = ({
               </h4>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
-              <pre className="bg-background border border-primary p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
+              <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
                 {suggestion.suggestion_array[0] || "No code provided"}
               </pre>
-              <pre className="bg-background border border-primary p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
+              <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
                 {suggestion.suggestion_array[1] || "No code provided"}
               </pre>
             </div>
@@ -259,7 +258,7 @@ export const SuggestionDetailCard = ({
             <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Suggested Code
             </h4>
-            <pre className="bg-background border border-primary p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
+            <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
               {suggestion.suggestion_array[0] || "No code provided"}
             </pre>
           </>
@@ -300,11 +299,11 @@ export const SuggestionDetailCard = ({
           <p>{log.duration} ms</p>
         </div>
 
-        <div className="md:col-span-2 max-h-64">
+        <div className="md:col-span-2">
           <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Prompt
           </h4>
-          <pre className="bg-background border border-primary p-4 rounded-md text-sm whitespace-pre-wrap">
+          <pre className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-48">
             {suggestion.prompt}
           </pre>
         </div>

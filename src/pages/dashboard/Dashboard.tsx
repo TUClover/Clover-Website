@@ -104,7 +104,7 @@ const Dashboard = ({
         />
         {/* <SidebarInset className="flex-1 overflow-y-auto dark:bg-[#0a0a0a]"> */}
         <main className="flex-1 bg-background/80 dark:bg-[#0a0a0a] overflow-auto">
-          <DashboardContentHeader />
+          <DashboardContentHeader role={effectiveRole} />
           <DashboardContent userData={userData} activeTab={activeTab} />
           <div className="h-[500px]" />
         </main>
@@ -134,9 +134,9 @@ function NavUser({ user }: { user: User }) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground space-x-1"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className="size-9 rounded-full">
                 <AvatarImage src={user.avatar_url} alt={user.first_name} />
-                <AvatarFallback className="rounded-lg">
+                <AvatarFallback className="rounded-lg font-semibold text-lg">
                   {user.first_name[0]}
                 </AvatarFallback>
               </Avatar>
@@ -357,7 +357,7 @@ function DashboardContent({
   );
 }
 
-function DashboardContentHeader() {
+function DashboardContentHeader({ role }: { role?: UserRole }) {
   return (
     <header className="sticky top-0 z-50 flex h-(--header-height) mb-6 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) backdrop-blur-md bg-background/80 supports-[backdrop-filter]:bg-background/60">
       <div className="flex w-full items-center gap-1 px-4 py-2 lg:gap-2 lg:px-6">
@@ -366,19 +366,23 @@ function DashboardContentHeader() {
           orientation="vertical"
           className="mx-2 h-4 dark:bg-gray-600"
         />
+
         <div className="ml-auto flex items-center gap-2">
-          <button className="flex rounded-full p-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-            <a
-              href="https://github.com/Civic-Interactions-Lab/clover"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="dark:text-foreground flex-1 flex"
-            >
-              <SiGithub className="size-7" />
-            </a>
-          </button>
+          {role === UserRole.DEV && (
+            <button className="flex rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <a
+                href="https://github.com/Civic-Interactions-Lab/clover"
+                rel="noopener noreferrer"
+                target="_blank"
+                className="dark:text-foreground flex-1 flex"
+              >
+                <SiGithub className="size-7" />
+              </a>
+            </button>
+          )}
+
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
       </div>
     </header>
   );

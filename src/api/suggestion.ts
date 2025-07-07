@@ -1,22 +1,30 @@
-import { Suggestion } from "./types/suggestion";
+import {
+  getSuggestionIdByMode,
+  Suggestion,
+  UserActivityLogItem,
+} from "./types/suggestion";
 import { AI_SUGGESTION_ENDPOINT } from "./endpoints";
+import { ActiveUserMode } from "./types/user";
 
 /**
  * Fetches a suggestion by its ID.
  * @param {string} suggestionId - The ID of the suggestion to fetch.
  * @returns {Promise<{ data?: CodeSuggestion; error?: string }>} - The response from the server or an error message.
  */
-export async function getSuggestionById(
-  suggestionId: string
+export async function getSuggestionByModeAndId(
+  logItem: UserActivityLogItem,
+  mode: ActiveUserMode
 ): Promise<{ data?: Suggestion; error?: string }> {
+  const id = getSuggestionIdByMode(logItem, mode);
+
   try {
-    const response = await fetch(`${AI_SUGGESTION_ENDPOINT}/${suggestionId}`, {
+    const response = await fetch(`${AI_SUGGESTION_ENDPOINT}/${mode}/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
 
     const data = await response.json();
-    console.log("Response from getSuggestionById:", data);
+    console.log("Response from getSuggestionByModeAndId:", data);
 
     if (!response.ok) {
       return {
