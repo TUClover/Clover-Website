@@ -1,15 +1,37 @@
 import { ActiveUserMode } from "./user";
 
-export interface Suggestion {
-  id: number;
-  created_at: string;
-  has_bug: boolean;
-  suggestion_array: string[];
-  time_lapse?: number;
+interface BaseSuggestion {
+  id: string;
+  createdAt: string;
+  prompt: string;
+  hasBug: boolean;
+  duration: number;
   model: string;
-  prompt?: string;
-  accepted?: boolean;
+  vendor: string;
+  language?: string;
+  refinedPrompt?: string;
 }
+
+export interface CodeBlockSuggestion extends BaseSuggestion {
+  suggestionArray: string[];
+  explanation?: string;
+}
+
+export interface LineByLineSuggestion extends BaseSuggestion {
+  mainLine?: string;
+  fixedLine?: string;
+  lineIndex: number;
+}
+
+export interface CodeSelectionSuggestion extends BaseSuggestion {
+  suggestionText: string;
+  explanation?: string;
+}
+
+export type SuggestionData =
+  | CodeBlockSuggestion
+  | LineByLineSuggestion
+  | CodeSelectionSuggestion;
 
 export interface AIStats {
   id: string;

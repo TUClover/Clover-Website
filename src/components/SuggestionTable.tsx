@@ -1,5 +1,11 @@
-import { Suggestion, UserActivityLogItem } from "../api/types/suggestion";
-import { useCallback, useEffect, useState } from "react";
+import {
+  CodeBlockSuggestion,
+  CodeSelectionSuggestion,
+  LineByLineSuggestion,
+  SuggestionData,
+  UserActivityLogItem,
+} from "../api/types/suggestion";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card } from "./ui/card";
 import { ActiveUserMode } from "../api/types/user";
 import { getEventsForMode } from "../api/types/event";
@@ -37,13 +43,12 @@ export const SuggestionTable = ({
 }: SuggestionTableProps) => {
   const [selectedLogItem, setSelectedLogItem] =
     useState<UserActivityLogItem | null>(null);
-  const [suggestionDetail, setSuggestionDetail] = useState<Suggestion | null>(
-    null
-  );
+  const [suggestionDetail, setSuggestionDetail] =
+    useState<SuggestionData | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const events = getEventsForMode(mode);
+  const events = useMemo(() => getEventsForMode(mode), [mode]);
 
   const isAcceptEvent = useCallback(
     (event: string) => {
@@ -80,13 +85,7 @@ export const SuggestionTable = ({
         }
 
         if (result.data) {
-          const modifiedResult: Suggestion = {
-            ...result.data,
-            time_lapse: selectedLogItem.duration,
-            accepted: isAcceptEvent(selectedLogItem.event),
-          };
-
-          setSuggestionDetail(modifiedResult || null);
+          setSuggestionDetail(result.data);
         }
       } catch (err) {
         setFetchError(
@@ -201,6 +200,7 @@ export const SuggestionTable = ({
               <SuggestionDetailCard
                 log={selectedLogItem}
                 suggestion={suggestionDetail}
+                mode={mode}
               />
             ) : (
               <p className="text-muted-foreground">
@@ -226,55 +226,140 @@ export default SuggestionTable;
 export const SuggestionDetailCard = ({
   log,
   suggestion,
+  mode,
 }: {
   log: UserActivityLogItem;
-  suggestion: Suggestion;
+  suggestion: SuggestionData;
+  mode: ActiveUserMode;
 }) => {
+  const isAccepted =
+    log.event.includes("ACCEPT") || log.event.includes("accept");
+
+  const renderSuggestionContent = () => {
+    try {
+      switch (mode) {
+        case "CODE_BLOCK": {
+          const codeBlockSuggestion = suggestion as CodeBlockSuggestion;
+
+          // Add defensive check for suggestionArray
+          if (
+            !codeBlockSuggestion.suggestionArray ||
+            !Array.isArray(codeBlockSuggestion.suggestionArray)
+          ) {
+            return (
+              <div className="flex-1 flex flex-col min-h-0">
+                <div className="text-destructive p-4 bg-destructive/10 rounded-md">
+                  Error: No suggestion array found in the data
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex-1 flex flex-col min-h-0">
+              {suggestion.hasBug ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                    <h4 className="font-semibold text-gray-700 dark:text-gray-300">
+                      Correct Suggestion
+                    </h4>
+                    <h4 className="font-semibold text-gray-700 dark:text-gray-300">
+                      Incorrect Suggestion
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
+                    <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-36">
+                      {codeBlockSuggestion.suggestionArray[0] ||
+                        "No code provided"}
+                    </pre>
+                    <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-36">
+                      {codeBlockSuggestion.suggestionArray[1] ||
+                        "No code provided"}
+                    </pre>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Suggested Code
+                  </h4>
+                  <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-36">
+                    {codeBlockSuggestion.suggestionArray[0] ||
+                      "No code provided"}
+                  </pre>
+                </>
+              )}
+            </div>
+          );
+        }
+
+        case "LINE_BY_LINE": {
+          const lineSuggestion = suggestion as LineByLineSuggestion;
+          return (
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                <h4 className="font-semibold text-gray-700 dark:text-gray-300">
+                  Original Line (Index: {lineSuggestion.lineIndex || 0})
+                </h4>
+                <h4 className="font-semibold text-gray-700 dark:text-gray-300">
+                  Fixed Line
+                </h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
+                <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-36">
+                  {lineSuggestion.mainLine || "No original line provided"}
+                </pre>
+                <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-36">
+                  {lineSuggestion.fixedLine || "No fixed line provided"}
+                </pre>
+              </div>
+            </div>
+          );
+        }
+
+        case "CODE_SELECTION": {
+          const selectionSuggestion = suggestion as CodeSelectionSuggestion;
+          return (
+            <div className="flex-1 flex flex-col min-h-0">
+              <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Selection Suggestion
+              </h4>
+              <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-36">
+                {selectionSuggestion.suggestionText ||
+                  "No suggestion text provided"}
+              </pre>
+            </div>
+          );
+        }
+
+        default:
+          return (
+            <div className="text-muted-foreground">Unknown suggestion type</div>
+          );
+      }
+    } catch (error) {
+      console.error("Error rendering suggestion content:", error);
+      console.log("Suggestion data:", suggestion);
+      return (
+        <div className="text-destructive p-4 bg-destructive/10 rounded-md">
+          Error rendering suggestion content. Check console for details.
+        </div>
+      );
+    }
+  };
+
   return (
     <div className="space-y-4 h-full flex flex-col">
-      {/* Suggested Code Section */}
-      <div className="flex-1 flex flex-col min-h-0">
-        {suggestion.has_bug ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-              <h4 className="font-semibold text-gray-700 dark:text-gray-300">
-                Correct Suggestion
-              </h4>
-              <h4 className="font-semibold text-gray-700 dark:text-gray-300">
-                Incorrect Suggestion
-              </h4>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
-              <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
-                {suggestion.suggestion_array[0] || "No code provided"}
-              </pre>
-              <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
-                {suggestion.suggestion_array[1] || "No code provided"}
-              </pre>
-            </div>
-          </>
-        ) : (
-          <>
-            <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              Suggested Code
-            </h4>
-            <pre className="bg-sidebar p-4 rounded-md overflow-x-auto text-sm overflow-auto max-h-64">
-              {suggestion.suggestion_array[0] || "No code provided"}
-            </pre>
-          </>
-        )}
-      </div>
+      {renderSuggestionContent()}
 
       {/* Metadata */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <h4 className="font-semibold text-gray-700 dark:text-gray-300">
             Status
           </h4>
-          <p
-            className={suggestion.accepted ? "text-green-500" : "text-red-500"}
-          >
-            {suggestion.accepted ? "Accepted" : "Rejected"}
+          <p className={isAccepted ? "text-primary" : "text-beta"}>
+            {isAccepted ? "Accepted" : "Rejected"}
           </p>
         </div>
 
@@ -282,32 +367,82 @@ export const SuggestionDetailCard = ({
           <h4 className="font-semibold text-gray-700 dark:text-gray-300">
             Bug Detected
           </h4>
-          <p>{suggestion.has_bug ? "Yes" : "No"}</p>
+          <p className={suggestion.hasBug ? "text-beta" : "text-primary"}>
+            {suggestion.hasBug ? "Yes" : "No"}
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-gray-700 dark:text-gray-300">
+            Vendor
+          </h4>
+          <p className="text-cyan-500">{suggestion.vendor}</p>
         </div>
 
         <div>
           <h4 className="font-semibold text-gray-700 dark:text-gray-300">
             Model
           </h4>
-          <p>{suggestion.model}</p>
+          <p className="text-cyan-500">{suggestion.model || "N/A"}</p>
         </div>
 
         <div>
           <h4 className="font-semibold text-gray-700 dark:text-gray-300">
             Response Time
           </h4>
-          <p>{log.duration} ms</p>
+          <p
+            className={`${
+              suggestion.duration < 3000
+                ? "text-primary"
+                : suggestion.duration < 10000
+                  ? "text-beta"
+                  : "text-red-500"
+            }`}
+          >
+            {suggestion.duration} ms
+          </p>
         </div>
 
-        <div className="md:col-span-2">
+        {suggestion.language && (
+          <div>
+            <h4 className="font-semibold text-gray-700 dark:text-gray-300">
+              Language
+            </h4>
+            <p className="text-cyan-500">{suggestion.language}</p>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Prompt
+        </h4>
+        <pre className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-36">
+          {suggestion.prompt || "No prompt provided"}
+        </pre>
+      </div>
+
+      {suggestion.refinedPrompt && (
+        <div>
           <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
-            Prompt
+            Refined Prompt
           </h4>
-          <pre className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-48">
-            {suggestion.prompt}
+          <pre className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-36">
+            {suggestion.refinedPrompt}
           </pre>
         </div>
-      </div>
+      )}
+
+      {"explanation" in suggestion && suggestion.explanation && (
+        <div>
+          <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            Explanation
+          </h4>
+          <pre className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-62">
+            {suggestion.explanation}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };

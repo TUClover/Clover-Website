@@ -53,24 +53,6 @@ export type UserSettings = {
   mode: UserMode;
 };
 
-// export type UserActivityLogItem = {
-//   log_id: number;
-//   log_created_at: string;
-//   event: string;
-//   duration: number;
-//   user_id: string;
-//   class_id: string;
-//   suggestion_id: number;
-//   suggestion_created_at: string;
-//   prompt: string;
-//   suggestion_array: string[];
-//   has_bug: boolean;
-//   model: string;
-//   explanation: string | null;
-//   vendor: string;
-//   language: string;
-// };
-
 export interface ClassData {
   id?: string;
   created_at?: string;
