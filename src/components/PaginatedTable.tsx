@@ -1,4 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Button } from "./ui/button";
 
 interface PaginatedTableProps<T> {
   data: T[];
@@ -35,64 +43,89 @@ export const PaginatedTable = <T,>({
   const end = start + itemsPerPage;
   const currentItems = filteredData.slice(start, end);
 
-  const handleItemsPerPageChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1);
-  };
-
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
   };
 
+  // Reset to page 1 when items per page changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [itemsPerPage]);
+
   return (
-    <div className="">
-      <div className="flex justify-between items-center mb-4">
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <label className="text-sm text-text">Show:</label>
-          <div className="border border-gray-900 dark:border-gray-100 rounded-lg">
-            <select
-              onChange={handleItemsPerPageChange}
-              className="text-text rounded 
-               px-2 py-1 text-xs
-               sm:px-3 sm:py-1.5 sm:text-sm
-               md:px-4 md:py-2 md:text-base"
-              value={itemsPerPage}
-              style={{ backgroundColor: "transparent" }}
-            >
-              <option value="10">10 Per Page</option>
-              <option value="20">20 Per Page</option>
-              <option value="50">50 Per Page</option>
-            </select>
-          </div>
+          <label className="text-sm font-medium">Show:</label>
+          <Select
+            value={itemsPerPage.toString()}
+            onValueChange={(value) => setItemsPerPage(Number(value))}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10 per page</SelectItem>
+              <SelectItem value="20">20 per page</SelectItem>
+              <SelectItem value="50">50 per page</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Page indicator */}
-        <div className="text-sm text-text">
-          Page {currentPage} of {totalPages}
+        <div className="text-sm text-muted-foreground">
+          Page {currentPage} of {totalPages} ({filteredData.length} total items)
         </div>
       </div>
 
-      {renderTable(currentItems, start)}
+      <div className="w-full">{renderTable(currentItems, start)}</div>
 
-      <div className="flex justify-center items-center mt-4 space-x-2">
-        <button
+      <div className="flex justify-center items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="button-gray px-3 py-1 rounded text-text text-sm disabled:opacity-50 transition duration-200"
         >
           Previous
-        </button>
-        <button
+        </Button>
+
+        <div className="flex items-center space-x-1">
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNum;
+            if (totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+
+            return (
+              <Button
+                key={pageNum}
+                variant={currentPage === pageNum ? "default" : "outline"}
+                size="sm"
+                onClick={() => handlePageChange(pageNum)}
+                className="w-8 h-8 p-0"
+              >
+                {pageNum}
+              </Button>
+            );
+          })}
+        </div>
+
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="button-gray px-3 py-1 rounded text-text text-sm disabled:opacity-50 transition duration-200"
         >
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -1,11 +1,23 @@
 import { useState, useEffect } from "react";
-import { UserActivityLogItem } from "../api/types/user";
 import { Line } from "react-chartjs-2";
-import TimeIntervalDropDown from "./TimeIntervalDropDown";
 import { parseISODate } from "../utils/timeConverter";
 import InfoTooltip from "./InfoTooltip";
 import { Card } from "./ui/card";
 import { LogEvent } from "../api/types/event";
+import { UserActivityLogItem } from "../api/types/suggestion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+
+enum TimeInterval {
+  DAY = "Day",
+  WEEK = "Week",
+  MONTH = "Month",
+}
 
 /**
  * LineChart component displays a line chart of user activity over time.
@@ -20,7 +32,7 @@ export const LineChart = ({
   title?: string;
   activities: UserActivityLogItem[];
 }) => {
-  const [interval, setInterval] = useState<"day" | "week" | "month">("day");
+  const [interval, setInterval] = useState<TimeInterval>(TimeInterval.DAY);
   const [textColor, setTextColor] = useState("#000000");
   const [gridColor, setGridColor] = useState("rgba(255,255,255,0.1)");
 
@@ -42,13 +54,13 @@ export const LineChart = ({
     return () => observer.disconnect();
   }, []);
 
-  const groupBy = (date: Date, interval: "day" | "week" | "month") => {
+  const groupBy = (date: Date, interval: TimeInterval) => {
     const year = date.getFullYear();
     const month = date.getMonth();
 
-    if (interval === "day") return date.toISOString().split("T")[0];
+    if (interval === TimeInterval.DAY) return date.toISOString().split("T")[0];
 
-    if (interval === "week") {
+    if (interval === TimeInterval.WEEK) {
       const firstDay = new Date(date);
       firstDay.setDate(date.getDate() - date.getDay());
 
@@ -59,7 +71,7 @@ export const LineChart = ({
       return `${y}-${m}-${d}`;
     }
 
-    if (interval === "month")
+    if (interval === TimeInterval.MONTH)
       return `${year}-${String(month + 1).padStart(2, "0")}`;
 
     return "";
@@ -69,12 +81,23 @@ export const LineChart = ({
   const rejectedMap: Record<string, number> = {};
 
   activities.forEach((activity) => {
-    const date = new Date(activity.log_created_at);
+    const date = new Date(activity.createdAt);
     const key = groupBy(date, interval);
     if (key) {
-      if (activity.event === LogEvent.SUGGESTION_ACCEPT) {
+      // Check for different possible accept events
+      if (
+        activity.event === LogEvent.SUGGESTION_ACCEPT ||
+        activity.event === "SUGGESTION_ACCEPT" ||
+        activity.event.includes("ACCEPT")
+      ) {
         acceptedMap[key] = (acceptedMap[key] || 0) + 1;
-      } else if (activity.event === LogEvent.USER_REJECT) {
+      }
+      // Check for different possible reject events
+      else if (
+        activity.event === LogEvent.USER_REJECT ||
+        activity.event === "USER_REJECT" ||
+        activity.event.includes("REJECT")
+      ) {
         rejectedMap[key] = (rejectedMap[key] || 0) + 1;
       }
     }
@@ -84,7 +107,7 @@ export const LineChart = ({
     const range: string[] = [];
     const today = new Date();
 
-    if (interval === "day") {
+    if (interval === TimeInterval.DAY) {
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
@@ -92,7 +115,7 @@ export const LineChart = ({
       }
     }
 
-    if (interval === "week") {
+    if (interval === TimeInterval.WEEK) {
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i * 7);
@@ -100,7 +123,7 @@ export const LineChart = ({
       }
     }
 
-    if (interval === "month") {
+    if (interval === TimeInterval.MONTH) {
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setMonth(today.getMonth() - i);
@@ -135,8 +158,22 @@ export const LineChart = ({
             </div>
           </InfoTooltip>
         </div>
-        <TimeIntervalDropDown value={interval} onChange={setInterval} />
+
+        <Select
+          value={interval}
+          onValueChange={(value) => setInterval(value as TimeInterval)}
+        >
+          <SelectTrigger className="w-24">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={TimeInterval.DAY}>Day</SelectItem>
+            <SelectItem value={TimeInterval.WEEK}>Week</SelectItem>
+            <SelectItem value={TimeInterval.MONTH}>Month</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
+
       <div className="relative w-full h-60 md:h-64 lg:h-72">
         <Line
           data={{
@@ -193,12 +230,12 @@ export const LineChart = ({
                     const label = labels[value as number];
                     const date = parseISODate(label + "T00:00:00");
 
-                    if (interval === "month")
+                    if (interval === TimeInterval.MONTH)
                       return date.toLocaleDateString("en-US", {
                         month: "short",
                         year: "numeric",
                       });
-                    if (interval === "week")
+                    if (interval === TimeInterval.WEEK)
                       return `Week of ${date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
                     return date.toLocaleDateString("en-US", {
                       month: "short",

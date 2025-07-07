@@ -4,6 +4,10 @@ import {
   Users,
   PenBoxIcon,
   LucideIcon,
+  Activity,
+  FileText,
+  Settings,
+  BarChart3,
 } from "lucide-react";
 import { UserRole } from "../api/types/user";
 
@@ -30,7 +34,7 @@ export const sidebarItems: SideBarItem[] = [
   // My Dashboard
   {
     id: "user-stats",
-    icon: BarChart2,
+    icon: Activity,
     name: "Statistics",
     subheading: "My Dashboard",
     roles: ALL_ROLES,
@@ -51,7 +55,7 @@ export const sidebarItems: SideBarItem[] = [
   },
   {
     id: "user-logs",
-    icon: Users,
+    icon: FileText,
     name: "Logs",
     subheading: "My Dashboard",
     roles: ALL_ROLES,
@@ -60,7 +64,7 @@ export const sidebarItems: SideBarItem[] = [
   // Teaching
   {
     id: "instructor-stats",
-    icon: BarChart2,
+    icon: BarChart3,
     name: "Student Statistics",
     subheading: "Teaching",
     roles: ADMIN_ROLES,
@@ -90,7 +94,7 @@ export const sidebarItems: SideBarItem[] = [
   },
   {
     id: "admin-classes",
-    icon: BookOpenText,
+    icon: Settings,
     name: "Manage Classes",
     subheading: "Administration",
     roles: SUPER_ADMIN_ROLES,

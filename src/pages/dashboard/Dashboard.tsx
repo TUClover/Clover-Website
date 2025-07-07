@@ -44,12 +44,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "../../components/ThemeToggle";
 import { SideBarItem, sidebarItems } from "../../constants/sidebarConfigs";
 import { Separator } from "../../components/ui/separator";
 import { SiGithub } from "react-icons/si";
+import { Label } from "../../components/ui/label";
 
 const Dashboard = ({
   userData,
@@ -124,7 +132,7 @@ function NavUser({ user }: { user: User }) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground space-x-1"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar_url} alt={user.first_name} />
@@ -219,10 +227,10 @@ function SideBar({
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="!p-1.5">
+            <SidebarMenuButton asChild className="!p-1 !m-1.5">
               <a href="/">
-                <img src={cloverLogo} alt="Clover Logo" className="h-5" />
-                <span className="text-xl font-semibold">
+                <img src={cloverLogo} alt="Clover Logo" className="h-8" />
+                <span className="text-2xl font-bold">
                   <CLOVER />
                 </span>
               </a>
@@ -255,44 +263,61 @@ function SideBar({
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="pb-4">
         {userData.role === UserRole.DEV && onRoleChange && (
-          <div className="px-2 pb-4">
-            <label className="text-xs font-semibold text-muted-foreground block mb-1">
+          <div className="space-y-1">
+            <Label className="text-xs font-semibold text-muted-foreground px-1.5">
               Viewing as
-            </label>
-            <select
+            </Label>
+            <Select
               value={effectiveRole}
-              onChange={(e) => onRoleChange(e.target.value as UserRole)}
-              className="w-full rounded-md border px-2 py-1 text-sm bg-background"
+              onValueChange={(value) => onRoleChange(value as UserRole)}
             >
-              {Object.values(UserRole).map((role) => (
-                <option key={role} value={role}>
-                  {role[0] + role.slice(1).toLowerCase()}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full text-sm bg-background">
+                <SelectValue placeholder="Select role" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.values(UserRole).map((role) => (
+                  <SelectItem key={role} value={role}>
+                    {role[0] + role.slice(1).toLowerCase()}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
-        <SidebarMenuButton
-          onClick={() => navigate("/download")}
-          className={`w-full text-left`}
-        >
-          <Download className="mr-2 h-4 w-4" />
-          Download
-        </SidebarMenuButton>
-        <SidebarMenuButton
-          onClick={() =>
-            window.open(
-              "https://civic-interactions-lab.github.io/clover/",
-              "_blank"
-            )
-          }
-          className={`w-full text-left`}
-        >
-          <FileQuestion className="mr-2 h-4 w-4" />
-          Docs
-        </SidebarMenuButton>
+
+        <SidebarGroup className="mb-2">
+          <SidebarGroupLabel>Actions</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => navigate("/download")}
+                  className="w-full text-left"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Download</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() =>
+                    window.open(
+                      "https://civic-interactions-lab.github.io/clover/",
+                      "_blank"
+                    )
+                  }
+                  className="w-full text-left"
+                >
+                  <FileQuestion className="h-4 w-4" />
+                  <span>Docs</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>

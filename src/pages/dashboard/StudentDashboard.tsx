@@ -30,7 +30,7 @@ import {
 } from "../../components/ui/table";
 import { Skeleton } from "../../components/ui/skeleton";
 import { Badge } from "../../components/ui/badge";
-import { LogEvent } from "../../api/types/event";
+import { getEventsForMode } from "../../api/types/event";
 import { Card } from "../../components/ui/card";
 import InfoTooltip from "../../components/InfoTooltip";
 import PaginatedTable from "../../components/PaginatedTable";
@@ -45,6 +45,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
+import NoData from "../../components/NoData";
 
 Chart.register(...registerables);
 
@@ -67,9 +68,17 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
     userActivity,
     progressData,
     loading: userActivityLoading,
-  } = useUserActivity(userData.id, selectedClassId, selectedClassType);
+  } = useUserActivity(
+    userData.id,
+    userData.settings.mode,
+    selectedClassId,
+    selectedClassType
+  );
 
   const loading = userClassLoading || userActivityLoading;
+  const [dataMode, setDataMode] = useState<"total" | "accepted" | "rejected">(
+    "total"
+  );
 
   if (loading) {
     return (
@@ -78,27 +87,40 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
       </div>
     );
   }
-  if (progressData.totalAccepted === 0) {
-    return (
-      <div className="flex justify-center">
-        <div className="text-center card">
-          <h2 className="text-lg font-semibold text mb-4">No activity found</h2>
-          <p className="text-gray-500">
-            It seems you haven't accepted any suggestions yet. Start coding to
-            see your progress here!
-          </p>
-          <a
-            href="https://clover.nickrucinski.com/download"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-block bg-blue-400 dark:bg-blue-500 hover:bg-blue-500 dark:hover:bg-blue-700 hover:scale-105 text-white font-bold py-2 px-4 rounded transition-all"
-          >
-            Download CLOVER
-          </a>
-        </div>
-      </div>
-    );
-  }
+
+  const getStatCardData = () => {
+    switch (dataMode) {
+      case "accepted":
+        return {
+          total: progressData.totalAccepted,
+          correct: progressData.correctSuggestions,
+          accuracy: progressData.accuracyPercentage,
+          title: "Accepted",
+        };
+      case "rejected":
+        return {
+          total: progressData.totalRejected,
+          correct: 0,
+          accuracy: 0,
+          title: "Rejected",
+        };
+      case "total":
+      default:
+        return {
+          total: progressData.totalInteractions,
+          correct: progressData.correctSuggestions,
+          accuracy:
+            progressData.totalInteractions > 0
+              ? (progressData.correctSuggestions /
+                  progressData.totalInteractions) *
+                100
+              : 0,
+          title: "Total",
+        };
+    }
+  };
+
+  const statData = getStatCardData();
 
   return (
     <div className="space-y-8">
@@ -125,40 +147,43 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
           />
         </div>
       </div>
-      <div className="">
-        {/* Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          <StatCard
-            title="Accepted"
-            value={progressData.totalAccepted}
-            tooltipContent="Total suggestions accepted by the user, including both correct and incorrect suggestions."
-          />
-          <StatCard
-            title="Correct"
-            value={progressData.correctSuggestions}
-            tooltipContent="Number of accepted suggestions that were actually correct (without bugs)."
-          />
-          <StatCard
-            title="Accuracy"
-            value={`${progressData.percentageCorrect.toFixed(2)}%`}
-            tooltipContent={`${progressData.percentageCorrect.toFixed(2)}% of accepted suggestions were correct (${progressData.correctSuggestions}/${progressData.totalAccepted})`}
-          />
-        </div>
+      {progressData.totalAccepted === 0 ? (
+        <NoData />
+      ) : (
+        <div className="">
+          {/* Metric Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <StatCard
+              title={statData.title}
+              value={statData.total}
+              tooltipContent={`Total ${dataMode} suggestions.`}
+            />
+            <StatCard
+              title="Correct"
+              value={statData.correct}
+              tooltipContent={`Number of ${dataMode} suggestions that were correct.`}
+            />
+            <StatCard
+              title="Accuracy"
+              value={`${statData.accuracy.toFixed(1)}%`}
+              tooltipContent={`Accuracy rate for ${dataMode} suggestions.`}
+            />
+          </div>
 
-        {/* Charts Row */}
-        <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-          <PieChart
-            correct={progressData.correctSuggestions}
-            incorrect={
-              progressData.totalAccepted - progressData.correctSuggestions
-            }
-          />
-          <LineChart activities={userActivity} />
-        </div>
+          {/* Charts Row */}
+          <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+            <PieChart
+              progressData={progressData}
+              dataMode={dataMode}
+              onDataModeChange={setDataMode}
+            />
+            <LineChart activities={userActivity} />
+          </div>
 
-        {/*Stacked Bar Graph*/}
-        <StackedBarChart activities={userActivity} />
-      </div>
+          {/*Stacked Bar Graph*/}
+          <StackedBarChart activities={userActivity} />
+        </div>
+      )}
     </div>
   );
 };
@@ -391,21 +416,25 @@ export const UserLogs = ({ userData }: { userData: User }) => {
     selectedClassType,
     loading: userClassLoading,
   } = useUserClasses();
+
   const { userActivity, loading: userActivityLoading } = useUserActivity(
     userData.id,
+    userData.settings.mode,
     selectedClassId,
     selectedClassType
   );
 
+  const events = getEventsForMode(userData.settings.mode);
+
   const filteredLogItems = userActivity.filter(
     (logItem) =>
-      logItem.event === LogEvent.SUGGESTION_ACCEPT ||
-      logItem.event === LogEvent.USER_REJECT
+      logItem.event === events?.accept || logItem.event === events?.reject
   );
+
   const sortedLogItems = filteredLogItems.sort(
     (a, b) =>
-      new Date(b.log_created_at).getTime() -
-      new Date(a.log_created_at).getTime()
+      new Date(b.createdAt || b.createdAt).getTime() -
+      new Date(a.createdAt || a.createdAt).getTime()
   );
 
   const loading = userClassLoading || userActivityLoading;
@@ -432,8 +461,11 @@ export const UserLogs = ({ userData }: { userData: User }) => {
               suggestions contained bugs.
             </p>
             <p className="text-xs text-muted-foreground">
-              Click on any row to view detailed information about that specific
-              suggestion.
+              • <strong>Correct:</strong> Accepting good suggestions or
+              rejecting bad ones
+              <br />• <strong>Incorrect:</strong> Accepting bad suggestions or
+              rejecting good ones
+              <br />• Click any row to view detailed suggestion information
             </p>
           </div>
         </InfoTooltip>
@@ -441,7 +473,11 @@ export const UserLogs = ({ userData }: { userData: User }) => {
       <PaginatedTable
         data={sortedLogItems}
         renderTable={(items, startIndex) => (
-          <SuggestionTable logItems={items} startIndex={startIndex} />
+          <SuggestionTable
+            logItems={items}
+            startIndex={startIndex}
+            mode={userData.settings.mode}
+          />
         )}
       />
     </Card>

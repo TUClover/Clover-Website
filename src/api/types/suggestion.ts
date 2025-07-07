@@ -1,3 +1,5 @@
+import { ActiveUserMode } from "./user";
+
 export interface Suggestion {
   id: number;
   created_at: string;
@@ -20,11 +22,45 @@ export interface AIStats {
   provider: string;
 }
 
-export type ProgressData = {
-  suggestions: Suggestion[];
-  progress: {
-    totalAccepted: number;
-    totalWithBugs: number;
-    percentageWithBugs: number;
-  };
-};
+export interface ProgressData {
+  totalAccepted: number;
+  totalRejected: number;
+  totalInteractions: number;
+  correctSuggestions: number;
+  accuracyPercentage: number;
+}
+
+interface BaseLogResponse {
+  id: string;
+  event: string;
+  duration: number;
+  userId: string;
+  classId?: string;
+  createdAt: string;
+  hasBug?: boolean;
+}
+
+interface BlockSuggestionLogResponse extends BaseLogResponse {
+  suggestionId: string;
+}
+
+interface LineSuggestionLogResponse extends BaseLogResponse {
+  lineSuggestionId: string;
+}
+
+interface SelectionSuggestionLogResponse extends BaseLogResponse {
+  selectionSuggestionItemId: string;
+}
+
+export type LogResponse<T extends ActiveUserMode> = T extends "CODE_BLOCK"
+  ? BlockSuggestionLogResponse[]
+  : T extends "LINE_BY_LINE"
+    ? LineSuggestionLogResponse[]
+    : T extends "CODE_SELECTION"
+      ? SelectionSuggestionLogResponse[]
+      : never;
+
+export type UserActivityLogItem =
+  | BlockSuggestionLogResponse
+  | LineSuggestionLogResponse
+  | SelectionSuggestionLogResponse;

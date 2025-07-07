@@ -1,9 +1,26 @@
 import { getSuggestionById } from "../api/suggestion";
-import { LogEvent } from "../api/types/event";
-import { UserActivityLogItem } from "../api/types/user";
-import { Suggestion } from "../api/types/suggestion";
-import { useEffect, useState } from "react";
+import { Suggestion, UserActivityLogItem } from "../api/types/suggestion";
+import { useCallback, useEffect, useState } from "react";
 import { Card } from "./ui/card";
+import { ActiveUserMode } from "../api/types/user";
+import { getEventsForMode } from "../api/types/event";
+import { Loader2, X } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+
+interface SuggestionTableProps {
+  logItems: UserActivityLogItem[];
+  startIndex?: number;
+  mode: ActiveUserMode;
+}
 
 /**
  * SuggestionTable component displays a table of user activity log items and allows the user to view details of a selected suggestion.
@@ -16,10 +33,8 @@ import { Card } from "./ui/card";
 export const SuggestionTable = ({
   logItems,
   startIndex = 0,
-}: {
-  logItems: UserActivityLogItem[];
-  startIndex?: number;
-}) => {
+  mode,
+}: SuggestionTableProps) => {
   const [selectedLogItem, setSelectedLogItem] =
     useState<UserActivityLogItem | null>(null);
   const [suggestionDetail, setSuggestionDetail] = useState<Suggestion | null>(
@@ -28,16 +43,37 @@ export const SuggestionTable = ({
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
+  const events = getEventsForMode(mode);
+
+  const isAcceptEvent = useCallback(
+    (event: string) => {
+      return (
+        event === events?.accept ||
+        event.includes("ACCEPT") ||
+        event.includes("accept")
+      );
+    },
+    [events]
+  );
+
+  const getDecisionCorrectness = (logItem: UserActivityLogItem) => {
+    const isAccept = isAcceptEvent(logItem.event);
+    const hasBug = logItem.hasBug || logItem.hasBug;
+
+    const isCorrect = (isAccept && !hasBug) || (!isAccept && hasBug);
+    return isCorrect ? "Correct" : "Incorrect";
+  };
+
   useEffect(() => {
     const fetchSuggestion = async () => {
-      if (!selectedLogItem?.suggestion_id) return;
+      if (!selectedLogItem?.id) return;
 
       setLoading(true);
       setFetchError(null);
 
       try {
         const result = await getSuggestionById(
-          selectedLogItem.suggestion_id as unknown as string
+          selectedLogItem.id as unknown as string
         );
 
         if (result.error) {
@@ -49,7 +85,7 @@ export const SuggestionTable = ({
           const modifiedResult: Suggestion = {
             ...result.data,
             time_lapse: selectedLogItem.duration,
-            accepted: selectedLogItem.event === LogEvent.SUGGESTION_ACCEPT,
+            accepted: isAcceptEvent(selectedLogItem.event),
           };
 
           setSuggestionDetail(modifiedResult || null);
@@ -65,72 +101,112 @@ export const SuggestionTable = ({
     };
 
     fetchSuggestion();
-  }, [selectedLogItem]);
+  }, [selectedLogItem, events, isAcceptEvent]);
 
   return (
     <>
-      <table className="w-full text-sm text-left text-text">
-        <thead className="text-text">
-          <tr className="border-b border-gray-900 dark:border-gray-100 font-semibold">
-            <th className="w-4">No.</th>
-            <th className="px-4 py-2">Date</th>
-            <th className="px-4 py-2">Accepted?</th>
-            <th className="px-4 py-2">Bug?</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-400 dark:divide-gray-100">
-          {logItems.map((logItem, index) => (
-            <tr
-              key={logItem.log_id}
-              className="hover:bg-gray-200 dark:hover:bg-gray-800 transition cursor-pointer"
-              onClick={() => setSelectedLogItem(logItem)}
-            >
-              <td className="p-2">{startIndex + index + 1}</td>
-              <td className="px-4 py-2">
-                {new Date(logItem.log_created_at).toLocaleDateString()}
-              </td>
-              <td className="px-4 py-2">
-                {logItem.event === LogEvent.SUGGESTION_ACCEPT ? "Yes" : "No"}
-              </td>
-              <td className="px-4 py-2">{logItem.has_bug ? "Yes" : "No"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="w-full">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-16">No.</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Decision</TableHead>
+              <TableHead>Has Bug</TableHead>
+              <TableHead>Result</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {logItems.map((logItem, index) => {
+              const isAccept = isAcceptEvent(logItem.event);
+              const hasBug = logItem.hasBug || logItem.hasBug;
+              const correctness = getDecisionCorrectness(logItem);
+
+              return (
+                <TableRow
+                  key={logItem.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => setSelectedLogItem(logItem)}
+                >
+                  <TableCell>{startIndex + index + 1}</TableCell>
+                  <TableCell>
+                    {new Date(
+                      logItem.createdAt || logItem.createdAt
+                    ).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={isAccept ? "default" : "destructive"}
+                      className="w-20 justify-center"
+                    >
+                      {isAccept ? "Accepted" : "Rejected"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={hasBug ? "destructive" : "default"}
+                      className="w-10 justify-center"
+                    >
+                      {hasBug ? "Yes" : "No"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        correctness === "Correct" ? "default" : "destructive"
+                      }
+                      className="w-20 justify-center"
+                    >
+                      {correctness}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+
       {selectedLogItem && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
+          className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setSelectedLogItem(null);
             }
           }}
         >
-          <Card className="p-6 max-w-3xl w-full relative">
-            {/* Close button */}
-            <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-white text-xl"
+          <Card className="p-6 max-w-4xl w-full max-h-[90vh] overflow-auto relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2"
               onClick={() => setSelectedLogItem(null)}
             >
-              &times;
-            </button>
-            <h3 className="text-xl font-bold text-[#50B498] mb-4">
-              Code Suggestion
+              <X className="h-4 w-4" />
+            </Button>
+
+            <h3 className="text-xl font-bold text-primary mb-4">
+              Code Suggestion Details
             </h3>
 
             {loading ? (
               <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#50B498]"></div>
+                <Loader2 className="animate-spin h-8 w-8" />
               </div>
             ) : fetchError ? (
-              <div className="text-red-500 p-4">{fetchError}</div>
+              <div className="text-destructive p-4 bg-destructive/10 rounded-md">
+                {fetchError}
+              </div>
             ) : suggestionDetail ? (
               <SuggestionDetailCard
                 log={selectedLogItem}
                 suggestion={suggestionDetail}
               />
             ) : (
-              <p>No suggestion details available</p>
+              <p className="text-muted-foreground">
+                No suggestion details available
+              </p>
             )}
           </Card>
         </div>
