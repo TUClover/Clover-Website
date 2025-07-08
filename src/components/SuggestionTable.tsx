@@ -167,14 +167,14 @@ export const SuggestionTable = ({
 
       {selectedLogItem && (
         <div
-          className="fixed inset-0 bg-black/20 z-50 flex justify-center items-center p-4"
+          className="fixed inset-0 bg-black/40 z-50 flex justify-center items-center p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setSelectedLogItem(null);
             }
           }}
         >
-          <Card className="p-6 max-w-3xl lg:max-w-5xl w-full max-h-[90vh] relative bg-white dark:bg-black">
+          <Card className="p-6 max-w-3xl lg:max-w-5xl w-full max-h-[90vh] relative bg-white dark:bg-black border border-border-gray-200 dark:border-gray-700 overflow-y-auto">
             <Button
               variant="ghost"
               size="icon"

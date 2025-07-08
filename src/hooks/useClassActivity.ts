@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { getClassActivityByClassId } from "../api/classes";
-import { calculateProgress, ProgressData } from "../utils/calculateProgress";
-import { ClassData, UserActivityLogItem } from "../api/types/user";
-import { LogEvent } from "../api/types/event";
+import { ActiveUserMode } from "../api/types/user";
+import { ProgressData } from "../api/types/suggestion";
+import { getEventsForMode } from "../api/types/event";
+import {
+  getClassActivityByInstructorId,
+  InstructorLogResponse,
+} from "../api/classes";
 
 /**
  * Custom hook to fetch and manage class activity logs.
@@ -12,50 +15,45 @@ import { LogEvent } from "../api/types/event";
  * @returns An object containing the following properties:
  */
 export const useClassActivity = (
-  classes: ClassData[],
-  selectedClassId: string | null
+  instructorId: string,
+  selectedClassId: string | null,
+  mode?: ActiveUserMode | null
 ) => {
-  const [allActivity, setAllActivity] = useState<UserActivityLogItem[]>([]);
-  const [classActivity, setClassActivity] = useState<UserActivityLogItem[]>([]);
+  const [allActivity, setAllActivity] = useState<InstructorLogResponse[]>([]);
+  const [classActivity, setClassActivity] = useState<InstructorLogResponse[]>(
+    []
+  );
   const [progressData, setProgressData] = useState<ProgressData>({
     totalAccepted: 0,
+    totalRejected: 0,
+    totalInteractions: 0,
     correctSuggestions: 0,
-    percentageCorrect: 0,
+    accuracyPercentage: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch all logs only once
   useEffect(() => {
-    const fetchAllClassActivity = async () => {
+    if (!mode || !instructorId) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchInstructorActivity = async () => {
       try {
         setError(null);
         setLoading(true);
 
-        const classRequests = classes
-          .filter((classInfo) => classInfo.id !== "all")
-          .map(async (classInfo) => {
-            const { data, error } = await getClassActivityByClassId(
-              classInfo.id!
-            );
-            if (error) {
-              console.error(
-                `Failed to fetch for class ${classInfo.class_title}: ${error}`
-              );
-            }
-            return data;
-          });
+        const { data, error } =
+          await getClassActivityByInstructorId(instructorId);
 
-        const allLogsArrays = await Promise.all(classRequests);
-        const allLogs = allLogsArrays.flat();
+        if (error) {
+          throw new Error(error);
+        }
 
-        const validLogs = allLogs.filter(
-          (log) =>
-            log.event === LogEvent.SUGGESTION_ACCEPT ||
-            log.event === LogEvent.USER_REJECT // Update this later
-        );
+        console.log("Fetched instructor activity:", data.length);
 
-        setAllActivity(validLogs);
+        setAllActivity(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
@@ -63,27 +61,39 @@ export const useClassActivity = (
       }
     };
 
-    if (classes.length > 0) {
-      fetchAllClassActivity();
-    } else {
-      setLoading(false);
-    }
-  }, [classes]);
+    fetchInstructorActivity();
+  }, [instructorId, mode]);
 
-  // Filter logs by selected class
   useEffect(() => {
-    const filtered =
-      selectedClassId && selectedClassId !== "all"
-        ? allActivity.filter((log) => log.class_id === selectedClassId)
-        : allActivity;
+    if (!mode) return;
 
-    setClassActivity(filtered);
+    const activeMode = mode as ActiveUserMode;
+    const events = getEventsForMode(activeMode);
 
-    const progress = calculateProgress(
-      selectedClassId === "all" ? allActivity : filtered
+    const filteredByMode = allActivity.filter(
+      (log) => log.event === events?.accept || log.event === events?.reject
+    );
+
+    // Then filter by selected class
+    let filteredByClass: InstructorLogResponse[];
+    if (selectedClassId && selectedClassId !== "all") {
+      // Filter to specific class
+      filteredByClass = filteredByMode.filter(
+        (log) => log.classId === selectedClassId
+      );
+    } else {
+      // Show all classes
+      filteredByClass = filteredByMode;
+    }
+
+    setClassActivity(filteredByClass);
+
+    const progress = calculateProgressFromInstructorLogs(
+      filteredByClass,
+      activeMode
     );
     setProgressData(progress);
-  }, [selectedClassId, allActivity]);
+  }, [allActivity, selectedClassId, mode]);
 
   return {
     allActivity,
@@ -94,3 +104,30 @@ export const useClassActivity = (
     isEmpty: !loading && classActivity.length === 0,
   };
 };
+
+function calculateProgressFromInstructorLogs(
+  logs: InstructorLogResponse[],
+  mode: ActiveUserMode
+): ProgressData {
+  const events = getEventsForMode(mode);
+
+  const acceptedLogs = logs.filter((log) => log.event === events?.accept);
+  const rejectedLogs = logs.filter((log) => log.event === events?.reject);
+
+  const totalAccepted = acceptedLogs.length;
+  const totalRejected = rejectedLogs.length;
+  const totalInteractions = totalAccepted + totalRejected;
+
+  const correctSuggestions = acceptedLogs.filter((log) => !log.hasBug).length;
+
+  const accuracyPercentage =
+    totalAccepted > 0 ? (correctSuggestions / totalAccepted) * 100 : 0;
+
+  return {
+    totalAccepted,
+    totalRejected,
+    totalInteractions,
+    correctSuggestions,
+    accuracyPercentage,
+  };
+}

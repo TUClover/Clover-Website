@@ -21,3 +21,15 @@ const NoData = () => {
 };
 
 export default NoData;
+
+// <div className="flex justify-center mt-10">
+//   <div className="text-center p-6 border rounded-lg">
+//     <h2 className="text-lg font-semibold text mb-4">
+//       No Activity Found
+//     </h2>
+//     <p className="text-muted-foreground">
+//       You have not created any classes yet. Please create a class to
+//       view activity and insights.
+//     </p>
+//   </div>
+// </div>

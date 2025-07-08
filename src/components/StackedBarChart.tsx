@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { InstructorLogResponse } from "../api/classes";
 
 enum TimeInterval {
   DAY = "Day",
@@ -32,7 +33,7 @@ export const StackedBarChart = ({
   activities,
 }: {
   title?: string;
-  activities: UserActivityLogItem[];
+  activities: UserActivityLogItem[] | InstructorLogResponse[];
 }) => {
   const [interval, setInterval] = useState<TimeInterval>(TimeInterval.DAY);
   const [textColor, setTextColor] = useState("#000000");
@@ -82,7 +83,12 @@ export const StackedBarChart = ({
   const dateMap: Record<string, { correct: number; incorrect: number }> = {};
 
   activities.forEach((activity) => {
-    const date = new Date(activity.createdAt);
+    // Handle both string and Date for createdAt
+    const date =
+      typeof activity.createdAt === "string"
+        ? new Date(activity.createdAt)
+        : new Date(activity.createdAt);
+
     const key = groupBy(date, interval);
 
     if (!dateMap[key]) {

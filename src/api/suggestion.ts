@@ -20,15 +20,33 @@ export async function getSuggestionByModeAndId(
 ): Promise<{ data?: SuggestionData; error?: string }> {
   const id = getSuggestionIdByMode(logItem, mode);
 
+  let modeRoute: string;
+  switch (mode) {
+    case "CODE_BLOCK":
+      modeRoute = "code-block";
+      break;
+    case "LINE_BY_LINE":
+      modeRoute = "line-by-line";
+      break;
+    case "CODE_SELECTION":
+      modeRoute = "code-selection";
+      break;
+    default:
+      return { error: "Invalid mode" };
+  }
+
   if (!id) {
     return { error: "No suggestion ID found for this mode" };
   }
 
   try {
-    const response = await fetch(`${AI_SUGGESTION_ENDPOINT}/${mode}/${id}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await fetch(
+      `${AI_SUGGESTION_ENDPOINT}/${modeRoute}/${id}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
     const backendData = await response.json();
     console.log("Backend response:", backendData);
