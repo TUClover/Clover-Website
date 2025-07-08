@@ -151,7 +151,6 @@ export async function getClassActivityByInstructorId(
       };
     }
 
-    // Handle the response structure from your Go backend
     const logs = result.data || result;
 
     if (!Array.isArray(logs)) {

@@ -14,6 +14,7 @@ import {
 } from "./ui/select";
 import StudentDashboardCard from "./StudentDashboardCard";
 import { UserActivityLogItem } from "../api/types/suggestion";
+import { InstructorLogResponse } from "../api/classes";
 
 interface StudentClassData {
   fullName?: string;
@@ -136,11 +137,13 @@ export const StudentRow = ({
  * @param {"all" | "class"} [param0.classFilter="all"] - The filter for the class type.
  * @returns
  */
+export type ActivityLogItem = InstructorLogResponse | UserActivityLogItem;
+
 export const StudentDataTable = ({
   logs,
   classFilter = "all",
 }: {
-  logs: UserActivityLogItem[];
+  logs: ActivityLogItem[];
   classFilter?: "all" | "class";
 }) => {
   const [loading, setLoading] = useState(true);
@@ -190,7 +193,7 @@ export const StudentDataTable = ({
   useEffect(() => {
     const buildData = async () => {
       setLoading(true);
-      const activityLogsMap = new Map<string, UserActivityLogItem[]>();
+      const activityLogsMap = new Map<string, ActivityLogItem[]>();
 
       for (const log of logs) {
         const userId = log.userId ?? "Unknown";
@@ -211,8 +214,12 @@ export const StudentDataTable = ({
               ? compositeKey.split("&")
               : [compositeKey, userLogs[0]?.classId ?? "Unknown"];
 
+          const userActivityLogs = userLogs.filter(
+            (log): log is UserActivityLogItem =>
+              (log as UserActivityLogItem).event !== undefined
+          );
           const { totalAccepted, correctSuggestions, accuracyPercentage } =
-            calculateProgress(userLogs, "LINE_BY_LINE");
+            calculateProgress(userActivityLogs, "LINE_BY_LINE");
 
           const lastActivity = userLogs.reduce(
             (latest, log) =>
@@ -244,8 +251,15 @@ export const StudentDataTable = ({
             // fetchStudentStatus(student.userId, student.classId),
           ]);
 
+          // Filter logs to only UserActivityLogItem[]
+          const userLogs = (student.logs as ActivityLogItem[]).filter(
+            (log): log is UserActivityLogItem =>
+              (log as UserActivityLogItem).event !== undefined
+          );
+
           return {
             ...student,
+            logs: userLogs,
             fullName:
               `${userData?.firstName || ""} ${userData?.lastName || ""}`.trim(),
             // studentStatus: studentStatus,
