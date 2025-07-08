@@ -1,24 +1,16 @@
 import { useState } from "react";
-import {
-  BarChart2,
-  BookOpenText,
-  Users,
-  Activity,
-  Loader2,
-  LucideIcon,
-  Download,
-  FileQuestion,
-} from "lucide-react";
+import { Loader2, Download, FileQuestion } from "lucide-react";
 import { User, UserRole } from "../../api/types/user";
 import cloverLogo from "../../assets/CLOVER.svg";
-
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
-  SidebarInset,
+  // SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -52,116 +44,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { Separator } from "../../components/ui/separator";
-import { Button } from "../../components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "../../components/ThemeToggle";
-
-type SideBarItem = {
-  id: string;
-  icon: LucideIcon;
-  name: string;
-  subheading: string;
-  roles: UserRole[];
-};
-
-const sidebarItems = [
-  // Students
-  {
-    id: "user-stats",
-    icon: Activity,
-    name: "Statistics",
-    subheading: "My Dashboard",
-    roles: [
-      UserRole.DEV,
-      UserRole.ADMIN,
-      UserRole.INSTRUCTOR,
-      UserRole.STUDENT,
-    ],
-  },
-  {
-    id: "user-classes",
-    icon: Activity,
-    name: "Classes",
-    subheading: "My Dashboard",
-    roles: [
-      UserRole.DEV,
-      UserRole.ADMIN,
-      UserRole.INSTRUCTOR,
-      UserRole.STUDENT,
-    ],
-  },
-  {
-    id: "user-register-classes",
-    icon: Activity,
-    name: "Register",
-    subheading: "My Dashboard",
-    roles: [
-      UserRole.DEV,
-      UserRole.ADMIN,
-      UserRole.INSTRUCTOR,
-      UserRole.STUDENT,
-    ],
-  },
-  {
-    id: "user-logs",
-    icon: Activity,
-    name: "Logs",
-    subheading: "My Dashboard",
-    roles: [
-      UserRole.DEV,
-      UserRole.ADMIN,
-      UserRole.INSTRUCTOR,
-      UserRole.STUDENT,
-    ],
-  },
-  // Instructor Views
-  {
-    id: "instructor-stats",
-    icon: BookOpenText,
-    name: "Student Statistics",
-    subheading: "Teaching",
-    roles: [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR],
-  },
-  {
-    id: "instructor-students",
-    icon: BookOpenText,
-    name: "Students",
-    subheading: "Teaching",
-    roles: [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR],
-  },
-  {
-    id: "instructor-classes",
-    icon: BookOpenText,
-    name: "Classes",
-    subheading: "Teaching",
-    roles: [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR],
-  },
-  // Admin Views
-  {
-    id: "admin-users",
-    icon: Users,
-    name: "Manage Users",
-    subheading: "Administration",
-    roles: [UserRole.DEV, UserRole.ADMIN],
-  },
-  {
-    id: "admin-classes",
-    icon: Users,
-    name: "Manage Classes",
-    subheading: "Administration",
-    roles: [UserRole.DEV, UserRole.ADMIN],
-  },
-  // Dev Views
-  {
-    id: "app-stats",
-    icon: BarChart2,
-    name: "App Stats",
-    subheading: "Development",
-    roles: [UserRole.DEV],
-  },
-];
+import { SideBarItem, sidebarItems } from "../../constants/sidebarConfigs";
+import { Separator } from "../../components/ui/separator";
+import { SiGithub } from "react-icons/si";
+import { Label } from "../../components/ui/label";
 
 const Dashboard = ({
   userData,
@@ -206,11 +102,13 @@ const Dashboard = ({
           setActiveTab={setActiveTab}
           onRoleChange={handleRoleChange}
         />
-        <SidebarInset className="flex-1 overflow-y-auto dark:bg-[#0a0a0a]">
-          <main>
-            <DashboardContent userData={userData} activeTab={activeTab} />
-          </main>
-        </SidebarInset>
+        {/* <SidebarInset className="flex-1 overflow-y-auto dark:bg-[#0a0a0a]"> */}
+        <main className="flex-1 bg-background/80 dark:bg-[#0a0a0a] overflow-auto">
+          <DashboardContentHeader role={effectiveRole} />
+          <DashboardContent userData={userData} activeTab={activeTab} />
+          <div className="h-[500px]" />
+        </main>
+        {/* </SidebarInset> */}
       </div>
     </SidebarProvider>
   );
@@ -234,11 +132,11 @@ function NavUser({ user }: { user: User }) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground space-x-1"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className="size-9 rounded-full">
                 <AvatarImage src={user.avatar_url} alt={user.first_name} />
-                <AvatarFallback className="rounded-lg">
+                <AvatarFallback className="rounded-lg font-semibold text-lg">
                   {user.first_name[0]}
                 </AvatarFallback>
               </Avatar>
@@ -329,10 +227,10 @@ function SideBar({
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="!p-1.5">
+            <SidebarMenuButton asChild className="!p-1 !m-1.5">
               <a href="/">
-                <img src={cloverLogo} alt="Clover Logo" className="h-5" />
-                <span className="text-xl font-semibold">
+                <img src={cloverLogo} alt="Clover Logo" className="h-8" />
+                <span className="text-2xl font-bold">
                   <CLOVER />
                 </span>
               </a>
@@ -340,65 +238,86 @@ function SideBar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <Separator />
+
       <SidebarContent>
         {Object.entries(groupedItems).map(([subheading, items]) => (
           <SidebarGroup key={subheading}>
-            <h1>{subheading}</h1>
-            {items.map(({ id, icon: Icon, name }) => (
-              <SidebarMenuItem key={id}>
-                <SidebarMenuButton
-                  className={`w-full text-left ${
-                    activeTab === id ? "bg-muted" : ""
-                  }`}
-                  onClick={() => setActiveTab(id)}
-                >
-                  <Icon className="mr-2 h-4 w-4" />
-                  {name}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            <SidebarGroupLabel>{subheading}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map(({ id, icon: Icon, name }) => (
+                  <SidebarMenuItem key={id}>
+                    <SidebarMenuButton
+                      className={`w-full text-left ${
+                        activeTab === id ? "bg-muted" : ""
+                      }`}
+                      onClick={() => setActiveTab(id)}
+                    >
+                      <Icon />
+                      <span>{name}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="pb-4">
         {userData.role === UserRole.DEV && onRoleChange && (
-          <div className="px-2 pb-4">
-            <label className="text-xs font-semibold text-muted-foreground block mb-1">
+          <div className="space-y-1">
+            <Label className="text-xs font-semibold text-muted-foreground px-1.5">
               Viewing as
-            </label>
-            <select
+            </Label>
+            <Select
               value={effectiveRole}
-              onChange={(e) => onRoleChange(e.target.value as UserRole)}
-              className="w-full rounded-md border px-2 py-1 text-sm bg-background"
+              onValueChange={(value) => onRoleChange(value as UserRole)}
             >
-              {Object.values(UserRole).map((role) => (
-                <option key={role} value={role}>
-                  {role[0] + role.slice(1).toLowerCase()}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full text-sm bg-background">
+                <SelectValue placeholder="Select role" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.values(UserRole).map((role) => (
+                  <SelectItem key={role} value={role}>
+                    {role[0] + role.slice(1).toLowerCase()}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
-        <SidebarMenuButton
-          onClick={() => navigate("/download")}
-          className={`w-full text-left`}
-        >
-          <Download className="mr-2 h-4 w-4" />
-          Download
-        </SidebarMenuButton>
-        <SidebarMenuButton
-          onClick={() =>
-            window.open(
-              "https://civic-interactions-lab.github.io/clover/",
-              "_blank"
-            )
-          }
-          className={`w-full text-left`}
-        >
-          <FileQuestion className="mr-2 h-4 w-4" />
-          Docs
-        </SidebarMenuButton>
+
+        <SidebarGroup className="mb-2">
+          <SidebarGroupLabel>Actions</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => navigate("/download")}
+                  className="w-full text-left"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Download</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() =>
+                    window.open(
+                      "https://civic-interactions-lab.github.io/clover/",
+                      "_blank"
+                    )
+                  }
+                  className="w-full text-left"
+                >
+                  <FileQuestion className="h-4 w-4" />
+                  <span>Docs</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
@@ -413,8 +332,7 @@ function DashboardContent({
   userData: User;
 }) {
   return (
-    <div className="w-full p-2">
-      <DashboardContentHeader />
+    <div className="w-full max-w-7xl mx-auto">
       <div className="px-6">
         {activeTab === "user-stats" && <StudentDashboard userData={userData} />}
         {activeTab === "user-classes" && <UserClasses />}
@@ -439,28 +357,32 @@ function DashboardContent({
   );
 }
 
-function DashboardContentHeader() {
+function DashboardContentHeader({ role }: { role?: UserRole }) {
   return (
-    <header className="flex h-(--header-height) mb-6 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+    <header className="sticky top-0 z-50 flex h-(--header-height) mb-6 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) backdrop-blur-md bg-background/80 supports-[backdrop-filter]:bg-background/60">
       <div className="flex w-full items-center gap-1 px-4 py-2 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1" />
         <Separator
           orientation="vertical"
-          className="mx-2 data-[orientation=vertical]:h-4"
+          className="mx-2 h-4 dark:bg-gray-600"
         />
+
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-            <a
-              href="https://github.com/Civic-Interactions-Lab/clover"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="dark:text-foreground"
-            >
-              GitHub
-            </a>
-          </Button>
+          {role === UserRole.DEV && (
+            <button className="flex rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <a
+                href="https://github.com/Civic-Interactions-Lab/clover"
+                rel="noopener noreferrer"
+                target="_blank"
+                className="dark:text-foreground flex-1 flex"
+              >
+                <SiGithub className="size-7" />
+              </a>
+            </button>
+          )}
+
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
       </div>
     </header>
   );

@@ -1,6 +1,6 @@
 import { supabase } from "../supabaseClient";
 import { CLASS_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
-import { ClassData, EnrollmentStatus, UserActivityLogItem } from "./types/user";
+import { ClassData, EnrollmentStatus } from "./types/user";
 
 /**
  * * Creates a new class in the database.
@@ -114,31 +114,51 @@ export const registerUserToClass = async (
  * @param {string} classId - The ID of the class
  * @returns {Promise<{ data?: UserActivityLogItem[]; error?: string }>} - The response from the server or an error message.
  */
-export async function getClassActivityByClassId(
-  classId: string
-): Promise<{ data: UserActivityLogItem[]; error?: string }> {
+
+export interface InstructorLogResponse {
+  id: string;
+  event: string;
+  duration: number;
+  userId: string;
+  classId?: string;
+  createdAt: string; // ISO string from time.Time JSON serialization
+  hasBug?: boolean;
+  suggestionId?: string;
+  lineSuggestionId?: string;
+  selectionSuggestionItemId?: string;
+  type: string;
+  classTitle?: string;
+  classCode?: string;
+}
+
+export async function getClassActivityByInstructorId(
+  instructorId: string
+): Promise<{ data: InstructorLogResponse[]; error?: string }> {
   try {
-    const response = await fetch(`${LOG_ENDPOINT}/class/${classId}`, {
+    const response = await fetch(`${LOG_ENDPOINT}/instructor/${instructorId}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
 
-    const data = await response.json();
+    const result = await response.json();
 
     if (!response.ok) {
       return {
         data: [],
         error:
-          data?.error ||
-          `Failed to get logs by class: ${response.status} ${response.statusText}`,
+          result?.error ||
+          `Failed to get logs by instructor: ${response.status} ${response.statusText}`,
       };
     }
 
-    if (!Array.isArray(data)) {
+    // Handle the response structure from your Go backend
+    const logs = result.data || result;
+
+    if (!Array.isArray(logs)) {
       return { data: [] };
     }
 
-    return { data };
+    return { data: logs };
   } catch (err) {
     return {
       data: [],

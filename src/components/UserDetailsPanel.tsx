@@ -139,10 +139,12 @@ const ClassDataSection: React.FC<{
   onClassClick: (cls: ClassData) => void;
 }> = ({ userClasses, onClassClick }) => {
   if (userClasses) {
+    // TODO
+    console.log("");
   }
   return (
     <div className="bg-gray-100 dark:bg-gray-900 rounded shadow-sm p-6 mb-4">
-      <h2 className="text-md font-semibold text-[#50B498]">User Classes</h2>
+      <h2 className="text-md font-semibold text-alpha">User Classes</h2>
       {userClasses && userClasses.length > 0 ? (
         <ul className="mt-2">
           {userClasses.map((userClass) => (

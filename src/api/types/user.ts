@@ -26,6 +26,8 @@ export enum UserMode {
   SELECTION = "CODE_SELECTION",
 }
 
+export type ActiveUserMode = Omit<UserMode, UserMode.OFF>;
+
 export const AUTH_CONTEXT = "authContext";
 
 export interface User {
@@ -49,24 +51,6 @@ export type UserSettings = {
   show_notifications: boolean;
   enable_quiz: boolean;
   mode: UserMode;
-};
-
-export type UserActivityLogItem = {
-  log_id: number;
-  log_created_at: string;
-  event: string;
-  duration: number;
-  user_id: string;
-  class_id: string;
-  suggestion_id: number;
-  suggestion_created_at: string;
-  prompt: string;
-  suggestion_array: string[];
-  has_bug: boolean;
-  model: string;
-  explanation: string | null;
-  vendor: string;
-  language: string;
 };
 
 export interface ClassData {

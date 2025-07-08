@@ -1,10 +1,11 @@
 import {
   User,
-  UserActivityLogItem,
   UserClassInfo,
+  ActiveUserMode,
   UserSettings,
 } from "./types/user";
 import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
+import { LogResponse } from "./types/suggestion";
 
 /**
  * Function to save user settings to the database.
@@ -88,17 +89,35 @@ export async function getUserData(
  * @returns {Promise<{ data?: UserActivityLogItem[] | null; error?: string }>} - The response from the server or an error message
  */
 export async function getUserActivity(
-  userId: string
-): Promise<{ data?: UserActivityLogItem[] | null; error?: string }> {
+  userId: string,
+  mode: ActiveUserMode
+): Promise<{ logs?: LogResponse<typeof mode>; error?: string }> {
+  let routeMode: string;
+  switch (mode) {
+    case "CODE_BLOCK":
+      routeMode = "code-block";
+      break;
+    case "LINE_BY_LINE":
+      routeMode = "line-by-line";
+      break;
+    case "CODE_SELECTION":
+      routeMode = "code-selection";
+      break;
+    default:
+      console.error("Invalid mode provided:", mode);
+      return { error: "Invalid mode provided" };
+  }
+
   try {
-    const response = await fetch(`${LOG_ENDPOINT}/${userId}`, {
+    const url = `${LOG_ENDPOINT}/suggestion/${userId}/${routeMode}`;
+
+    const response = await fetch(url, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
+      const data = await response.json();
       return {
         error:
           data.message ||
@@ -106,21 +125,50 @@ export async function getUserActivity(
       };
     }
 
-    if (data == null) {
-      return { data: [] };
-    }
+    const data = await response.json();
 
-    if (!Array.isArray(data)) {
-      return { error: "Invalid response: expected an array of activity logs" };
-    }
-
-    return { data: data as UserActivityLogItem[] };
+    return { logs: data.logs as LogResponse<typeof mode> };
   } catch (err) {
+    console.error("Error fetching user activity:", err);
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
     };
   }
 }
+// export async function getUserActivity(
+//   userId: string
+// ): Promise<{ data?: UserActivityLogItem[] | null; error?: string }> {
+//   try {
+//     const response = await fetch(`${LOG_ENDPOINT}/${userId}`, {
+//       method: "GET",
+//       headers: { "Content-Type": "application/json" },
+//     });
+
+//     const data = await response.json();
+
+//     if (!response.ok) {
+//       return {
+//         error:
+//           data.message ||
+//           `Failed to get user activity: ${response.status} ${response.statusText}`,
+//       };
+//     }
+
+//     if (data == null) {
+//       return { data: [] };
+//     }
+
+//     if (!Array.isArray(data)) {
+//       return { error: "Invalid response: expected an array of activity logs" };
+//     }
+
+//     return { data: data as UserActivityLogItem[] };
+//   } catch (err) {
+//     return {
+//       error: err instanceof Error ? err.message : "Unknown error occurred",
+//     };
+//   }
+// }
 
 /**
  * Function to get the classes of a user from the database.

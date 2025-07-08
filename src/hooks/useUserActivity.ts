@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { getUserActivity } from "../api/user";
-import { calculateProgress, ProgressData } from "../utils/calculateProgress";
-import { LogEvent } from "../api/types/event";
-import { UserActivityLogItem } from "../api/types/user";
+import { calculateProgress } from "../utils/calculateProgress";
+import { getEventsForMode } from "../api/types/event";
+import { ProgressData, UserActivityLogItem } from "../api/types/suggestion";
+import { ActiveUserMode } from "../api/types/user";
 
 /**
  * Custom hook to fetch user activity logs and calculate progress data.
@@ -13,36 +14,45 @@ import { UserActivityLogItem } from "../api/types/user";
  */
 export const useUserActivity = (
   userId?: string | null,
+  mode?: ActiveUserMode | null,
   selectedClassId: string | null = null,
   selectedClassType: "all" | "class" | "non-class" | null = "all"
 ) => {
   const [userActivity, setUserActivity] = useState<UserActivityLogItem[]>([]);
   const [progressData, setProgressData] = useState<ProgressData>({
     totalAccepted: 0,
+    totalRejected: 0,
+    totalInteractions: 0,
     correctSuggestions: 0,
-    percentageCorrect: 0,
+    accuracyPercentage: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userId) {
+    if (!userId || !mode) {
       setLoading(false);
       return;
     }
 
     const fetchActivity = async () => {
+      const activeMode = mode as ActiveUserMode;
+
       try {
         setError(null);
-        const { data, error } = await getUserActivity(userId);
-        if (error || !data) throw new Error(error);
+        const { logs, error } = await getUserActivity(userId, activeMode);
+        if (error || !logs) throw new Error(error);
 
-        let filteredActivities = data.filter(
+        const events = getEventsForMode(activeMode);
+
+        const logArray = logs as UserActivityLogItem[];
+        let filteredActivities = logArray.filter(
           (activity) =>
-            activity.event === LogEvent.SUGGESTION_ACCEPT ||
-            activity.event === LogEvent.USER_REJECT
+            activity.event === events?.accept ||
+            activity.event === events?.reject
         );
-        if (!filteredActivities) {
+
+        if (!filteredActivities.length) {
           setUserActivity([]);
           setLoading(false);
           return;
@@ -50,17 +60,17 @@ export const useUserActivity = (
 
         if (selectedClassType === "non-class") {
           filteredActivities = filteredActivities.filter(
-            (activity) => !activity.class_id
+            (activity) => !activity.classId
           );
         } else if (selectedClassType === "class" && selectedClassId) {
           filteredActivities = filteredActivities.filter(
-            (activity) => activity.class_id === selectedClassId
+            (activity) => activity.classId === selectedClassId
           );
         }
 
         setUserActivity(filteredActivities);
 
-        const progress = calculateProgress(filteredActivities);
+        const progress = calculateProgress(filteredActivities, activeMode);
         setProgressData(progress);
       } catch (err) {
         console.error("Error fetching user activity:", err);
@@ -71,7 +81,7 @@ export const useUserActivity = (
     };
 
     fetchActivity();
-  }, [userId, selectedClassId, selectedClassType]);
+  }, [userId, mode, selectedClassId, selectedClassType]);
 
   return {
     userActivity,

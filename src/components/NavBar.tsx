@@ -64,7 +64,7 @@ export const NavBar = () => {
         <ul className="flex space-x-12 text-lg items-center ml-8">
           {navLinks.map((link) => (
             <li key={link.to}>
-              <Link to={link.to} className="hover:text-[#50B498] transition">
+              <Link to={link.to} className="hover:text-alpha transition">
                 {link.label}
               </Link>
             </li>
@@ -81,7 +81,7 @@ export const NavBar = () => {
         ) : (
           <>
             <Link to="/login">
-              <Button className="bg-[#50B498] hover:bg-[#468585] text-white font-medium text-md">
+              <Button className="bg-alpha hover:bg-[#468585] text-white font-medium text-md">
                 Log In
               </Button>
             </Link>
@@ -131,7 +131,7 @@ export const NavBar = () => {
                   <>
                     <Link to="/login">
                       <Button
-                        className="w-full py-4 text-lg bg-[#50B498] hover:bg-[#468585] text-white"
+                        className="w-full py-4 text-lg bg-alpha hover:bg-[#468585] text-white"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         Log In
@@ -139,7 +139,7 @@ export const NavBar = () => {
                     </Link>
                     <Link to="/signup">
                       <Button
-                        className="mt-4 w-full py-4 text-lg text-[#5AC8A8] hover:bg-gray-200 bg-gray-50"
+                        className="mt-4 w-full py-4 text-lg text-alpha hover:bg-gray-200 bg-gray-50"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         Sign Up
@@ -186,7 +186,7 @@ export const DropdownAvatar = ({
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              <AvatarFallback className="bg-[#50B498] text-white text-lg font-semibold">
+              <AvatarFallback className="bg-alpha text-white text-lg font-semibold">
                 {userData?.first_name.charAt(0).toUpperCase()}
               </AvatarFallback>
             )}
