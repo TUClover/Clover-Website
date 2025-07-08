@@ -9,7 +9,7 @@ export default function VSCodeAuthCallback() {
 
     handleAuthRedirect({
       onComplete: (userId) => {
-        window.location.href = `vscode://capstone-team-2.temple-capstone-clover/auth-complete?id=${userId}`;
+        window.location.href = `vscode://capstone-team-2.tu-clover/auth-complete?id=${userId}`;
       },
       onError: (message) => {
         console.error("VSCode Auth Failed:", message);
