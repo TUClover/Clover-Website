@@ -52,7 +52,7 @@ export const InstructorDashboard = ({ userData }: { userData: User }) => {
     userData.id
   );
 
-  const { allActivity, classActivity, progressData, loading, error } =
+  const { allActivity, classActivity, progressData, loading, error, isEmpty } =
     useClassActivity(userData.id, selectedClassId, selectedMode);
 
   const selectedClassTitle =
@@ -67,6 +67,19 @@ export const InstructorDashboard = ({ userData }: { userData: User }) => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="animate-spin h-10 w-10 dark:text-white" />
+      </div>
+    );
+  }
+
+  if (isEmpty) {
+    return (
+      <div className="flex justify-center mt-10">
+        <div className="text-center p-6 border rounded-lg">
+          <h2 className="text-lg font-semibold mb-4">No Activity Data</h2>
+          <p className="text-muted-foreground">
+            No activity data found for the selected criteria.
+          </p>
+        </div>
       </div>
     );
   }

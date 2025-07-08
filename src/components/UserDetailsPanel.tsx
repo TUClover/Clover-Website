@@ -1,16 +1,11 @@
-import {
-  UserActivityLogItem,
-  ClassData,
-  User,
-  UserRole,
-  UserClassInfo,
-} from "../api/types/user";
+import { ClassData, User, UserRole, UserClassInfo } from "../api/types/user";
 import PaginatedTable from "./PaginatedTable";
 import SuggestionTable from "./SuggestionTable";
 import UserSettings from "./UserSettings";
 import { EditUserButton } from "./EditUserButton";
 import { DeleteUserButton } from "./DeleteUserButton";
 import { ResetPasswordButton } from "./ResetPasswordButton";
+import { UserActivityLogItem } from "../api/types/suggestion";
 
 /**
  * UserDetailsPanel component displays user details, activity, and settings.
@@ -73,7 +68,10 @@ export const UserDetailsPanel: React.FC<{
               userClasses={userClasses}
               onClassClick={(cls) => setSelectedClass && setSelectedClass(cls)}
             />
-            <UserActivitySection userActivity={userActivity} />
+            <UserActivitySection
+              userActivity={userActivity}
+              user={singleUser}
+            />
             <InstructorClassesSection
               user={singleUser}
               instructorClasses={instructorClasses}
@@ -185,7 +183,8 @@ const ClassDataSection: React.FC<{
 
 const UserActivitySection: React.FC<{
   userActivity: UserActivityLogItem[];
-}> = ({ userActivity }) => {
+  user: User;
+}> = ({ userActivity, user }) => {
   return (
     <div className="bg-gray-100 dark:bg-gray-900 rounded shadow-sm p-6 mb-4">
       {userActivity.length > 0 ? (
@@ -196,7 +195,11 @@ const UserActivitySection: React.FC<{
           <PaginatedTable
             data={userActivity}
             renderTable={(items, startIndex) => (
-              <SuggestionTable logItems={items} startIndex={startIndex} />
+              <SuggestionTable
+                logItems={items}
+                startIndex={startIndex}
+                mode={user.settings.mode}
+              />
             )}
           />
         </div>

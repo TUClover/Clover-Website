@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import MiniPieChart from "./MiniPieChart";
 import { calculateProgress } from "../utils/calculateProgress";
-import { StudentStatus, UserActivityLogItem } from "../api/types/user";
+import { StudentStatus } from "../api/types/user";
 import { supabase } from "../supabaseClient";
 import PaginatedTable from "./PaginatedTable";
 import { Input } from "./ui/input";
@@ -13,6 +13,7 @@ import {
   SelectContent,
 } from "./ui/select";
 import StudentDashboardCard from "./StudentDashboardCard";
+import { UserActivityLogItem } from "../api/types/suggestion";
 
 interface StudentClassData {
   fullName?: string;
@@ -161,7 +162,7 @@ export const StudentDataTable = ({
   useEffect(() => {
     const fetchClassData = async () => {
       const uniqueClassIds = [
-        ...new Set(logs.map((log) => log.class_id)),
+        ...new Set(logs.map((log) => log.classId)),
       ].filter(Boolean);
 
       if (uniqueClassIds.length === 0) return;
@@ -192,8 +193,8 @@ export const StudentDataTable = ({
       const activityLogsMap = new Map<string, UserActivityLogItem[]>();
 
       for (const log of logs) {
-        const userId = log.user_id ?? "Unknown";
-        const classId = log.class_id ?? "Unknown";
+        const userId = log.userId ?? "Unknown";
+        const classId = log.classId ?? "Unknown";
         const compositeKey =
           classFilter === "all" ? `${userId}&${classId}` : userId;
 
@@ -208,17 +209,17 @@ export const StudentDataTable = ({
           const [userId, classId] =
             classFilter === "all"
               ? compositeKey.split("&")
-              : [compositeKey, userLogs[0]?.class_id ?? "Unknown"];
+              : [compositeKey, userLogs[0]?.classId ?? "Unknown"];
 
-          const { percentageCorrect, correctSuggestions, totalAccepted } =
-            calculateProgress(userLogs);
+          const { totalAccepted, correctSuggestions, accuracyPercentage } =
+            calculateProgress(userLogs, "LINE_BY_LINE");
 
           const lastActivity = userLogs.reduce(
             (latest, log) =>
-              new Date(log.log_created_at) > new Date(latest)
-                ? log.log_created_at
+              new Date(log.createdAt) > new Date(latest)
+                ? log.createdAt
                 : latest,
-            userLogs[0].log_created_at
+            userLogs[0].createdAt
           );
 
           const classTitle = classDataMap[classId]?.classTitle || "Unknown";
@@ -229,7 +230,7 @@ export const StudentDataTable = ({
             classTitle,
             totalAccepted,
             correctSuggestions,
-            percentageCorrect: Math.round(percentageCorrect),
+            percentageCorrect: Math.round(accuracyPercentage),
             lastActivity,
             logs: userLogs,
           };
