@@ -119,7 +119,7 @@ export const AdminUsers = () => {
                 : null,
             totalAccepted: progressData.totalAccepted,
             correctSuggestions: progressData.correctSuggestions,
-            percentageCorrect: progressData.percentageCorrect,
+            percentageCorrect: progressData.accuracyPercentage,
             logs: selectedActivity,
           }}
           onClose={() => setSelectedClass(null)}

@@ -102,13 +102,10 @@ const Dashboard = ({
           setActiveTab={setActiveTab}
           onRoleChange={handleRoleChange}
         />
-        {/* <SidebarInset className="flex-1 overflow-y-auto dark:bg-[#0a0a0a]"> */}
         <main className="flex-1 bg-background/80 dark:bg-[#0a0a0a] overflow-auto">
           <DashboardContentHeader role={effectiveRole} />
           <DashboardContent userData={userData} activeTab={activeTab} />
-          <div className="h-[500px]" />
         </main>
-        {/* </SidebarInset> */}
       </div>
     </SidebarProvider>
   );

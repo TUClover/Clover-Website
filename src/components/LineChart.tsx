@@ -82,7 +82,6 @@ export const LineChart = ({
   const rejectedMap: Record<string, number> = {};
 
   activities.forEach((activity) => {
-    // Handle both string and Date for createdAt (InstructorLogResponse uses Date, UserActivityLogItem uses string)
     const date =
       typeof activity.createdAt === "string"
         ? new Date(activity.createdAt)
@@ -90,16 +89,13 @@ export const LineChart = ({
 
     const key = groupBy(date, interval);
     if (key) {
-      // Check for different possible accept events
       if (
         activity.event === LogEvent.SUGGESTION_ACCEPT ||
         activity.event === "SUGGESTION_ACCEPT" ||
         activity.event.includes("ACCEPT")
       ) {
         acceptedMap[key] = (acceptedMap[key] || 0) + 1;
-      }
-      // Check for different possible reject events
-      else if (
+      } else if (
         activity.event === LogEvent.USER_REJECT ||
         activity.event === "USER_REJECT" ||
         activity.event.includes("REJECT")

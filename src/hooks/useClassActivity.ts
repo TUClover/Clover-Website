@@ -34,7 +34,7 @@ export const useClassActivity = (
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!mode || !instructorId) {
+    if (!instructorId) {
       setLoading(false);
       return;
     }
@@ -51,9 +51,10 @@ export const useClassActivity = (
           throw new Error(error);
         }
 
+        const activityData = data || [];
         console.log("Fetched instructor activity:", data.length);
 
-        setAllActivity(data);
+        setAllActivity(activityData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
@@ -62,7 +63,7 @@ export const useClassActivity = (
     };
 
     fetchInstructorActivity();
-  }, [instructorId, mode]);
+  }, [instructorId]);
 
   useEffect(() => {
     if (!mode) return;

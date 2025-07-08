@@ -2,10 +2,11 @@ import StatCard from "./StatCard";
 import LineChart from "./LineChart";
 import StackedBarChart from "./StackedBarChart";
 import { X } from "lucide-react";
-import PieChart from "./PieChart";
-import { StudentStatus, UserActivityLogItem } from "../api/types/user";
+import { StudentStatus } from "../api/types/user";
 import StudentStatusBadge from "./StudentStatusBadge";
 import { Card } from "./ui/card";
+import { UserActivityLogItem } from "../api/types/suggestion";
+import MiniPieChart from "./MiniPieChart";
 
 interface StudentClassData {
   fullName?: string;
@@ -98,7 +99,7 @@ export const StudentDashboardCard = ({
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <PieChart
+            <MiniPieChart
               correct={correctSuggestions}
               incorrect={totalAccepted - correctSuggestions}
             />

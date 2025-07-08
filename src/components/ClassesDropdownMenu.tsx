@@ -54,7 +54,10 @@ export const ClassesDropdownMenu = ({
         }
       }}
     >
-      <SelectTrigger className="w-full border-gray-300">
+      <SelectTrigger
+        className="w-full flex-shrink-0
+      "
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
@@ -64,7 +67,7 @@ export const ClassesDropdownMenu = ({
               <div className="flex items-center gap-2">
                 {cls.class_hex_color && (
                   <div
-                    className="w-3 h-3 rounded-full shrink-0"
+                    className="w-2 h-2 rounded"
                     style={{ backgroundColor: cls.class_hex_color }}
                   />
                 )}
