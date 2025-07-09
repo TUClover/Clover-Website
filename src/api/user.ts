@@ -1,9 +1,4 @@
-import {
-  User,
-  UserClassInfo,
-  ActiveUserMode,
-  UserSettings,
-} from "./types/user";
+import { User, ActiveUserMode, UserSettings } from "./types/user";
 import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
 import { LogResponse } from "./types/suggestion";
 
@@ -169,45 +164,6 @@ export async function getUserActivity(
 //     };
 //   }
 // }
-
-/**
- * Function to get the classes of a user from the database.
- * @param {string} userId - The ID of the user whose classes are to be fetched
- * @returns {Promise<{ data?: UserClassInfo[]; error?: string }>} - The response from the server or an error message
- */
-export async function getUserClasses(userId: string): Promise<{
-  data?: UserClassInfo[];
-  error?: string;
-}> {
-  try {
-    const response = await fetch(`${USER_ENDPOINT}/${userId}/classes`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    const data = await response.json();
-
-    if (response.status === 404) {
-      return { data: [] };
-    }
-    if (!response.ok) {
-      return {
-        error:
-          data.message ||
-          `Failed to get user classes: ${response.status} ${response.statusText}`,
-      };
-    }
-
-    if (!Array.isArray(data)) {
-      return { error: "Invalid response: expected an array of classes" };
-    }
-
-    return { data: data };
-  } catch (err) {
-    return {
-      error: err instanceof Error ? err.message : "Unknown error occurred",
-    };
-  }
-}
 
 /**
  * Function to get all users from the database.

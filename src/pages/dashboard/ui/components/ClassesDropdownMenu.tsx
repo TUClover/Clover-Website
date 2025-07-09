@@ -1,3 +1,4 @@
+import { ClassData } from "@/api/types/user";
 import {
   Select,
   SelectContent,
@@ -6,14 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ClassData } from "@/api/types/user";
 
 interface ClassesDropdownMenuProps {
   classes: ClassData[];
-  onClassSelect: (selection: {
-    id: string | null;
-    type: "all" | "class" | "non-class";
-  }) => void;
+  onClassSelect: (classId: string | null) => void;
   selectedId?: string | null;
   placeholder?: string;
 }
@@ -33,52 +30,28 @@ const ClassesDropdownMenu = ({
   selectedId,
   placeholder,
 }: ClassesDropdownMenuProps) => {
-  const selectValue =
-    selectedId === undefined
-      ? undefined
-      : selectedId === null
-        ? "all"
-        : selectedId;
-
   return (
     <Select
-      value={selectValue}
+      value={selectedId || undefined}
       onValueChange={(value) => {
-        if (value === "all") {
-          onClassSelect({ id: null, type: "all" });
-        } else if (value === "non-class") {
-          onClassSelect({ id: null, type: "non-class" });
-        } else {
-          onClassSelect({ id: value, type: "class" });
-        }
+        onClassSelect(value);
       }}
     >
-      <SelectTrigger
-        className="w-full flex-shrink-0
-    "
-      >
+      <SelectTrigger className="w-full md:w-80">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           {classes.map((cls) => (
-            <SelectItem key={cls.id} value={cls.id || "all"}>
+            <SelectItem key={cls.id} value={cls.id || ""}>
               <div className="flex items-center gap-2">
-                {cls.classHexColor && (
-                  <div
-                    className="w-2 h-2 rounded"
-                    style={{ backgroundColor: cls.classHexColor }}
-                  />
-                )}
+                <div
+                  className="w-2 h-2 rounded"
+                  style={{ backgroundColor: cls.classHexColor || "#cccccc" }}
+                />
                 <span>
-                  {cls.classTitle}{" "}
-                  <span
-                    className={
-                      cls.id === "all" || cls.id === "non-class" ? "hidden" : ""
-                    }
-                  >
-                    - {cls.classCode}
-                  </span>
+                  {cls.classTitle}
+                  {cls.classCode && <span> - {cls.classCode}</span>}
                 </span>
               </div>
             </SelectItem>

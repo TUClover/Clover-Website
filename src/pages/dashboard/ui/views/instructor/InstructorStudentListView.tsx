@@ -9,7 +9,7 @@ import { useInstructorClasses } from "@/hooks/useInstructorClasses";
 
 const InstructorStudentListView = () => {
   const { userData } = useUser();
-  const { classes, selectedClassId } = useInstructorClasses(userData?.id);
+  const { allClasses, selectedClassId } = useInstructorClasses(userData?.id);
 
   const { allActivity, progressData, loading } = useClassActivity(
     userData?.id as string,
@@ -18,8 +18,8 @@ const InstructorStudentListView = () => {
   );
 
   const selectedClassTitle =
-    classes.find((classItem) => classItem.id === selectedClassId)?.classTitle ??
-    "";
+    allClasses.find((classItem) => classItem.id === selectedClassId)
+      ?.classTitle ?? "";
 
   if (loading) {
     return (

@@ -45,15 +45,21 @@ const UsersAdministrationView = () => {
 
   const primaryUser = selectedUsers[0];
 
-  const { classes, loading: userClassesLoading } = useUserClasses(
+  const { allClasses, loading: userClassesLoading } = useUserClasses(
     primaryUser?.id
   );
+
+  // const { userActivity, loading: userActivityLoading } = useUserActivity(
+  //   primaryUser?.id
+  // );
 
   const { userActivity, loading: userActivityLoading } = useUserActivity(
-    primaryUser?.id
+    primaryUser?.id,
+    primaryUser?.settings?.mode, // Add the mode parameter
+    "all" // Show all activities for the general view
   );
 
-  const { classes: instructorClasses, loading: instructorLoading } =
+  const { allClasses: instructorClasses, loading: instructorLoading } =
     useInstructorClasses(primaryUser?.id);
 
   const { userActivity: selectedActivity, progressData } = useUserActivity(
@@ -90,7 +96,7 @@ const UsersAdministrationView = () => {
         {/* Details Panel */}
         <UserDetailsPanel
           user={selectedUsers}
-          userClasses={classes}
+          userClasses={allClasses}
           userRole={UserRole.DEV}
           userActivity={userActivity}
           instructorClasses={instructorClasses}

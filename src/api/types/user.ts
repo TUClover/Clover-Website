@@ -59,18 +59,19 @@ export interface ClassData {
   classTitle: string;
   classCode: string;
   instructorId?: string;
-  classHexColor: string;
+  instructorName?: string;
+  classHexColor?: string;
   classImageCover?: string | null;
-  classDescription: string;
-  students: User[];
+  classDescription?: string;
+  students?: User[];
 }
 /**
  * UserClassInfo interface represents the structure of user class information.
  * It contains the user class and the student's status in that class.
  */
 export interface UserClassInfo {
-  user_class: ClassData;
-  joined_at: string;
-  enrollment_status: EnrollmentStatus;
-  student_status: StudentStatus;
+  userClass: ClassData;
+  joinedAt: string;
+  enrollmentStatus: EnrollmentStatus;
+  studentStatus: StudentStatus;
 }

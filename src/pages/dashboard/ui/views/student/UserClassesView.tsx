@@ -1,13 +1,22 @@
 import { useState } from "react";
 import { useUserClasses } from "@/hooks/useUserClasses";
-import { ClassData, StudentStatus, User } from "@/api/types/user";
+import {
+  ClassData,
+  EnrollmentStatus,
+  StudentStatus,
+  User,
+} from "@/api/types/user";
 import ClassDetails from "@/components/ClassDetails";
 import NoClasses from "@/components/NoClasses";
 import ClassesCarousel from "../../components/ClassesCarousel";
 import Loading from "@/components/Loading";
+import { useUser } from "@/context/UserContext";
 
 export const UserClassesView = () => {
-  const { originalClasses, loading: userClassLoading } = useUserClasses();
+  const { userData } = useUser();
+  const { allClasses, loading: userClassLoading } = useUserClasses(
+    userData?.id
+  );
   const [selectedClass, setSelectedClass] = useState<{
     userClass: ClassData;
     studentStatus?: StudentStatus;
@@ -41,53 +50,43 @@ export const UserClassesView = () => {
     setSelectedClass(null);
   };
 
-  if (originalClasses.length === 0) {
+  if (allClasses.length === 0) {
     return <NoClasses role="student" />;
   }
 
-  const hasEnrolledClasses = originalClasses.some(
-    (c) => c.enrollment_status === "ENROLLED"
-  );
-
-  const hasWaitlistedClasses = originalClasses.some(
-    (c) => c.enrollment_status === "WAITLISTED"
-  );
-
-  const hasCompletedClasses = originalClasses.some(
-    (c) => c.enrollment_status === "COMPLETED"
-  );
+  const classGroups = [
+    {
+      status: EnrollmentStatus.ENROLLED,
+      title: "Enrolled Classes",
+    },
+    {
+      status: EnrollmentStatus.WAITLISTED,
+      title: "Waitlisted Classes",
+    },
+    {
+      status: EnrollmentStatus.COMPLETED,
+      title: "Completed Classes",
+    },
+  ];
 
   return (
     <>
-      {hasEnrolledClasses && (
-        <ClassesCarousel
-          classes={originalClasses.filter(
-            (c) => c.enrollment_status === "ENROLLED"
-          )}
-          onClassSelect={handleClassSelect}
-          title="Enrolled Classes"
-        />
-      )}
+      {classGroups.map(({ status, title }) => {
+        const filteredClasses = allClasses.filter(
+          (c) => c.enrollmentStatus === status
+        );
 
-      {hasWaitlistedClasses && (
-        <ClassesCarousel
-          classes={originalClasses.filter(
-            (c) => c.enrollment_status === "WAITLISTED"
-          )}
-          onClassSelect={handleClassSelect}
-          title="Waitlisted Classes"
-        />
-      )}
+        if (filteredClasses.length === 0) return null;
 
-      {hasCompletedClasses && (
-        <ClassesCarousel
-          classes={originalClasses.filter(
-            (c) => c.enrollment_status === "COMPLETED"
-          )}
-          onClassSelect={handleClassSelect}
-          title="Completed Classes"
-        />
-      )}
+        return (
+          <ClassesCarousel
+            key={status}
+            classes={filteredClasses}
+            onClassSelect={handleClassSelect}
+            title={title}
+          />
+        );
+      })}
 
       {selectedClass && (
         <ClassDetails

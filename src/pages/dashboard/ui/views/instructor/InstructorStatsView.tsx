@@ -25,16 +25,15 @@ const InstructorStatsView = () => {
     userData?.settings.mode as ActiveUserMode
   );
 
-  const { classes, selectedClassId, handleClassSelect } = useInstructorClasses(
-    userData?.id
-  );
+  const { allClassOptions, selectedClassId, handleClassSelect } =
+    useInstructorClasses(userData?.id);
 
   const { allActivity, classActivity, progressData, loading } =
     useClassActivity(userData?.id as string, selectedClassId, selectedMode);
 
   const selectedClassTitle =
-    classes.find((classItem) => classItem.id === selectedClassId)?.classTitle ??
-    "";
+    allClassOptions.find((classItem) => classItem.id === selectedClassId)
+      ?.classTitle ?? "";
 
   const [dataMode, setDataMode] = useState<"total" | "accepted" | "rejected">(
     "total"
@@ -83,48 +82,44 @@ const InstructorStatsView = () => {
   const statData = getStatCardData();
 
   return (
-    <div>
-      <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="col-span-1"></div>
-        <div className="col-span-1" />
-        <div className="col-span-2 flex items-center justify-end gap-4">
-          <div className="flex items-center gap-2">
-            <Select
-              value={selectedMode as string}
-              onValueChange={(value: ActiveUserMode) => setSelectedMode(value)}
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={UserMode.BLOCK}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded bg-blue-500"></div>
-                    Code Block
-                  </div>
-                </SelectItem>
-                <SelectItem value={UserMode.LINE}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded bg-green-500"></div>
-                    Line by Line
-                  </div>
-                </SelectItem>
-                <SelectItem value={UserMode.SELECTION}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded bg-purple-500"></div>
-                    Code Selection
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <ClassesDropdownMenu
-            classes={classes}
-            selectedId={selectedClassId}
-            onClassSelect={handleClassSelect}
-          />
+    <div className="space-y-8">
+      <div className="col-span-2 flex items-center justify-end gap-4">
+        <div className="flex items-center gap-2">
+          <Select
+            value={selectedMode as string}
+            onValueChange={(value: ActiveUserMode) => setSelectedMode(value)}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={UserMode.BLOCK}>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded bg-blue-500"></div>
+                  Code Block
+                </div>
+              </SelectItem>
+              <SelectItem value={UserMode.LINE}>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded bg-green-500"></div>
+                  Line by Line
+                </div>
+              </SelectItem>
+              <SelectItem value={UserMode.SELECTION}>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded bg-purple-500"></div>
+                  Code Selection
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+
+        <ClassesDropdownMenu
+          classes={allClassOptions}
+          selectedId={selectedClassId}
+          onClassSelect={handleClassSelect}
+        />
       </div>
 
       {progressData.totalInteractions > 0 ? (

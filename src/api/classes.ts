@@ -1,6 +1,6 @@
 import { supabase } from "../supabaseClient";
 import { CLASS_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
-import { ClassData, EnrollmentStatus } from "./types/user";
+import { ClassData, EnrollmentStatus, UserClassInfo } from "./types/user";
 
 /**
  * * Creates a new class in the database.
@@ -110,6 +110,38 @@ export const registerUserToClass = async (
 };
 
 /**
+ * Function to get the classes of a user from the database.
+ * @param {string} userId - The ID of the user whose classes are to be fetched
+ * @returns {Promise<{ data?: UserClassInfo[]; error?: string }>} - The response from the server or an error message
+ */
+export async function getClassesbyStudent(studentId: string): Promise<{
+  data?: UserClassInfo[];
+  error?: string;
+}> {
+  try {
+    const response = await fetch(`${CLASS_ENDPOINT}/students/${studentId}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error:
+          data.error ||
+          `Failed to get user classes: ${response.status} ${response.statusText}`,
+      };
+    }
+
+    return { data: data };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
  * Fetches all activity logs for a specific class from the database.
  * @param {string} classId - The ID of the class
  * @returns {Promise<{ data?: UserActivityLogItem[]; error?: string }>} - The response from the server or an error message.
@@ -179,8 +211,8 @@ export const updateStudentEnrollmentStatus = async (
   newStatus: EnrollmentStatus
 ): Promise<{ success: boolean; error?: string }> => {
   const updateFields = {
-    enrollment_status: newStatus,
-    user_class_status: newStatus === "ENROLLED" ? "ACTIVE" : null,
+    enrollmentStatus: newStatus,
+    userClassStatus: newStatus === "ENROLLED" ? "ACTIVE" : null,
   };
 
   const { error } = await supabase

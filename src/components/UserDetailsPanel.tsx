@@ -148,27 +148,27 @@ const ClassDataSection: React.FC<{
           {userClasses.map((userClass) => (
             <div
               className="flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded cursor-pointer"
-              onClick={() => onClassClick(userClass.user_class)}
+              onClick={() => onClassClick(userClass.userClass)}
             >
-              {userClass.user_class.classHexColor && (
+              {userClass.userClass.classHexColor && (
                 <div
                   className="w-3 h-3 rounded-full shrink-0"
                   style={{
-                    backgroundColor: userClass.user_class.classHexColor,
+                    backgroundColor: userClass.userClass.classHexColor,
                   }}
                 />
               )}
               <span>
-                {userClass.user_class.classTitle}{" "}
+                {userClass.userClass.classTitle}{" "}
                 <span
                   className={
-                    userClass.user_class.id === "all" ||
-                    userClass.user_class.id === "non-class"
+                    userClass.userClass.id === "all" ||
+                    userClass.userClass.id === "non-class"
                       ? "hidden"
                       : ""
                   }
                 >
-                  - {userClass.user_class.classCode}
+                  - {userClass.userClass.classCode}
                 </span>
               </span>
             </div>

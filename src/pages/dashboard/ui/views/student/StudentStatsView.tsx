@@ -4,7 +4,6 @@ import StatCard from "@/components/StatCard";
 import StackedBarChart from "@/components/StackedBarChart";
 import PieChart from "@/components/PieChart";
 import { useUserActivity } from "@/hooks/useUserActivity";
-import StudentStatusBadge from "@/components/StudentStatusBadge";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import NoData from "@/components/NoData";
 import { useState } from "react";
@@ -23,24 +22,17 @@ const StudentStatsView = () => {
   const { userData } = useUser();
 
   const {
-    classes,
+    allClassOptions,
     selectedClassId,
-    selectedClassType,
     handleClassSelect,
-    selectedClass,
     loading: userClassLoading,
-  } = useUserClasses();
+  } = useUserClasses(userData?.id);
 
   const {
     userActivity,
     progressData,
     loading: userActivityLoading,
-  } = useUserActivity(
-    userData?.id,
-    userData?.settings.mode,
-    selectedClassId,
-    selectedClassType
-  );
+  } = useUserActivity(userData?.id, userData?.settings.mode, selectedClassId);
 
   const loading = userClassLoading || userActivityLoading;
   const [dataMode, setDataMode] = useState<"total" | "accepted" | "rejected">(
@@ -91,28 +83,12 @@ const StudentStatsView = () => {
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-4 gap-6">
-        <div className="col-span-1"></div>
-        <div className="col-span-1 flex items-center justify-end">
-          <span
-            className={
-              selectedClassType === "all" || selectedClassType === "non-class"
-                ? "hidden"
-                : ""
-            }
-          >
-            <StudentStatusBadge
-              status={selectedClass?.student_status || null}
-            />
-          </span>
-        </div>
-        <div className="col-span-2 flex justify-end">
-          <ClassesDropdownMenu
-            classes={classes.map((info) => info.user_class)}
-            onClassSelect={handleClassSelect}
-            selectedId={selectedClassId}
-          />
-        </div>
+      <div className="flex justify-end">
+        <ClassesDropdownMenu
+          classes={allClassOptions}
+          onClassSelect={handleClassSelect}
+          selectedId={selectedClassId}
+        />
       </div>
       {progressData.totalInteractions === 0 ? (
         <NoData role="student" />

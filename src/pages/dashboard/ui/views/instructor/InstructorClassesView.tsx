@@ -17,7 +17,9 @@ import { useState } from "react";
 
 export const InstructorClassesView = () => {
   const { userData } = useUser();
-  const { originalClasses, loading: userClassLoading } = useInstructorClasses();
+  const { allClasses, loading: userClassLoading } = useInstructorClasses(
+    userData?.id
+  );
   const [selectedClass, setSelectedClass] = useState<{
     userClass: ClassData;
     studentStatus?: StudentStatus;
@@ -47,7 +49,7 @@ export const InstructorClassesView = () => {
     );
   }
 
-  if (originalClasses.length === 0) {
+  if (allClasses.length === 0) {
     return <NoClasses role="instructor" />;
   }
 
@@ -66,7 +68,7 @@ export const InstructorClassesView = () => {
             className="w-full"
           >
             <CarouselContent>
-              {originalClasses.map((userClass, index) => (
+              {allClasses.map((userClass, index) => (
                 <CarouselItem key={index} className="lg:basis-1/3">
                   <div className="p-1">
                     <ClassInfoCard
@@ -81,10 +83,10 @@ export const InstructorClassesView = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            {originalClasses.length > 1 && (
+            {allClasses.length > 1 && (
               <div
                 className={`flex justify-between w-full pt-4 ${
-                  originalClasses.length <= 2 && "lg:hidden"
+                  allClasses.length <= 2 && "lg:hidden"
                 }`}
               >
                 <CarouselPrevious className="static translate-x-0 translate-y-0 ml-4" />

@@ -1,5 +1,5 @@
-import { cn } from "../../lib/utils";
-import { CLOVER } from "./text";
+import { cn } from "../lib/utils";
+import { CLOVER } from "./ui/text";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";

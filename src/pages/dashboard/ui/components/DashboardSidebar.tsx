@@ -24,7 +24,7 @@ import { SideBarItem } from "@/constants/sidebarConfigs";
 import { Label } from "@/components/ui/label";
 import { Download, FileQuestion } from "lucide-react";
 import NavUser from "./NavUser";
-import CloverLogo from "@/components/ui/CloverLogo";
+import CloverLogo from "@/components/CloverLogo";
 
 interface DashboardSidebarProps {
   sidebarItems: SideBarItem[];

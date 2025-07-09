@@ -38,7 +38,7 @@ const RegisterClassView = () => {
     if (!userClasses) return new Map();
     return userClasses.reduce((acc, userClass) => {
       // Use the unique identifier for the class from your userClasses data
-      acc.set(userClass.user_class.id, userClass);
+      acc.set(userClass.userClass.id, userClass);
       return acc;
     }, new Map());
   }, [userClasses]);

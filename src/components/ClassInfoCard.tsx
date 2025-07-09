@@ -1,22 +1,11 @@
-import { useUserData } from "../hooks/useUserData";
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import PingDot from "./PingDot";
-import {
-  StudentStatus,
-  ClassData,
-  User,
-  UserClassInfo,
-} from "../api/types/user";
+import { StudentStatus, ClassData, UserClassInfo } from "../api/types/user";
 import { Card } from "./ui/card";
-import Loading from "./Loading";
 
 type ClassCardProps = {
   classInfo: ClassData | UserClassInfo;
-  onSelect: (
-    userClass: ClassData,
-    studentStatus?: StudentStatus,
-    instructorData?: User
-  ) => void;
+  onSelect: (userClass: ClassData, studentStatus?: StudentStatus) => void;
   isInstructor?: boolean;
 };
 
@@ -37,39 +26,33 @@ export const ClassInfoCard = ({
   const isUserClassInfo = (
     info: ClassData | UserClassInfo
   ): info is UserClassInfo => {
-    return (info as UserClassInfo).user_class !== undefined;
+    return (info as UserClassInfo).userClass !== undefined;
   };
 
   const userClass = isUserClassInfo(classInfo)
-    ? classInfo.user_class
+    ? classInfo.userClass
     : classInfo;
 
   const studentStatus = isUserClassInfo(classInfo)
-    ? classInfo.student_status
+    ? classInfo.studentStatus
     : undefined;
 
   const {
-    instructorId,
     classTitle,
     classDescription,
     classImageCover,
     classHexColor,
+    instructorName,
     id,
   } = userClass;
 
-  const { userData: instructorData, loading: userDataLoading } =
-    useUserData(instructorId);
   const { waitlistedStudents } = useClassStudentsInfo(id as string);
-
-  if (userDataLoading) {
-    return <Loading showText={false} />;
-  }
 
   return (
     <div
       className="group hover:no-underline flex"
       onClick={() => {
-        onSelect(userClass, studentStatus, instructorData!);
+        onSelect(userClass, studentStatus);
       }}
     >
       <Card className="pt-0 rounded-xl overflow-hidden shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-95 border border-border flex flex-col flex-1">
@@ -105,29 +88,19 @@ export const ClassInfoCard = ({
             {classDescription || "No description available."}
           </p>
           <div className="space-y-4 mt-auto">
-            {instructorData && (
+            {instructorName && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  {instructorData?.avatarUrl ? (
-                    <div className="size-8 rounded-full overflow-hidden border-white dark:border-slate-700">
-                      <img
-                        src={instructorData.avatarUrl ?? ""}
-                        alt={`${instructorData.firstName} ${instructorData.lastName}`}
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      className="size-8 rounded-full flex items-center justify-center font-medium text-white shrink-0"
-                      style={{
-                        backgroundColor: classHexColor || "#E5E7EB",
-                      }}
-                    >
-                      {instructorData.firstName?.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                  <div
+                    className="size-8 rounded-full flex items-center justify-center font-medium text-white shrink-0"
+                    style={{
+                      backgroundColor: classHexColor || "#E5E7EB",
+                    }}
+                  >
+                    {instructorName.charAt(0).toUpperCase()}
+                  </div>
                   <span className="text-sm text-muted-foreground ml-3">
-                    by {instructorData.firstName} {instructorData.lastName}
+                    by {instructorName}
                   </span>
                 </div>
               </div>

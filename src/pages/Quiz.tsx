@@ -63,7 +63,7 @@ const QuizControls: React.FC<QuizControlsProps> = ({
         Select a class:
       </label>
       <ClassesDropdownMenu
-        classes={classes.map((c) => c.user_class)}
+        classes={classes.map((c) => c.userClass)}
         onClassSelect={onClassSelect}
         selectedId={selectedClassId}
       />
@@ -300,10 +300,10 @@ export const QuizPage: React.FC = () => {
           data.message?.includes("no sections that need review")
         ) {
           const selectedClass = classes.find(
-            (cls) => cls.user_class.id === selectedClassId
+            (cls) => cls.userClass.id === selectedClassId
           );
           toast.success(
-            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.user_class.classTitle}` : ""}.`
+            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.userClass.classTitle}` : ""}.`
           );
         } else {
           throw new Error(data?.message || "Failed to generate quiz");
