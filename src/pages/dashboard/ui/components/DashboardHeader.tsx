@@ -1,10 +1,15 @@
-import ThemeToggle from "../../../../components/ThemeToggle";
-import { Separator } from "../../../../components/ui/separator";
+import { UserRole } from "@/api/types/user";
+import ThemeToggle from "@/components/ThemeToggle";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { SiGithub } from "react-icons/si";
-import { SidebarTrigger } from "../../../../components/ui/sidebar";
-import { UserRole } from "../../../../api/types/user";
 
-const DashboardContentHeader = ({ role }: { role?: UserRole }) => {
+interface DashboardHeaderProps {
+  title: string;
+  role?: UserRole;
+}
+
+const DashboardHeader = ({ title, role }: DashboardHeaderProps) => {
   return (
     <header className="sticky top-0 z-50 flex h-(--header-height) mb-6 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) backdrop-blur-md bg-background/80 supports-[backdrop-filter]:bg-background/60">
       <div className="flex w-full items-center gap-1 px-4 py-2 lg:gap-2 lg:px-6">
@@ -13,6 +18,8 @@ const DashboardContentHeader = ({ role }: { role?: UserRole }) => {
           orientation="vertical"
           className="mx-2 h-4 dark:bg-gray-600"
         />
+
+        <h1 className="font-semibold text-foreground ">{title}</h1>
 
         <div className="ml-auto flex items-center gap-2">
           {role === UserRole.DEV && (
@@ -35,4 +42,4 @@ const DashboardContentHeader = ({ role }: { role?: UserRole }) => {
   );
 };
 
-export default DashboardContentHeader;
+export default DashboardHeader;

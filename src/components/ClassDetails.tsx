@@ -79,11 +79,11 @@ export const ClassDetails = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
       onClick={onClose}
     >
       <Card
-        className="pt-0 overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pb-8"
+        className="pt-0 overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pb-8 bg-white dark:bg-black border border-gray-200 dark:border-gray-600"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative h-56 w-full flex-shrink-0">
@@ -93,7 +93,7 @@ export const ClassDetails = ({
           />
           <div className="absolute -bottom-4 left-12">
             {instructorData?.avatar_url ? (
-              <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-700">
+              <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-white dark:border-black">
                 <img
                   src={instructorData.avatar_url ?? ""}
                   alt={`${instructorData.first_name} ${instructorData.last_name}`}
@@ -102,7 +102,7 @@ export const ClassDetails = ({
               </div>
             ) : (
               <div
-                className="rounded-full flex items-center justify-center text-white text-4xl font-bold size-24 border-4 border-white dark:border-slate-700 bg-white dark:bg-slate-900"
+                className="rounded-full flex items-center justify-center text-white text-4xl font-bold size-24 border-4 border-white dark:border-black bg-white dark:bg-slate-900"
                 style={{ backgroundColor: classHexColor || "#50B498" }}
               >
                 {instructorData?.first_name?.charAt(0).toUpperCase()}

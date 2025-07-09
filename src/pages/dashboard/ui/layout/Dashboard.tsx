@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { UserRole } from "../../../../api/types/user";
-import {
-  getComponentById,
-  sidebarItems,
-} from "../../../../constants/sidebarConfigs";
-import { SidebarProvider } from "../../../../components/ui/sidebar";
-import DashboardSidebar from "../components/DashboardSidebar";
-import DashboardContentHeader from "../components/DashboardHeader";
+import { UserRole } from "@/api/types/user";
+import DashboardSidebar from "@/pages/dashboard/ui/components/DashboardSidebar";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useUser } from "../../../../context/UserContext";
+import { useUser } from "@/context/UserContext";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import {
+  getDashboardViewById,
+  getTitleById,
+  sidebarItems,
+} from "@/constants/sidebarConfigs";
+import DashboardHeader from "@/pages/dashboard/ui/components/DashboardHeader";
 
 const Dashboard = () => {
   const { userData, loading } = useUser();
@@ -43,8 +44,8 @@ const Dashboard = () => {
     }
   };
 
-  // Get the component for current tab
-  const CurrentComponent = getComponentById(currentTab);
+  const ActiveComponentView = getDashboardViewById(currentTab);
+  const title = getTitleById(currentTab);
 
   return (
     <SidebarProvider>
@@ -57,10 +58,10 @@ const Dashboard = () => {
           onRoleChange={handleRoleChange}
         />
         <main className="flex-1 bg-background/80 dark:bg-[#0a0a0a] overflow-auto">
-          <DashboardContentHeader role={effectiveRole} />
+          <DashboardHeader title={title} role={effectiveRole} />
 
           <div className="w-full max-w-7xl mx-auto px-6">
-            <CurrentComponent />
+            <ActiveComponentView />
           </div>
           <div className="h-96" />
         </main>

@@ -11,26 +11,25 @@ import {
 } from "lucide-react";
 import { UserRole } from "../api/types/user";
 import { ComponentType } from "react";
-import StudentStatsView, {
-  RegisterClassPage,
-  UserClasses,
-  UserLogs,
-} from "../pages/dashboard/ui/views/student/StudentStatsView";
-import InstructorDashboard, {
-  InstructorClasses,
-  InstructorStudents,
-} from "../pages/dashboard/ui/views/InstructorDashboard";
+import StudentStatsView from "../pages/dashboard/ui/views/student/StudentStatsView";
 import {
   AdminClasses,
   AdminUsers,
 } from "../pages/dashboard/ui/views/AdminDashboard";
-import DevDashboard from "../pages/dashboard/ui/views/DevDashboard";
-import NoData from "../components/NoData";
+import DevDashboard from "@/pages/dashboard/ui/views/DevDashboard";
+import NoData from "@/components/NoData";
+import UserClassesView from "@/pages/dashboard/ui/views/student/UserClassesView";
+import RegisterClassView from "@/pages/dashboard/ui/views/student/RegisterClassView";
+import UserLogsView from "@/pages/dashboard/ui/views/student/UserLogsView";
+import InstructorStudentListView from "@/pages/dashboard/ui/views/instructor/InstructorStudentListView";
+import InstructorStatsView from "@/pages/dashboard/ui/views/instructor/InstructorStatsView";
+import InstructorClassesView from "@/pages/dashboard/ui/views/instructor/InstructorClassesView";
 
 export type SideBarItem = {
   id: string;
   icon: LucideIcon;
   name: string;
+  title: string;
   subheading: string;
   roles: UserRole[];
   dashboardView: ComponentType;
@@ -52,6 +51,7 @@ export const sidebarItems: SideBarItem[] = [
     id: "user-stats",
     icon: Activity,
     name: "Statistics",
+    title: "Activity Statistics",
     subheading: "My Dashboard",
     roles: ALL_ROLES,
     dashboardView: StudentStatsView,
@@ -60,25 +60,28 @@ export const sidebarItems: SideBarItem[] = [
     id: "user-classes",
     icon: BookOpenText,
     name: "Classes",
+    title: "Class Information",
     subheading: "My Dashboard",
     roles: ALL_ROLES,
-    dashboardView: UserClasses,
+    dashboardView: UserClassesView,
   },
   {
     id: "user-register-classes",
     icon: PenBoxIcon,
     name: "Register",
+    title: "Class Registration",
     subheading: "My Dashboard",
     roles: ALL_ROLES,
-    dashboardView: RegisterClassPage,
+    dashboardView: RegisterClassView,
   },
   {
     id: "user-logs",
     icon: FileText,
     name: "Logs",
+    title: "Activity Details",
     subheading: "My Dashboard",
     roles: ALL_ROLES,
-    dashboardView: UserLogs,
+    dashboardView: UserLogsView,
   },
 
   // Teaching
@@ -86,25 +89,28 @@ export const sidebarItems: SideBarItem[] = [
     id: "instructor-stats",
     icon: BarChart3,
     name: "Student Statistics",
+    title: "Student Performance Analytics",
     subheading: "Teaching",
     roles: ADMIN_ROLES,
-    dashboardView: InstructorDashboard,
+    dashboardView: InstructorStatsView,
   },
   {
     id: "instructor-students",
     icon: Users,
     name: "Students",
+    title: "Student Management",
     subheading: "Teaching",
     roles: ADMIN_ROLES,
-    dashboardView: InstructorStudents,
+    dashboardView: InstructorStudentListView,
   },
   {
     id: "instructor-classes",
     icon: BookOpenText,
     name: "Classes",
+    title: "Class Management",
     subheading: "Teaching",
     roles: ADMIN_ROLES,
-    dashboardView: InstructorClasses,
+    dashboardView: InstructorClassesView,
   },
 
   // Administration
@@ -112,6 +118,7 @@ export const sidebarItems: SideBarItem[] = [
     id: "admin-users",
     icon: Users,
     name: "Manage Users",
+    title: "User Administration",
     subheading: "Administration",
     roles: SUPER_ADMIN_ROLES,
     dashboardView: AdminUsers,
@@ -120,6 +127,7 @@ export const sidebarItems: SideBarItem[] = [
     id: "admin-classes",
     icon: Settings,
     name: "Manage Classes",
+    title: "Class Administration",
     subheading: "Administration",
     roles: SUPER_ADMIN_ROLES,
     dashboardView: AdminClasses,
@@ -130,13 +138,19 @@ export const sidebarItems: SideBarItem[] = [
     id: "app-stats",
     icon: BarChart2,
     name: "App Stats",
+    title: "Application Analytics",
     subheading: "Development",
     roles: DEV_ONLY,
     dashboardView: DevDashboard,
   },
 ];
 
-export const getComponentById = (id: string): ComponentType => {
+export const getDashboardViewById = (id: string): ComponentType => {
   const item = sidebarItems.find((item) => item.id === id);
   return item?.dashboardView || NoData;
+};
+
+export const getTitleById = (id: string): string => {
+  const item = sidebarItems.find((item) => item.id === id);
+  return item?.title || "My Dashboard";
 };

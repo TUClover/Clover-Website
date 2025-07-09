@@ -174,7 +174,7 @@ export const SuggestionTable = ({
             }
           }}
         >
-          <Card className="p-6 max-w-3xl lg:max-w-5xl w-full max-h-[90vh] relative bg-white dark:bg-black border border-border-gray-200 dark:border-gray-700 overflow-y-auto">
+          <Card className="p-6 max-w-3xl lg:max-w-5xl w-full max-h-[90vh] relative bg-white dark:bg-black border border-gray-200 dark:border-gray-900 overflow-y-auto">
             <Button
               variant="ghost"
               size="icon"
@@ -221,7 +221,6 @@ export default SuggestionTable;
  * It shows the suggested code, status, bug detection, model, response time, and prompt.
  * @param param0 - props for the SuggestionDetailCard component
  * @param param0.suggestion - suggestion object containing details of the suggestion
- * @returns {JSX.Element} - JSX element representing the suggestion detail card
  */
 export const SuggestionDetailCard = ({
   log,

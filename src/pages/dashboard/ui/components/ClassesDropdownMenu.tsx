@@ -5,8 +5,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../components/ui/select";
-import { ClassData } from "../../../../api/types/user";
+} from "@/components/ui/select";
+import { ClassData } from "@/api/types/user";
 
 interface ClassesDropdownMenuProps {
   classes: ClassData[];
@@ -26,13 +26,12 @@ interface ClassesDropdownMenuProps {
  * @param props.onClassSelect - The function to call when a class is selected.
  * @param {string | null | undefined} props.selectedId - The currently selected class ID.
  * @param {string | undefined} props.placeholder - The placeholder text for the dropdown.
- * @returns {JSX.Element} - A React component that renders a dropdown menu for selecting classes.
  */
-export const ClassesDropdownMenu = ({
+const ClassesDropdownMenu = ({
   classes,
   onClassSelect,
   selectedId,
-  placeholder = "Select a class...",
+  placeholder,
 }: ClassesDropdownMenuProps) => {
   const selectValue =
     selectedId === undefined
@@ -56,7 +55,7 @@ export const ClassesDropdownMenu = ({
     >
       <SelectTrigger
         className="w-full flex-shrink-0
-      "
+    "
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

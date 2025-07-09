@@ -10,21 +10,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "../../../../components/ui/sidebar";
+} from "@/components/ui/sidebar";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../components/ui/select";
+} from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { UserRole } from "../../../../api/types/user";
-import { SideBarItem } from "../../../../constants/sidebarConfigs";
-import { Label } from "../../../../components/ui/label";
+import { UserRole } from "@/api/types/user";
+import { SideBarItem } from "@/constants/sidebarConfigs";
+import { Label } from "@/components/ui/label";
 import { Download, FileQuestion } from "lucide-react";
 import NavUser from "./NavUser";
-import CloverLogo from "../../../../components/ui/CloverLogo";
+import CloverLogo from "@/components/ui/CloverLogo";
 
 interface DashboardSidebarProps {
   sidebarItems: SideBarItem[];
