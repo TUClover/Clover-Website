@@ -64,20 +64,20 @@ const ClassesDropdownMenu = ({
           {classes.map((cls) => (
             <SelectItem key={cls.id} value={cls.id || "all"}>
               <div className="flex items-center gap-2">
-                {cls.class_hex_color && (
+                {cls.classHexColor && (
                   <div
                     className="w-2 h-2 rounded"
-                    style={{ backgroundColor: cls.class_hex_color }}
+                    style={{ backgroundColor: cls.classHexColor }}
                   />
                 )}
                 <span>
-                  {cls.class_title}{" "}
+                  {cls.classTitle}{" "}
                   <span
                     className={
                       cls.id === "all" || cls.id === "non-class" ? "hidden" : ""
                     }
                   >
-                    - {cls.class_code}
+                    - {cls.classCode}
                   </span>
                 </span>
               </div>

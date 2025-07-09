@@ -1,7 +1,8 @@
-import { Loader2, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { User } from "../api/types/user";
 import ProfileCard from "../components/ProfileCard";
 import { useInstructorClasses } from "../hooks/useInstructorClasses";
+import Loading from "@/components/Loading";
 
 const AdminProfile = ({ userData }: { userData: User }) => {
   const { originalClasses, loading: userClassLoading } = useInstructorClasses();
@@ -9,7 +10,7 @@ const AdminProfile = ({ userData }: { userData: User }) => {
   if (userClassLoading) {
     return (
       <div className="flex min-h-screen justify-center items-center">
-        <Loader2 className="size-12 animate-spin" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }

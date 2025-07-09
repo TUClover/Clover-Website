@@ -2,6 +2,7 @@ import { ClassData, StudentStatus, User, UserRole } from "@/api/types/user";
 import ClassDetails from "@/components/ClassDetails";
 import ClassInfoCard from "@/components/ClassInfoCard";
 import CreateNewClassDialog from "@/components/CreateNewClassDialog";
+import Loading from "@/components/Loading";
 import NoClasses from "@/components/NoClasses";
 import {
   Carousel,
@@ -12,7 +13,6 @@ import {
 } from "@/components/ui/carousel";
 import { useUser } from "@/context/UserContext";
 import { useInstructorClasses } from "@/hooks/useInstructorClasses";
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 export const InstructorClassesView = () => {
@@ -42,7 +42,7 @@ export const InstructorClassesView = () => {
   if (userClassLoading) {
     return (
       <div className="flex min-h-screen justify-center items-center">
-        <Loader2 className="size-12 animate-spin" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
 import { UserRole } from "@/api/types/user";
 import DashboardSidebar from "@/pages/dashboard/ui/components/DashboardSidebar";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -11,6 +10,7 @@ import {
   sidebarItems,
 } from "@/constants/sidebarConfigs";
 import DashboardHeader from "@/pages/dashboard/ui/components/DashboardHeader";
+import Loading from "@/components/Loading";
 
 const Dashboard = () => {
   const { userData, loading } = useUser();
@@ -23,7 +23,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="animate-spin h-10 w-10 dark:text-white" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }

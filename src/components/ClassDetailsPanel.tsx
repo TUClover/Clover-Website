@@ -24,28 +24,28 @@ export const ClassDetailsPanel: React.FC<{
           {/* Class Info */}
           <div>
             <h2 className="text-3xl font-bold text-primary mb-1">
-              {singleClass.class_title}
+              {singleClass.classTitle}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-1">
               <span className="font-medium">Class Code:</span>{" "}
-              {singleClass.class_code}
+              {singleClass.classCode}
             </p>
-            {singleClass.instructor_id && (
+            {singleClass.instructorId && (
               <p className="text-gray-600 dark:text-gray-300 mb-1">
                 <span className="font-medium">Instructor:</span>{" "}
                 {(() => {
                   const instructor = users.find(
-                    (u) => u.id === singleClass.instructor_id
+                    (u) => u.id === singleClass.instructorId
                   );
                   return instructor
-                    ? `${instructor.first_name} ${instructor.last_name} (${instructor.id})`
-                    : singleClass.instructor_id;
+                    ? `${instructor.firstName} ${instructor.lastName} (${instructor.id})`
+                    : singleClass.instructorId;
                 })()}
               </p>
             )}
-            {singleClass.class_description && (
+            {singleClass.classDescription && (
               <p className="text-gray-700 dark:text-gray-200 mt-2">
-                {singleClass.class_description}
+                {singleClass.classDescription}
               </p>
             )}
           </div>
@@ -58,7 +58,7 @@ export const ClassDetailsPanel: React.FC<{
                 {singleClass.students.map((student) => (
                   <li key={student.id} className="py-2">
                     <span className="font-medium">
-                      {student.first_name} {student.last_name}
+                      {student.firstName} {student.lastName}
                     </span>{" "}
                     <span className="text-gray-500 text-sm">
                       ({student.email})

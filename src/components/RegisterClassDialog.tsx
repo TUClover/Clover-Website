@@ -16,12 +16,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../components/ui/collapsible";
-import { ChevronDown, ChevronUp, Loader2, Plus } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { toast } from "sonner";
 import { ClassData, User } from "../api/types/user";
+import Loading from "./Loading";
 
 /**
  * RegisterClassDialog component allows users to search and register for classes.
@@ -85,7 +86,7 @@ export const RegisterClassDialog = () => {
           (classItem) => classItem.id === classId
         );
         const { data, error } = await getUserData(
-          foundClass?.instructor_id || ""
+          foundClass?.instructorId || ""
         );
 
         if (data) {
@@ -141,8 +142,8 @@ export const RegisterClassDialog = () => {
       setOpen(false);
       setSearch("");
       setResults([]);
-      console.log("Registered to class:", cls.class_title);
-      toast.success(`You have successfully registered for ${cls.class_title}!`);
+      console.log("Registered to class:", cls.classTitle);
+      toast.success(`You have successfully registered for ${cls.classTitle}!`);
     } catch (error) {
       console.error("Error registering for class:", error);
       toast.error("Error registering for class. Please try again later.");
@@ -205,16 +206,16 @@ export const RegisterClassDialog = () => {
                   >
                     <div
                       className="p-4 rounded-lg border shadow cursor-pointer flex justify-between items-center"
-                      style={{ borderLeft: `6px solid ${cls.class_hex_color}` }}
+                      style={{ borderLeft: `6px solid ${cls.classHexColor}` }}
                     >
                       <CollapsibleTrigger asChild>
                         <div className="flex justify-between w-full items-center">
                           <div>
                             <div className="font-medium dark:text-white">
-                              {cls.class_title}
+                              {cls.classTitle}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {cls.class_code}
+                              {cls.classCode}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -247,7 +248,7 @@ export const RegisterClassDialog = () => {
                             Instructor
                           </h3>{" "}
                           <p>
-                            {instructor?.first_name} {instructor?.last_name}
+                            {instructor?.firstName} {instructor?.lastName}
                           </p>
                         </div>
                         <div className="space-y-1">
@@ -255,8 +256,7 @@ export const RegisterClassDialog = () => {
                             Description
                           </h3>{" "}
                           <p>
-                            {cls.class_description ||
-                              "No description available"}
+                            {cls.classDescription || "No description available"}
                           </p>
                         </div>
                       </motion.div>
@@ -344,7 +344,11 @@ export function EnrollmentStatusButton({
       {registerLoading ? (
         <>
           <span className="invisible">Register</span>
-          <Loader2 className="absolute inset-0 m-auto h-4 w-4 animate-spin" />
+          <Loading
+            className="absolute inset-0 m-auto"
+            size="sm"
+            showText={false}
+          />
         </>
       ) : (
         "Register"

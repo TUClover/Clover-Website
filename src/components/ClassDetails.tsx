@@ -1,4 +1,4 @@
-import { Loader2, User as LucidUser, Users, X } from "lucide-react";
+import { User as LucidUser, Users, X } from "lucide-react";
 import { ClassData, EnrollmentStatus, User, UserRole } from "../api/types/user";
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import { useUserData } from "../hooks/useUserData";
@@ -6,6 +6,7 @@ import { updateStudentEnrollmentStatus } from "../api/classes";
 import StudentListSection from "./StudentListSection";
 import { toast } from "sonner";
 import { Card } from "./ui/card";
+import Loading from "./Loading";
 
 /**
  * ClassDetails component displays the details of a class, including the instructor and enrolled students.
@@ -25,12 +26,8 @@ export const ClassDetails = ({
   onClose: () => void;
 }) => {
   const { userData } = useUserData();
-  const {
-    class_title: classTitle,
-    class_code: classCode,
-    class_description: classDescription,
-    class_hex_color: classHexColor,
-  } = userClass || {};
+  const { classTitle, classCode, classDescription, classHexColor } =
+    userClass || {};
 
   const {
     enrolledStudents,
@@ -41,11 +38,7 @@ export const ClassDetails = ({
   } = useClassStudentsInfo(userClass.id || "");
 
   if (loading) {
-    return (
-      <div className="flex h-64 justify-center items-center">
-        <Loader2 className="size-12 animate-spin" />
-      </div>
-    );
+    return <Loading />;
   }
 
   const handleStatusUpdate = async (
@@ -92,11 +85,11 @@ export const ClassDetails = ({
             style={{ backgroundColor: classHexColor || "#E5E7EB" }}
           />
           <div className="absolute -bottom-4 left-12">
-            {instructorData?.avatar_url ? (
+            {instructorData?.avatarUrl ? (
               <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-white dark:border-black">
                 <img
-                  src={instructorData.avatar_url ?? ""}
-                  alt={`${instructorData.first_name} ${instructorData.last_name}`}
+                  src={instructorData.avatarUrl ?? ""}
+                  alt={`${instructorData.firstName} ${instructorData.lastName}`}
                   className="w-full h-full rounded-full object-cover"
                 />
               </div>
@@ -105,7 +98,7 @@ export const ClassDetails = ({
                 className="rounded-full flex items-center justify-center text-white text-4xl font-bold size-24 border-4 border-white dark:border-black bg-white dark:bg-slate-900"
                 style={{ backgroundColor: classHexColor || "#50B498" }}
               >
-                {instructorData?.first_name?.charAt(0).toUpperCase()}
+                {instructorData?.firstName?.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
@@ -147,7 +140,7 @@ export const ClassDetails = ({
               <div className="flex items-center gap-4">
                 <div>
                   <h3 className="font-medium text-gray-600 dark:text-gray-300">
-                    {instructorData?.first_name} {instructorData?.last_name}
+                    {instructorData?.firstName} {instructorData?.lastName}
                   </h3>
                 </div>
               </div>

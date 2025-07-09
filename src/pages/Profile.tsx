@@ -3,9 +3,9 @@ import { User, UserRole } from "../api/types/user";
 import AdminProfile from "./AdminProfile";
 import InstructorProfile from "./InstructorProfile";
 import StudentProfile from "./StudentProfile";
-import { Loader2 } from "lucide-react";
 import NavBar from "../components/NavBar";
 import { useUser } from "../context/UserContext";
+import Loading from "@/components/Loading";
 
 /**
  * Profile component that renders different profile views based on user role.
@@ -21,7 +21,7 @@ export const Profile = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="animate-spin h-10 w-10 dark:text-white" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }

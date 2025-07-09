@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card } from "./ui/card";
 import { ActiveUserMode } from "../api/types/user";
 import { getEventsForMode } from "../api/types/event";
-import { Loader2, X } from "lucide-react";
+import { X } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -21,6 +21,7 @@ import {
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { getSuggestionByModeAndId } from "../api/suggestion";
+import Loading from "./Loading";
 
 interface SuggestionTableProps {
   logItems: UserActivityLogItem[];
@@ -190,7 +191,7 @@ export const SuggestionTable = ({
 
             {loading ? (
               <div className="flex justify-center items-center h-32">
-                <Loader2 className="animate-spin h-8 w-8" />
+                <Loading />
               </div>
             ) : fetchError ? (
               <div className="text-destructive p-4 bg-destructive/10 rounded-md">

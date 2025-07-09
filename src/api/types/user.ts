@@ -32,36 +32,36 @@ export const AUTH_CONTEXT = "authContext";
 
 export interface User {
   id: string;
-  created_at: string;
-  first_name: string;
-  last_name: string;
+  createdAt: string; // ISO date string from Go's time.Time
+  firstName: string;
+  lastName: string;
   email: string;
-  status?: string;
   role: UserRole;
+  status: StudentStatus;
+  avatarUrl?: string;
   settings: UserSettings;
   last_updated_at?: string;
   auth_created_at?: string;
   last_sign_in?: string;
   source?: string;
-  avatar_url?: string;
 }
 
 export type UserSettings = {
-  bug_percentage: number;
-  show_notifications: boolean;
-  enable_quiz: boolean;
-  mode: UserMode;
+  enableQuiz: boolean;
+  bugPercentage: number;
+  showNotifications: boolean;
+  mode: string;
 };
 
 export interface ClassData {
   id?: string;
-  created_at?: string;
-  class_title: string;
-  class_code: string;
-  instructor_id?: string;
-  class_hex_color: string;
-  class_image_cover?: string | null;
-  class_description?: string | null;
+  createdAt?: string;
+  classTitle: string;
+  classCode: string;
+  instructorId?: string;
+  classHexColor: string;
+  classImageCover?: string | null;
+  classDescription: string;
   students: User[];
 }
 /**

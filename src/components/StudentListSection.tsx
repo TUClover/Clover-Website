@@ -87,7 +87,7 @@ export const StudentListSection = ({
                   <tr key={student.id}>
                     <td className="px-4 py-2 w-12">{index + 1}</td>
                     <td className="px-4 py-2 w-1/4 truncate">
-                      {student.first_name} {student.last_name}
+                      {student.firstName} {student.lastName}
                     </td>
                     <td className="px-4 py-2 w-1/3 truncate">
                       {student.email}

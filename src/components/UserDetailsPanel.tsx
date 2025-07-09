@@ -54,7 +54,7 @@ export const UserDetailsPanel: React.FC<{
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold mb-4 px-2">
-              {singleUser.first_name} {singleUser.last_name}
+              {singleUser.firstName} {singleUser.lastName}
               <span className="text-sm text-gray-500 px-4">
                 {singleUser.email}
               </span>
@@ -150,16 +150,16 @@ const ClassDataSection: React.FC<{
               className="flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded cursor-pointer"
               onClick={() => onClassClick(userClass.user_class)}
             >
-              {userClass.user_class.class_hex_color && (
+              {userClass.user_class.classHexColor && (
                 <div
                   className="w-3 h-3 rounded-full shrink-0"
                   style={{
-                    backgroundColor: userClass.user_class.class_hex_color,
+                    backgroundColor: userClass.user_class.classHexColor,
                   }}
                 />
               )}
               <span>
-                {userClass.user_class.class_title}{" "}
+                {userClass.user_class.classTitle}{" "}
                 <span
                   className={
                     userClass.user_class.id === "all" ||
@@ -168,7 +168,7 @@ const ClassDataSection: React.FC<{
                       : ""
                   }
                 >
-                  - {userClass.user_class.class_code}
+                  - {userClass.user_class.classCode}
                 </span>
               </span>
             </div>
@@ -226,14 +226,14 @@ const InstructorClassesSection: React.FC<{
           <ul className="mt-2">
             {instructorClasses.map((userClass) => (
               <div className="flex items-center gap-2">
-                {userClass.class_hex_color && (
+                {userClass.classHexColor && (
                   <div
                     className="w-3 h-3 rounded-full shrink-0"
-                    style={{ backgroundColor: userClass.class_hex_color }}
+                    style={{ backgroundColor: userClass.classHexColor }}
                   />
                 )}
                 <span>
-                  {userClass.class_title}{" "}
+                  {userClass.classTitle}{" "}
                   <span
                     className={
                       userClass.id === "all" || userClass.id === "non-class"
@@ -241,7 +241,7 @@ const InstructorClassesSection: React.FC<{
                         : ""
                     }
                   >
-                    - {userClass.class_code}
+                    - {userClass.classCode}
                   </span>
                 </span>
               </div>

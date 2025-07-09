@@ -1,5 +1,6 @@
 import { getEventsForMode } from "@/api/types/event";
 import InfoTooltip from "@/components/InfoTooltip";
+import Loading from "@/components/Loading";
 import NoData from "@/components/NoData";
 import PaginatedTable from "@/components/PaginatedTable";
 import SuggestionTable from "@/components/SuggestionTable";
@@ -7,7 +8,6 @@ import { Card } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
-import { Loader2 } from "lucide-react";
 
 const UserLogsView = () => {
   const { userData } = useUser();
@@ -47,7 +47,7 @@ const UserLogsView = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="animate-spin h-10 w-10 dark:text-white" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }

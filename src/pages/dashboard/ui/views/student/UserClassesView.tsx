@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import { ClassData, StudentStatus, User } from "@/api/types/user";
-import { Loader2 } from "lucide-react";
 import ClassDetails from "@/components/ClassDetails";
 import NoClasses from "@/components/NoClasses";
 import ClassesCarousel from "../../components/ClassesCarousel";
+import Loading from "@/components/Loading";
 
 export const UserClassesView = () => {
   const { originalClasses, loading: userClassLoading } = useUserClasses();
@@ -18,7 +18,7 @@ export const UserClassesView = () => {
   if (userClassLoading) {
     return (
       <div className="flex min-h-screen justify-center items-center">
-        <Loader2 className="size-12 animate-spin" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }

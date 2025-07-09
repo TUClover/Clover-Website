@@ -1,29 +1,36 @@
-import { useState, useEffect } from "react";
-import { ClassData } from "../api/types/user";
+import { useQuery } from "@tanstack/react-query";
 import { getAllClasses } from "../api/classes";
+import QUERY_INTERVALS from "@/constants/queryIntervals";
 
 export const useAllClasses = () => {
-  const [classes, setClasses] = useState<ClassData[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchClasses = async () => {
-      setIsLoading(true);
-      setError(null);
-      const { classes: fetchedClasses, error: fetchError } =
-        await getAllClasses();
-      if (fetchError) {
-        setError(fetchError);
-        setClasses([]);
-      } else if (fetchedClasses) {
-        setClasses(fetchedClasses);
+  const {
+    data: classes = [],
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+    isRefetching,
+  } = useQuery({
+    queryKey: ["classes"],
+    queryFn: async () => {
+      const { classes, error } = await getAllClasses();
+      if (error) {
+        throw new Error(error);
       }
-      setIsLoading(false);
-    };
+      return classes || [];
+    },
+    staleTime: QUERY_INTERVALS.staleTime,
+    gcTime: QUERY_INTERVALS.gcTime,
+    retry: QUERY_INTERVALS.retry,
+    retryDelay: QUERY_INTERVALS.retryDelay,
+  });
 
-    fetchClasses();
-  }, []);
-
-  return { classes, isLoading, error };
+  return {
+    classes,
+    isLoading,
+    error: error?.message || null,
+    refetch,
+    isFetching,
+    isRefetching,
+  };
 };

@@ -9,7 +9,6 @@ import {
 import { useUser } from "@/context/UserContext";
 import { useClassActivity } from "@/hooks/useClassActivity";
 import { useInstructorClasses } from "@/hooks/useInstructorClasses";
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";
 import StatCard from "@/components/StatCard";
@@ -17,6 +16,7 @@ import PieChart from "@/components/PieChart";
 import LineChart from "@/components/LineChart";
 import StackedBarChart from "@/components/StackedBarChart";
 import NoData from "@/components/NoData";
+import Loading from "@/components/Loading";
 
 const InstructorStatsView = () => {
   const { userData } = useUser();
@@ -33,8 +33,8 @@ const InstructorStatsView = () => {
     useClassActivity(userData?.id as string, selectedClassId, selectedMode);
 
   const selectedClassTitle =
-    classes.find((classItem) => classItem.id === selectedClassId)
-      ?.class_title ?? "";
+    classes.find((classItem) => classItem.id === selectedClassId)?.classTitle ??
+    "";
 
   const [dataMode, setDataMode] = useState<"total" | "accepted" | "rejected">(
     "total"
@@ -43,23 +43,10 @@ const InstructorStatsView = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="animate-spin h-10 w-10 dark:text-white" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }
-
-  // if (error) {
-  //   return (
-  //     <div className="flex justify-center mt-10">
-  //       <div className="text-center p-6 border rounded-lg">
-  //         <h2 className="text-lg font-semibold text-red-600 mb-4">
-  //           Error Loading Data
-  //         </h2>
-  //         <p className="text-muted-foreground">{error}</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   const getStatCardData = () => {
     switch (dataMode) {

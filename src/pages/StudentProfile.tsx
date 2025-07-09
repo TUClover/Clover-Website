@@ -1,4 +1,3 @@
-import { Loader2 } from "lucide-react";
 import { StudentStatus, ClassData, User } from "../api/types/user";
 import {
   Carousel,
@@ -13,6 +12,7 @@ import { useState } from "react";
 import ClassDetails from "../components/ClassDetails";
 import RegisterClassDialog from "../components/RegisterClassDialog";
 import ProfileCard from "../components/ProfileCard";
+import Loading from "@/components/Loading";
 
 /**
  * StudentProfile component that displays user profile and classes.
@@ -32,7 +32,7 @@ export const StudentProfile = ({ userData }: { userData: User }) => {
   if (userClassLoading) {
     return (
       <div className="flex min-h-screen justify-center items-center">
-        <Loader2 className="size-12 animate-spin" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }

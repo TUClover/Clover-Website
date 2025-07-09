@@ -11,7 +11,6 @@ import { useAuth } from "./hooks/useAuth";
 import Download from "./pages/Download";
 import Help from "./pages/Help";
 import AuthCallback from "./components/AuthCallback";
-import { Loader2 } from "lucide-react";
 import Reset from "./pages/PasswordReset";
 import PasswordCallback from "./pages/PasswordCallback";
 import VSCodeAuthCallback from "./components/VscodeAuth";
@@ -19,6 +18,10 @@ import { JSX } from "react";
 import { UserProvider } from "./context/UserProvider";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
+import Loading from "./components/Loading";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 /**
  * ProtectedRoute component that checks if the user is authenticated.
@@ -28,11 +31,7 @@ const ProtectedRoute = (): JSX.Element => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen w-full">
-        <Loader2 className="animate-spin h-10 w-10" />
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!isAuthenticated) {
@@ -48,32 +47,34 @@ const ProtectedRoute = (): JSX.Element => {
  */
 const App = (): JSX.Element => {
   return (
-    <UserProvider>
-      <main className="flex flex-col">
-        <Routes>
-          <Route element={<RootLayout />}>
-            {/* Auth Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard/*" element={<Dashboard />} />
-              <Route path="/quiz" element={<QuizPage />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/profile" element={<Profile />} />
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <main className="flex flex-col">
+          <Routes>
+            <Route element={<RootLayout />}>
+              {/* Auth Routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard/*" element={<Dashboard />} />
+                <Route path="/quiz" element={<QuizPage />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/profile" element={<Profile />} />
+              </Route>
+              {/* Public Routes */}
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<LogIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/download" element={<Download />} />
+              <Route path="/getting-started" element={<Help />} />
+              <Route path="/auth" element={<AuthCallback />} />
+              <Route path="/auth/vscode" element={<VSCodeAuthCallback />} />
+              <Route path="/passwordreset" element={<Reset />} />
+              <Route path="/resetform" element={<PasswordCallback />} />
             </Route>
-            {/* Public Routes */}
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<LogIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/download" element={<Download />} />
-            <Route path="/getting-started" element={<Help />} />
-            <Route path="/auth" element={<AuthCallback />} />
-            <Route path="/auth/vscode" element={<VSCodeAuthCallback />} />
-            <Route path="/passwordreset" element={<Reset />} />
-            <Route path="/resetform" element={<PasswordCallback />} />
-          </Route>
-        </Routes>
-      </main>
-    </UserProvider>
+          </Routes>
+        </main>
+      </UserProvider>
+    </QueryClientProvider>
   );
 };
 

@@ -1,3 +1,11 @@
+import { ClassData, User, UserRole } from "@/api/types/user";
+import StudentDashboardCard from "@/components/StudentDashboardCard";
+import UserDetailsPanel from "@/components/UserDetailsPanel";
+import UserSideBar from "@/components/UsersSideBar";
+import { useAllUsers } from "@/hooks/useAllUsers";
+import { useInstructorClasses } from "@/hooks/useInstructorClasses";
+import { useUserActivity } from "@/hooks/useUserActivity";
+import { useUserClasses, useUserClassStatus } from "@/hooks/useUserClasses";
 import {
   Chart as ChartJS,
   LineElement,
@@ -9,21 +17,7 @@ import {
 } from "chart.js";
 import { useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
-import { ClassData, User, UserRole } from "../../../../api/types/user";
-import { useAllUsers } from "../../../../hooks/useAllUsers";
-import {
-  useUserClasses,
-  useUserClassStatus,
-} from "../../../../hooks/useUserClasses";
-import { useUserActivity } from "../../../../hooks/useUserActivity";
-import { useInstructorClasses } from "../../../../hooks/useInstructorClasses";
 import { toast } from "sonner";
-import UserSideBar from "../../../../components/UsersSideBar";
-import UserDetailsPanel from "../../../../components/UserDetailsPanel";
-import StudentDashboardCard from "../../../../components/StudentDashboardCard";
-import { useAllClasses } from "../../../../hooks/useAllClasses";
-import ClassSideBar from "../../../../components/ClassSideBar";
-import ClassDetailsPanel from "../../../../components/ClassDetailsPanel";
 
 ChartJS.register(
   LineElement,
@@ -34,7 +28,7 @@ ChartJS.register(
   Legend
 );
 
-export const AdminUsers = () => {
+const UsersAdministrationView = () => {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -114,8 +108,8 @@ export const AdminUsers = () => {
       {selectedClass && selectedUserId && (
         <StudentDashboardCard
           student={{
-            fullName: `${selectedUsers[0].first_name} ${selectedUsers[0].last_name}`,
-            classTitle: selectedClass.class_title,
+            fullName: `${selectedUsers[0].firstName} ${selectedUsers[0].lastName}`,
+            classTitle: selectedClass.classTitle,
             studentStatus:
               selectedClassId !== "all" && selectedClassId !== "non-class"
                 ? studentStatus
@@ -132,38 +126,4 @@ export const AdminUsers = () => {
   );
 };
 
-export const AdminClasses = () => {
-  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
-  const { classes: allClasses, isLoading: isLoadingClasses } = useAllClasses();
-  const { users, error } = useAllUsers();
-
-  if (error) {
-    toast.error("Error fetching users. Please try again later.");
-    return null;
-  }
-
-  return (
-    <div className="flex flex-col md:flex-row gap-6 mb-6">
-      <ClassSideBar
-        classes={allClasses}
-        selectedClasses={selectedClasses}
-        onSelectClass={(classData) => {
-          setSelectedClasses([classData]);
-        }}
-        onSetSelectedClasses={setSelectedClasses}
-        loading={isLoadingClasses}
-        setSelectedClassId={(id) => {
-          const selected = allClasses.find((cls) => cls.id === id);
-          if (selected) {
-            setSelectedClasses([selected]);
-          }
-        }}
-      />
-      <ClassDetailsPanel
-        users={users}
-        classDetails={selectedClasses}
-        isLoading={isLoadingClasses}
-      />
-    </div>
-  );
-};
+export default UsersAdministrationView;

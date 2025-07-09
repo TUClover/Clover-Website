@@ -1,5 +1,4 @@
 import { useUserData } from "../hooks/useUserData";
-import { Loader2 } from "lucide-react";
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import PingDot from "./PingDot";
 import {
@@ -9,6 +8,7 @@ import {
   UserClassInfo,
 } from "../api/types/user";
 import { Card } from "./ui/card";
+import Loading from "./Loading";
 
 type ClassCardProps = {
   classInfo: ClassData | UserClassInfo;
@@ -49,24 +49,20 @@ export const ClassInfoCard = ({
     : undefined;
 
   const {
-    instructor_id,
-    class_title,
-    class_description,
-    class_image_cover,
-    class_hex_color,
+    instructorId,
+    classTitle,
+    classDescription,
+    classImageCover,
+    classHexColor,
     id,
   } = userClass;
 
   const { userData: instructorData, loading: userDataLoading } =
-    useUserData(instructor_id);
+    useUserData(instructorId);
   const { waitlistedStudents } = useClassStudentsInfo(id as string);
 
   if (userDataLoading) {
-    return (
-      <div className="flex h-64 justify-center items-center">
-        <Loader2 className="size-12 animate-spin" />
-      </div>
-    );
+    return <Loading showText={false} />;
   }
 
   return (
@@ -81,16 +77,16 @@ export const ClassInfoCard = ({
           {isInstructor &&
             waitlistedStudents &&
             waitlistedStudents.length > 0 && <PingDot />}
-          {class_image_cover ? (
+          {classImageCover ? (
             <img
-              src={class_image_cover}
-              alt={class_title}
+              src={classImageCover}
+              alt={classTitle}
               className="object-cover w-full h-full"
             />
           ) : (
             <div
               className="h-full w-full flex items-center justify-center"
-              style={{ backgroundColor: class_hex_color || "#E5E7EB" }}
+              style={{ backgroundColor: classHexColor || "#E5E7EB" }}
             />
           )}
           {!isInstructor && (
@@ -104,19 +100,19 @@ export const ClassInfoCard = ({
           )}
         </div>
         <div className="p-6 flex flex-col flex-1">
-          <h3 className="text-lg font-bold mb-2">{class_title}</h3>
+          <h3 className="text-lg font-bold mb-2">{classTitle}</h3>
           <p className="text-gray-500 mb-4 line-clamp-2 flex-1 text-sm">
-            {class_description || "No description available."}
+            {classDescription || "No description available."}
           </p>
           <div className="space-y-4 mt-auto">
             {instructorData && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  {instructorData?.avatar_url ? (
+                  {instructorData?.avatarUrl ? (
                     <div className="size-8 rounded-full overflow-hidden border-white dark:border-slate-700">
                       <img
-                        src={instructorData.avatar_url ?? ""}
-                        alt={`${instructorData.first_name} ${instructorData.last_name}`}
+                        src={instructorData.avatarUrl ?? ""}
+                        alt={`${instructorData.firstName} ${instructorData.lastName}`}
                         className="w-full h-full rounded-full object-cover"
                       />
                     </div>
@@ -124,14 +120,14 @@ export const ClassInfoCard = ({
                     <div
                       className="size-8 rounded-full flex items-center justify-center font-medium text-white shrink-0"
                       style={{
-                        backgroundColor: class_hex_color || "#E5E7EB",
+                        backgroundColor: classHexColor || "#E5E7EB",
                       }}
                     >
-                      {instructorData.first_name?.charAt(0).toUpperCase()}
+                      {instructorData.firstName?.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <span className="text-sm text-muted-foreground ml-3">
-                    by {instructorData.first_name} {instructorData.last_name}
+                    by {instructorData.firstName} {instructorData.lastName}
                   </span>
                 </div>
               </div>

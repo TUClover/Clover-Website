@@ -19,17 +19,17 @@ export const useInstructorClasses = (userID?: string | null) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const all_class: ClassData = {
+  const allClass: ClassData = {
     id: "all",
-    class_title: "All",
-    class_code: "",
-    class_hex_color: "#e5e5e5",
-    class_description: "All class info",
-    class_image_cover: "",
+    classTitle: "All",
+    classCode: "",
+    classHexColor: "#e5e5e5",
+    classDescription: "All class info",
+    classImageCover: "",
     students: [],
   };
 
-  const modifiedClasses = useMemo(() => [all_class, ...classes], [classes]);
+  const modifiedClasses = useMemo(() => [allClass, ...classes], [classes]);
 
   const selectedClass = useMemo(
     () => modifiedClasses.find((c) => c.id === selectedClassId),
@@ -139,8 +139,8 @@ export const useClassStudentsInfo = (classId: string | null) => {
 
       const normalizedEnrolled = (enrolledUsers || []).map((user) => ({
         ...user,
-        firstName: user.first_name,
-        lastName: user.last_name,
+        firstName: user.firstName,
+        lastName: user.lastName,
       }));
 
       setEnrolledStudents(normalizedEnrolled);
@@ -163,8 +163,8 @@ export const useClassStudentsInfo = (classId: string | null) => {
 
       const normalizedWaitlisted = (waitlistedUsers || []).map((user) => ({
         ...user,
-        firstName: user.first_name,
-        lastName: user.last_name,
+        firstName: user.firstName,
+        lastName: user.lastName,
       }));
 
       setWaitlistedStudents(normalizedWaitlisted);

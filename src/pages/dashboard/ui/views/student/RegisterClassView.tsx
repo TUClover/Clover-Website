@@ -92,9 +92,9 @@ const RegisterClassView = () => {
                   <TableRow key={allClass.id}>
                     <TableCell>
                       <div className="flex items-center gap-4">
-                        {allClass.class_image_cover ? (
+                        {allClass.classImageCover ? (
                           <img
-                            src={allClass.class_image_cover}
+                            src={allClass.classImageCover}
                             alt="Class cover"
                             className="w-12 h-12 rounded-md object-cover"
                           />
@@ -102,22 +102,22 @@ const RegisterClassView = () => {
                           <div
                             className="w-12 h-12 rounded-md"
                             style={{
-                              backgroundColor: allClass.class_hex_color,
+                              backgroundColor: allClass.classHexColor,
                             }}
                           />
                         )}
                         <div>
                           <div className="font-medium">
-                            {allClass.class_title}
+                            {allClass.classTitle}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {allClass.class_code}
+                            {allClass.classCode}
                           </div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {allClass.instructor_id?.substring(0, 8)}...
+                      {allClass.instructorId?.substring(0, 8)}...
                     </TableCell>
                     <TableCell className="text-right">
                       {userEnrollment ? (

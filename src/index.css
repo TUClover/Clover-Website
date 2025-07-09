@@ -99,4 +99,26 @@ Soft Gray:
   .tooltip-container {
     @apply max-w-[320px] shadow-lg p-4;
   }
+
+  .dot-animation::after {
+    content: ".";
+    animation: dots 1.5s steps(3, end) infinite;
+  }
+
+  @keyframes dots {
+    0% {
+      content: ".";
+    }
+    33% {
+      content: "..";
+    }
+    66% {
+      content: "...";
+    }
+  }
+
+  .animate-dots::after {
+    content: ".";
+    animation: dots 1s steps(3, end) infinite;
+  }
 }

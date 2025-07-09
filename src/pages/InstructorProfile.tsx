@@ -1,7 +1,8 @@
-import { Loader2, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { User } from "../api/types/user";
 import { useInstructorClasses } from "../hooks/useInstructorClasses";
 import ProfileCard from "../components/ProfileCard";
+import Loading from "@/components/Loading";
 
 /**
  * InstructorProfile component displays the profile of an instructor.
@@ -15,7 +16,7 @@ export const InstructorProfile = ({ userData }: { userData: User }) => {
   if (userClassLoading) {
     return (
       <div className="flex min-h-screen justify-center items-center">
-        <Loader2 className="size-12 animate-spin" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }

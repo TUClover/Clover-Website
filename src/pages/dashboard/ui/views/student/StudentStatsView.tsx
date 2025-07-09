@@ -5,12 +5,12 @@ import StackedBarChart from "@/components/StackedBarChart";
 import PieChart from "@/components/PieChart";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import StudentStatusBadge from "@/components/StudentStatusBadge";
-import { Loader2 } from "lucide-react";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import NoData from "@/components/NoData";
 import { useState } from "react";
 import { useUser } from "@/context/UserContext";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";
+import Loading from "@/components/Loading";
 
 Chart.register(...registerables);
 
@@ -50,7 +50,7 @@ const StudentStatsView = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="animate-spin h-10 w-10 dark:text-white" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }

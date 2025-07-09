@@ -201,6 +201,8 @@ export async function getAllClasses(): Promise<{
   classes?: ClassData[];
   error?: string;
 }> {
+  console.log("Fetching all classes from API...");
+
   try {
     const response = await fetch(`${CLASS_ENDPOINT}/`, {
       method: "GET",
@@ -215,6 +217,12 @@ export async function getAllClasses(): Promise<{
           `Failed to get all users: ${response.status} ${response.statusText}`,
       };
     }
+
+    if (!Array.isArray(data)) {
+      return { error: "Invalid response: expected an array of classes" };
+    }
+
+    console.log("Fetched classes from API", JSON.stringify(data, null, 2));
 
     return { classes: data };
   } catch (err) {

@@ -30,7 +30,7 @@ export const Settings = () => {
         <Card className="flex flex-col gap-4 p-6 width-container">
           <div className="flex justify-between items-center mb-4">
             <CardTitle>
-              {userData.first_name + " " + userData.last_name}
+              {userData.firstName + " " + userData.lastName}
             </CardTitle>
             <EditUserButton user={userData} />
           </div>

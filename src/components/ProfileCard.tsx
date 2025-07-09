@@ -14,20 +14,20 @@ interface ProfileCardProps {
 }
 
 const ProfileCard = ({ userData, detailsContent }: ProfileCardProps) => {
-  const { avatar_url, first_name, last_name, email, role } = userData || {};
+  const { avatarUrl, firstName, lastName, email, role } = userData || {};
   return (
     <Card className="p-6 m-6">
       <div className="flex items-center mb-4 justify-center">
         <Avatar className="size-16">
-          {avatar_url ? (
+          {avatarUrl ? (
             <img
-              src={avatar_url}
-              alt={`${first_name} ${last_name}`}
+              src={avatarUrl}
+              alt={`${firstName} ${lastName}`}
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
             <AvatarFallback className="bg-alpha text-white text-2xl font-semibold">
-              {first_name.charAt(0).toUpperCase()}
+              {firstName.charAt(0).toUpperCase()}
             </AvatarFallback>
           )}
         </Avatar>
@@ -35,7 +35,7 @@ const ProfileCard = ({ userData, detailsContent }: ProfileCardProps) => {
 
       <div className="text-center">
         <h2 className="text-lg font-semibold">
-          {userData.first_name} {userData.last_name}
+          {userData.firstName} {userData.lastName}
         </h2>
         {role && <p className="text-sm dark:text-gray-400 mt-1">{role}</p>}
       </div>

@@ -179,15 +179,15 @@ export const DropdownAvatar = ({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-12 w-12 rounded-full">
           <Avatar className="w-10 h-10">
-            {userData?.avatar_url ? (
+            {userData?.avatarUrl ? (
               <img
-                src={userData.avatar_url ?? ""}
-                alt={`${userData.first_name} ${userData.last_name}`}
+                src={userData.avatarUrl ?? ""}
+                alt={`${userData.firstName} ${userData.lastName}`}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
               <AvatarFallback className="bg-alpha text-white text-lg font-semibold">
-                {userData?.first_name.charAt(0).toUpperCase()}
+                {userData?.firstName.charAt(0).toUpperCase()}
               </AvatarFallback>
             )}
           </Avatar>

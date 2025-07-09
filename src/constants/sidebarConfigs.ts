@@ -12,11 +12,6 @@ import {
 import { UserRole } from "../api/types/user";
 import { ComponentType } from "react";
 import StudentStatsView from "../pages/dashboard/ui/views/student/StudentStatsView";
-import {
-  AdminClasses,
-  AdminUsers,
-} from "../pages/dashboard/ui/views/AdminDashboard";
-import DevDashboard from "@/pages/dashboard/ui/views/DevDashboard";
 import NoData from "@/components/NoData";
 import UserClassesView from "@/pages/dashboard/ui/views/student/UserClassesView";
 import RegisterClassView from "@/pages/dashboard/ui/views/student/RegisterClassView";
@@ -24,6 +19,9 @@ import UserLogsView from "@/pages/dashboard/ui/views/student/UserLogsView";
 import InstructorStudentListView from "@/pages/dashboard/ui/views/instructor/InstructorStudentListView";
 import InstructorStatsView from "@/pages/dashboard/ui/views/instructor/InstructorStatsView";
 import InstructorClassesView from "@/pages/dashboard/ui/views/instructor/InstructorClassesView";
+import UsersAdministrationView from "@/pages/dashboard/ui/views/admin/UsersAdministrationView";
+import ClassesAdministrationView from "@/pages/dashboard/ui/views/admin/ClassesAdministrationView";
+import AppAnalyticsView from "@/pages/dashboard/ui/views/dev/AppAnalyticsView";
 
 export type SideBarItem = {
   id: string;
@@ -121,7 +119,7 @@ export const sidebarItems: SideBarItem[] = [
     title: "User Administration",
     subheading: "Administration",
     roles: SUPER_ADMIN_ROLES,
-    dashboardView: AdminUsers,
+    dashboardView: UsersAdministrationView,
   },
   {
     id: "admin-classes",
@@ -130,7 +128,7 @@ export const sidebarItems: SideBarItem[] = [
     title: "Class Administration",
     subheading: "Administration",
     roles: SUPER_ADMIN_ROLES,
-    dashboardView: AdminClasses,
+    dashboardView: ClassesAdministrationView,
   },
 
   // Development
@@ -141,7 +139,7 @@ export const sidebarItems: SideBarItem[] = [
     title: "Application Analytics",
     subheading: "Development",
     roles: DEV_ONLY,
-    dashboardView: DevDashboard,
+    dashboardView: AppAnalyticsView,
   },
 ];
 

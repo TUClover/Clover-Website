@@ -1,3 +1,5 @@
+import { AIStatGraph } from "@/components/AIStatGraph";
+import { useAIStats } from "@/hooks/useAIStats";
 import {
   Chart as ChartJS,
   LineElement,
@@ -8,8 +10,6 @@ import {
   Legend,
 } from "chart.js";
 import "react-datepicker/dist/react-datepicker.css";
-import { useAIStats } from "../../../../hooks/useAIStats";
-import { AIStatGraph } from "../../../../components/AIStatGraph";
 
 ChartJS.register(
   LineElement,
@@ -25,9 +25,8 @@ ChartJS.register(
  * This component is responsible for rendering the developer dashboard.
  * It includes a sidebar for user selection, a details panel for user information,
  * and a graph for AI statistics.
- * @returns {JSX.Element} The DevDashboard component.
  */
-export const DevDashboard = () => {
+export const AppAnalyticsView = () => {
   const { aiStats } = useAIStats();
 
   return (
@@ -39,4 +38,4 @@ export const DevDashboard = () => {
   );
 };
 
-export default DevDashboard;
+export default AppAnalyticsView;

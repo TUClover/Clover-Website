@@ -1,4 +1,3 @@
-import { Loader2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
@@ -11,6 +10,7 @@ import { Card } from "../components/ui/card";
 import { UserClassInfo } from "../api/types/user";
 import { Button } from "../components/ui/button";
 import { Paragraph, Title } from "../components/ui/text";
+import Loading from "@/components/Loading";
 
 type QuizQuestion = {
   id: string;
@@ -70,7 +70,7 @@ const QuizControls: React.FC<QuizControlsProps> = ({
     </div>
     <div className="flex sm:col-span-1 items-end justify-start sm:justify-center pb-1">
       <Button onClick={onGenerate} disabled={isGenerating} className="">
-        {isGenerating ? <Loader2 className="animate-spin" /> : "Generate"}
+        {isGenerating ? <Loading text="Generating" /> : "Generate"}
       </Button>
     </div>
     <div className="col-span-full sm:col-span-2">
@@ -303,7 +303,7 @@ export const QuizPage: React.FC = () => {
             (cls) => cls.user_class.id === selectedClassId
           );
           toast.success(
-            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.user_class.class_title}` : ""}.`
+            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.user_class.classTitle}` : ""}.`
           );
         } else {
           throw new Error(data?.message || "Failed to generate quiz");
@@ -311,6 +311,7 @@ export const QuizPage: React.FC = () => {
         return;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const quizQuestions = data.data.quiz.map((q: any) => ({
         id: q.id,
         question: q.question,

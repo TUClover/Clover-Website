@@ -34,10 +34,10 @@ export const EditUserButton: React.FC<{
   const editUser = async () => {
     const editedUser: User = {
       ...user,
-      first_name: form.getValues("firstName"),
-      last_name: form.getValues("lastName"),
+      firstName: form.getValues("firstName"),
+      lastName: form.getValues("lastName"),
       email: form.getValues("email"),
-      avatar_url: form.getValues("avatar_url"),
+      avatarUrl: form.getValues("avatarUrl"),
       role: form.getValues("role"),
     };
 
@@ -54,10 +54,10 @@ export const EditUserButton: React.FC<{
 
   const form = useForm({
     defaultValues: {
-      firstName: user.first_name,
-      lastName: user.last_name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
-      avatar_url: user.avatar_url,
+      avatarUrl: user.avatarUrl,
       role: user.role,
     },
   });
@@ -132,7 +132,7 @@ export const EditUserButton: React.FC<{
               />
               <FormField
                 control={form.control}
-                name="avatar_url"
+                name="avatarUrl"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Avatar URL</FormLabel>

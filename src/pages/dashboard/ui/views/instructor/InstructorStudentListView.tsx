@@ -1,11 +1,11 @@
 import InfoTooltip from "@/components/InfoTooltip";
+import Loading from "@/components/Loading";
 import NoData from "@/components/NoData";
 import StudentDataTable from "@/components/StudentDataTable";
 import { Card } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
 import { useClassActivity } from "@/hooks/useClassActivity";
 import { useInstructorClasses } from "@/hooks/useInstructorClasses";
-import { Loader2 } from "lucide-react";
 
 const InstructorStudentListView = () => {
   const { userData } = useUser();
@@ -18,13 +18,13 @@ const InstructorStudentListView = () => {
   );
 
   const selectedClassTitle =
-    classes.find((classItem) => classItem.id === selectedClassId)
-      ?.class_title ?? "";
+    classes.find((classItem) => classItem.id === selectedClassId)?.classTitle ??
+    "";
 
   if (loading) {
     return (
       <div className="flex min-h-screen justify-center items-center">
-        <Loader2 className="size-12 animate-spin" />
+        <Loading size="lg" showText={false} />
       </div>
     );
   }
