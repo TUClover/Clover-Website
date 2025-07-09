@@ -1,10 +1,10 @@
 {
   "name": "cloverwebsite",
   "private": true,
-  "version": "0.3.1",
+  "version": "0.5.1",
   "type": "module",
   "scripts": {
-    "dev": "tsc -b && vite",
+    "dev": "vite",
     "build": "tsc -b && vite build && cp dist/index.html dist/404.html",
     "lint": "eslint .",
     "preview": "vite preview",
