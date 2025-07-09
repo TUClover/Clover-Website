@@ -5,19 +5,15 @@ import InstructorProfile from "./InstructorProfile";
 import StudentProfile from "./StudentProfile";
 import { Loader2 } from "lucide-react";
 import NavBar from "../components/NavBar";
+import { useUser } from "../context/UserContext";
 
 /**
  * Profile component that renders different profile views based on user role.
  * @param userData - The user data object containing user information.
  * @returns
  */
-export const Profile = ({
-  userData,
-  loading,
-}: {
-  userData: User | null;
-  loading: boolean;
-}) => {
+export const Profile = () => {
+  const { userData, loading } = useUser();
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
 
   if (!userData) return null;

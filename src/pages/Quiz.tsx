@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { BASE_ENDPOINT } from "../api/endpoints";
 import { useUserClasses } from "../hooks/useUserClasses";
-import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
+import ClassesDropdownMenu from "./dashboard/ui/components/ClassesDropdownMenu";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../components/ui/card";

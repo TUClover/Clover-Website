@@ -1,11 +1,4 @@
-import ClassesDropdownMenu from "../../components/ClassesDropdownMenu";
-import { useClassActivity } from "../../hooks/useClassActivity";
-import StatCard from "../../components/StatCard";
-import PieChart from "../../components/PieChart";
-import LineChart from "../../components/LineChart";
-import { useInstructorClasses } from "../../hooks/useInstructorClasses";
-import StackedBarChart from "../../components/StackedBarChart";
-import CreateNewClassDialog from "../../components/CreateNewClassDialog";
+import { useState } from "react";
 import {
   ActiveUserMode,
   ClassData,
@@ -13,29 +6,37 @@ import {
   User,
   UserMode,
   UserRole,
-} from "../../api/types/user";
-import { Card } from "../../components/ui/card";
-import InfoTooltip from "../../components/InfoTooltip";
-import StudentDataTable from "../../components/StudentDataTable";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../../components/ui/carousel";
-import ClassInfoCard from "../../components/ClassInfoCard";
-import ClassDetails from "../../components/ClassDetails";
-import { useState } from "react";
+} from "../../../../api/types/user";
+import { useInstructorClasses } from "../../../../hooks/useInstructorClasses";
+import { useClassActivity } from "../../../../hooks/useClassActivity";
 import { Loader2 } from "lucide-react";
-import NoData from "../../components/NoData";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select";
+} from "../../../../components/ui/select";
+import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
+import StatCard from "../../../../components/StatCard";
+import PieChart from "../../../../components/PieChart";
+import LineChart from "../../../../components/LineChart";
+import StackedBarChart from "../../../../components/StackedBarChart";
+import NoData from "../../../../components/NoData";
+import { Card } from "../../../../components/ui/card";
+import InfoTooltip from "../../../../components/InfoTooltip";
+import StudentDataTable from "../../../../components/StudentDataTable";
+import CreateNewClassDialog from "../../../../components/CreateNewClassDialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../../../../components/ui/carousel";
+import ClassInfoCard from "../../../../components/ClassInfoCard";
+import ClassDetails from "../../../../components/ClassDetails";
+import { useUser } from "../../../../context/UserContext";
 
 /**
  * InstructorDashboard component displays the instructor dashboard with class statistics and activity logs.
@@ -43,17 +44,19 @@ import {
  * @param { userData } - The user data of the instructor.
  * @returns
  */
-export const InstructorDashboard = ({ userData }: { userData: User }) => {
+export const InstructorDashboard = () => {
+  const { userData } = useUser();
+
   const [selectedMode, setSelectedMode] = useState<ActiveUserMode>(
-    userData.settings.mode as ActiveUserMode
+    userData?.settings.mode as ActiveUserMode
   );
 
   const { classes, selectedClassId, handleClassSelect } = useInstructorClasses(
-    userData.id
+    userData?.id
   );
 
   const { allActivity, classActivity, progressData, loading, error, isEmpty } =
-    useClassActivity(userData.id, selectedClassId, selectedMode);
+    useClassActivity(userData?.id as string, selectedClassId, selectedMode);
 
   const selectedClassTitle =
     classes.find((classItem) => classItem.id === selectedClassId)
@@ -227,13 +230,14 @@ export const InstructorDashboard = ({ userData }: { userData: User }) => {
 
 export default InstructorDashboard;
 
-export const InstructorStudents = ({ userData }: { userData: User }) => {
-  const { classes, selectedClassId } = useInstructorClasses(userData.id);
+export const InstructorStudents = () => {
+  const { userData } = useUser();
+  const { classes, selectedClassId } = useInstructorClasses(userData?.id);
 
   const { allActivity } = useClassActivity(
-    userData.id,
+    userData?.id as string,
     selectedClassId,
-    userData.settings.mode
+    userData?.settings.mode
   );
 
   const selectedClassTitle =
@@ -271,7 +275,8 @@ export const InstructorStudents = ({ userData }: { userData: User }) => {
   );
 };
 
-export const InstructorClasses = ({ userData }: { userData: User }) => {
+export const InstructorClasses = () => {
+  const { userData } = useUser();
   const { originalClasses, loading: userClassLoading } = useInstructorClasses();
   const [selectedClass, setSelectedClass] = useState<{
     userClass: ClassData;
@@ -333,8 +338,8 @@ export const InstructorClasses = ({ userData }: { userData: User }) => {
                         classInfo={userClass}
                         onSelect={handleClassSelect}
                         isInstructor={
-                          userData.role === UserRole.INSTRUCTOR ||
-                          userData.role === UserRole.ADMIN
+                          userData?.role === UserRole.INSTRUCTOR ||
+                          userData?.role === UserRole.ADMIN
                         }
                       />
                     </div>

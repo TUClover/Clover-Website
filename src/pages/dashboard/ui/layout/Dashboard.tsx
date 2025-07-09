@@ -1,0 +1,72 @@
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { UserRole } from "../../../../api/types/user";
+import {
+  getComponentById,
+  sidebarItems,
+} from "../../../../constants/sidebarConfigs";
+import { SidebarProvider } from "../../../../components/ui/sidebar";
+import DashboardSidebar from "../components/DashboardSidebar";
+import DashboardContentHeader from "../components/DashboardHeader";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useUser } from "../../../../context/UserContext";
+
+const Dashboard = () => {
+  const { userData, loading } = useUser();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const currentTab = location.pathname.split("/dashboard/")[1] || "user-stats";
+  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="animate-spin h-10 w-10 dark:text-white" />
+      </div>
+    );
+  }
+
+  if (!userData) return null;
+
+  const effectiveRole = selectedRole ?? userData.role;
+
+  const handleTabClick = (tabId: string) => {
+    navigate(`/dashboard/${tabId}`);
+  };
+
+  const handleRoleChange = (role: UserRole) => {
+    setSelectedRole(role);
+    const firstTab = sidebarItems.find((item) => item.roles.includes(role))?.id;
+    if (firstTab) {
+      navigate(`/dashboard/${firstTab}`);
+    }
+  };
+
+  // Get the component for current tab
+  const CurrentComponent = getComponentById(currentTab);
+
+  return (
+    <SidebarProvider>
+      <div className="flex h-screen w-full">
+        <DashboardSidebar
+          sidebarItems={sidebarItems}
+          effectiveRole={effectiveRole as UserRole}
+          currentTab={currentTab}
+          onTabClick={handleTabClick}
+          onRoleChange={handleRoleChange}
+        />
+        <main className="flex-1 bg-background/80 dark:bg-[#0a0a0a] overflow-auto">
+          <DashboardContentHeader role={effectiveRole} />
+
+          <div className="w-full max-w-7xl mx-auto px-6">
+            <CurrentComponent />
+          </div>
+          <div className="h-96" />
+        </main>
+      </div>
+    </SidebarProvider>
+  );
+};
+
+export default Dashboard;

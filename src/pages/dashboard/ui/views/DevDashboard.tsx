@@ -1,4 +1,3 @@
-import { useAIStats } from "../../hooks/useAIStats";
 import {
   Chart as ChartJS,
   LineElement,
@@ -9,7 +8,8 @@ import {
   Legend,
 } from "chart.js";
 import "react-datepicker/dist/react-datepicker.css";
-import { AIStatGraph } from "../../components/AIStatGraph";
+import { useAIStats } from "../../../../hooks/useAIStats";
+import { AIStatGraph } from "../../../../components/AIStatGraph";
 
 ChartJS.register(
   LineElement,

@@ -5,8 +5,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
-import { ClassData } from "../api/types/user";
+} from "../../../../components/ui/select";
+import { ClassData } from "../../../../api/types/user";
 
 interface ClassesDropdownMenuProps {
   classes: ClassData[];

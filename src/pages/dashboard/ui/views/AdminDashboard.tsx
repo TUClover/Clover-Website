@@ -7,7 +7,23 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
+import { ClassData, User, UserRole } from "../../../../api/types/user";
+import { useAllUsers } from "../../../../hooks/useAllUsers";
+import {
+  useUserClasses,
+  useUserClassStatus,
+} from "../../../../hooks/useUserClasses";
+import { useUserActivity } from "../../../../hooks/useUserActivity";
+import { useInstructorClasses } from "../../../../hooks/useInstructorClasses";
+import { toast } from "sonner";
+import UserSideBar from "../../../../components/UsersSideBar";
+import UserDetailsPanel from "../../../../components/UserDetailsPanel";
+import StudentDashboardCard from "../../../../components/StudentDashboardCard";
+import { useAllClasses } from "../../../../hooks/useAllClasses";
+import ClassSideBar from "../../../../components/ClassSideBar";
+import ClassDetailsPanel from "../../../../components/ClassDetailsPanel";
 
 ChartJS.register(
   LineElement,
@@ -17,19 +33,6 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-import ClassSideBar from "../../components/ClassSideBar";
-import { useAllClasses } from "../../hooks/useAllClasses";
-import ClassDetailsPanel from "../../components/ClassDetailsPanel";
-import { useAllUsers } from "../../hooks/useAllUsers";
-import { toast } from "sonner";
-import { useUserActivity } from "../../hooks/useUserActivity";
-import { useInstructorClasses } from "../../hooks/useInstructorClasses";
-import UserSideBar from "../../components/UsersSideBar";
-import UserDetailsPanel from "../../components/UserDetailsPanel";
-import StudentDashboardCard from "../../components/StudentDashboardCard";
-import { useState } from "react";
-import { ClassData, User, UserRole } from "../../api/types/user";
-import { useUserClasses, useUserClassStatus } from "../../hooks/useUserClasses";
 
 export const AdminUsers = () => {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);

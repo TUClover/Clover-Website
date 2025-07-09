@@ -1,15 +1,15 @@
 import { Chart, registerables } from "chart.js";
-import LineChart from "../../components/LineChart";
-import StatCard from "../../components/StatCard";
-import StackedBarChart from "../../components/StackedBarChart";
-import PieChart from "../../components/PieChart";
+import LineChart from "../../../../../components/LineChart";
+import StatCard from "../../../../../components/StatCard";
+import StackedBarChart from "../../../../../components/StackedBarChart";
+import PieChart from "../../../../../components/PieChart";
 import ClassesDropdownMenu from "../../components/ClassesDropdownMenu";
-import { useUserActivity } from "../../hooks/useUserActivity";
-import StudentStatusBadge from "../../components/StudentStatusBadge";
+import { useUserActivity } from "../../../../../hooks/useUserActivity";
+import StudentStatusBadge from "../../../../../components/StudentStatusBadge";
 import { Loader2, MoreHorizontal } from "lucide-react";
-import { useUserClasses } from "../../hooks/useUserClasses";
-import RegisterClassDialog from "../../components/RegisterClassDialog";
-import { ClassData, StudentStatus, User } from "../../api/types/user";
+import { useUserClasses } from "../../../../../hooks/useUserClasses";
+import RegisterClassDialog from "../../../../../components/RegisterClassDialog";
+import { ClassData, StudentStatus, User } from "../../../../../api/types/user";
 import { useMemo, useState } from "react";
 import {
   Carousel,
@@ -17,9 +17,9 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../../components/ui/carousel";
-import ClassInfoCard from "../../components/ClassInfoCard";
-import ClassDetails from "../../components/ClassDetails";
+} from "../../../../../components/ui/carousel";
+import ClassInfoCard from "../../../../../components/ClassInfoCard";
+import ClassDetails from "../../../../../components/ClassDetails";
 import {
   Table,
   TableBody,
@@ -27,34 +27,37 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table";
-import { Skeleton } from "../../components/ui/skeleton";
-import { Badge } from "../../components/ui/badge";
-import { getEventsForMode } from "../../api/types/event";
-import { Card } from "../../components/ui/card";
-import InfoTooltip from "../../components/InfoTooltip";
-import PaginatedTable from "../../components/PaginatedTable";
-import SuggestionTable from "../../components/SuggestionTable";
-import { useAllClasses } from "../../hooks/useAllClasses";
-import { Button } from "../../components/ui/button";
-import { registerUserToClass } from "../../api/classes";
+} from "../../../../../components/ui/table";
+import { Skeleton } from "../../../../../components/ui/skeleton";
+import { Badge } from "../../../../../components/ui/badge";
+import { getEventsForMode } from "../../../../../api/types/event";
+import { Card } from "../../../../../components/ui/card";
+import InfoTooltip from "../../../../../components/InfoTooltip";
+import PaginatedTable from "../../../../../components/PaginatedTable";
+import SuggestionTable from "../../../../../components/SuggestionTable";
+import { useAllClasses } from "../../../../../hooks/useAllClasses";
+import { Button } from "../../../../../components/ui/button";
+import { registerUserToClass } from "../../../../../api/classes";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
-import NoData from "../../components/NoData";
+} from "../../../../../components/ui/dropdown-menu";
+import NoData from "../../../../../components/NoData";
+import { useUser } from "../../../../../context/UserContext";
 
 Chart.register(...registerables);
 
 /**
- * StudentDashboard component that displays user activity and progress.
+ * StudentStatsView component that displays user activity and progress.
  * @param userData - The user data to display in the dashboard.
- * @returns StudentDashboard component that displays user activity and progress.
+ * @returns StudentStatsView component that displays user activity and progress.
  */
-export const StudentDashboard = ({ userData }: { userData: User }) => {
+export const StudentStatsView = () => {
+  const { userData } = useUser();
+
   const {
     classes,
     selectedClassId,
@@ -69,8 +72,8 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
     progressData,
     loading: userActivityLoading,
   } = useUserActivity(
-    userData.id,
-    userData.settings.mode,
+    userData?.id,
+    userData?.settings.mode,
     selectedClassId,
     selectedClassType
   );
@@ -188,7 +191,7 @@ export const StudentDashboard = ({ userData }: { userData: User }) => {
   );
 };
 
-export default StudentDashboard;
+export default StudentStatsView;
 
 export const UserClasses = () => {
   const { originalClasses, loading: userClassLoading } = useUserClasses();
@@ -284,7 +287,9 @@ export const UserClasses = () => {
   );
 };
 
-export const RegisterClassPage = ({ user }: { user: User }) => {
+export const RegisterClassPage = () => {
+  const { userData } = useUser();
+
   const {
     classes: userClasses,
     loading,
@@ -302,7 +307,11 @@ export const RegisterClassPage = ({ user }: { user: User }) => {
   }, [userClasses]);
 
   const registerUser = async (classId: string) => {
-    const { error } = await registerUserToClass(user.id, classId);
+    if (!userData || !userData.id) {
+      console.error("User data is not available for registration.");
+      return;
+    }
+    const { error } = await registerUserToClass(userData.id, classId);
     if (error) {
       console.error("Error registering user to class:", error);
       return;
@@ -410,7 +419,9 @@ export const RegisterClassPage = ({ user }: { user: User }) => {
   );
 };
 
-export const UserLogs = ({ userData }: { userData: User }) => {
+export const UserLogs = () => {
+  const { userData } = useUser();
+
   const {
     selectedClassId,
     selectedClassType,
@@ -418,13 +429,13 @@ export const UserLogs = ({ userData }: { userData: User }) => {
   } = useUserClasses();
 
   const { userActivity, loading: userActivityLoading } = useUserActivity(
-    userData.id,
-    userData.settings.mode,
+    userData?.id,
+    userData?.settings.mode,
     selectedClassId,
     selectedClassType
   );
 
-  const events = getEventsForMode(userData.settings.mode);
+  const events = getEventsForMode(userData?.settings.mode || "CODE_BLOCK");
 
   const filteredLogItems = userActivity.filter(
     (logItem) =>
@@ -476,7 +487,7 @@ export const UserLogs = ({ userData }: { userData: User }) => {
           <SuggestionTable
             logItems={items}
             startIndex={startIndex}
-            mode={userData.settings.mode}
+            mode={userData?.settings.mode || "CODE_BLOCK"}
           />
         )}
       />

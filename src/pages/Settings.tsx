@@ -1,4 +1,4 @@
-import { User, UserRole } from "../api/types/user";
+import { UserRole } from "../api/types/user";
 import { DeleteUserButton } from "../components/DeleteUserButton";
 import { EditUserButton } from "../components/EditUserButton";
 import NavBar from "../components/NavBar";
@@ -6,6 +6,7 @@ import { ResetPasswordButton } from "../components/ResetPasswordButton";
 import { Card, CardTitle } from "../components/ui/card";
 import { Title } from "../components/ui/text";
 import UserSettings from "../components/UserSettings";
+import { useUser } from "../context/UserContext";
 
 /**
  * Settings component that displays user settings and activity.
@@ -13,7 +14,9 @@ import UserSettings from "../components/UserSettings";
  *
  * @param userData - The user data to display in the settings page.
  */
-export const Settings = ({ userData }: { userData: User | null }) => {
+export const Settings = () => {
+  const { userData } = useUser();
+
   if (!userData) return null;
 
   const isPrivileged =
