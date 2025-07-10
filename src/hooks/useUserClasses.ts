@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ClassData, EnrollmentStatus, StudentStatus } from "../api/types/user";
+import { EnrollmentStatus, StudentStatus } from "../api/types/user";
 import { supabase } from "../supabaseClient";
 import { getClassesbyStudent } from "@/api/classes";
 import { useQuery } from "@tanstack/react-query";
@@ -50,7 +50,7 @@ export const useUserClasses = (userId?: string | null) => {
       ];
     }
 
-    const options: ClassData[] = [
+    const options = [
       {
         id: "all",
         classTitle: "All Classes",
@@ -58,14 +58,11 @@ export const useUserClasses = (userId?: string | null) => {
         classHexColor: "#e5e5e5",
         students: [],
       },
-      ...allClasses
-        .filter(
-          (classInfo) =>
-            classInfo.enrollmentStatus === EnrollmentStatus.ENROLLED &&
-            classInfo.userClass?.id &&
-            classInfo.userClass?.classTitle
-        )
-        .map((classInfo) => classInfo.userClass),
+      ...allClasses.filter(
+        (classInfo) =>
+          classInfo.enrollmentStatus === EnrollmentStatus.ENROLLED &&
+          classInfo.id // Now using classId instead of userClass.id
+      ),
       {
         id: "non-class",
         classTitle: "Non-class Activities",
@@ -87,7 +84,7 @@ export const useUserClasses = (userId?: string | null) => {
       selectedClassId !== "all" &&
       selectedClassId !== "non-class"
     ) {
-      return allClasses.find((c) => c.userClass.id === selectedClassId) || null;
+      return allClasses.find((c) => c.id === selectedClassId) || null;
     }
     return null;
   }, [selectedClassId, allClasses]);
@@ -103,125 +100,6 @@ export const useUserClasses = (userId?: string | null) => {
     refetch,
   };
 };
-
-/**
- * Custom hook to fetch user classes based on user ID or authenticated user.
- * @param {string} userID - Optional user ID to fetch specific user classes.
- * @returns {Object} - Contains classes, loading state, error message, and selected class information.
- */
-// export const useUserClasses = (userId: string) => {
-//   const [classes, setClasses] = useState<UserClassInfo[]>([]);
-//   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
-//   const [selectedClassType, setSelectedClassType] = useState<
-//     "all" | "class" | "non-class"
-//   >("all");
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
-
-//   const fetchAndSetClasses = useCallback(async () => {
-//     const currentUserId = userID ?? user?.id;
-//     if (!currentUserId) {
-//       setLoading(false);
-//       setClasses([]);
-//       return;
-//     }
-
-//     setLoading(true);
-//     setError(null);
-
-//     try {
-//       const { data, error } = await getClassesbyStudent(currentUserId);
-//       if (error) {
-//         setError(error);
-//         setClasses([]);
-//       } else {
-//         setClasses(data || []);
-//       }
-//     } catch (err) {
-//       setError(err instanceof Error ? err.message : "Unknown error occurred");
-//       setClasses([]);
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, [userId]);
-
-//   useEffect(() => {
-//     fetchAndSetClasses();
-//   }, [fetchAndSetClasses]);
-
-//   const mutate = useCallback(() => {
-//     fetchAndSetClasses();
-//   }, [fetchAndSetClasses]);
-
-//   const specialClasses: UserClassInfo[] = [
-//     {
-//       userClass: {
-//         id: "all",
-//         createdAt: "",
-//         classTitle: "All",
-//         classCode: "",
-//         instructorId: "",
-//         classHexColor: "#e5e5e5",
-//         classImageCover: "",
-//         classDescription: "",
-//         students: [],
-//       },
-//       joinedAt: "",
-//       enrollmentStatus: EnrollmentStatus.ENROLLED,
-//       studentStatus: StudentStatus.ACTIVE,
-//     },
-//     {
-//       userClass: {
-//         id: "non-class",
-//         createdAt: "",
-//         classTitle: "Non-class Activities",
-//         classCode: "",
-//         instructorId: "",
-//         classHexColor: "#404040",
-//         classImageCover: "",
-//         classDescription: "",
-//         students: [],
-//       },
-//       joinedAt: "",
-//       enrollmentStatus: EnrollmentStatus.ENROLLED,
-//       studentStatus: StudentStatus.ACTIVE,
-//     },
-//   ];
-
-//   const modifiedClasses: UserClassInfo[] = [
-//     specialClasses[0],
-//     ...classes,
-//     specialClasses[1],
-//   ];
-
-//   const handleClassSelect = (selection: {
-//     id: string | null;
-//     type: "all" | "class" | "non-class";
-//   }) => {
-//     setSelectedClassId(
-//       selection.type === "class" ? selection.id : selection.type
-//     );
-//     setSelectedClassType(selection.type);
-//   };
-
-//   const selectedClass =
-//     selectedClassType === "class"
-//       ? classes.find((c) => c.userClass.id === selectedClassId) || null
-//       : specialClasses.find((c) => c.userClass.id === selectedClassType)!;
-
-//   return {
-//     classes: modifiedClasses,
-//     originalClasses: classes, // It's good you return the original list too!
-//     selectedClassId:
-//       selectedClassType === "class" ? selectedClassId : selectedClassType,
-//     selectedClassType,
-//     selectedClass,
-//     loading,
-//     error,
-//     mutate,
-//     handleClassSelect,
-//   };
-// };
 
 export const useUserClassStatus = (
   studentId: string | null,

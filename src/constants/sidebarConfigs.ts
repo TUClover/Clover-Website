@@ -13,9 +13,9 @@ import { UserRole } from "../api/types/user";
 import { ComponentType } from "react";
 import StudentStatsView from "../pages/dashboard/ui/views/student/StudentStatsView";
 import NoData from "@/components/NoData";
-import UserClassesView from "@/pages/dashboard/ui/views/student/UserClassesView";
-import RegisterClassView from "@/pages/dashboard/ui/views/student/RegisterClassView";
-import UserLogsView from "@/pages/dashboard/ui/views/student/UserLogsView";
+import StudentClassesView from "@/pages/dashboard/ui/views/student/StudentClassesView";
+import StudentRegisterClassView from "@/pages/dashboard/ui/views/student/StudentRegisterClassView";
+import StudentLogsView from "@/pages/dashboard/ui/views/student/StudentLogsView";
 import InstructorStudentListView from "@/pages/dashboard/ui/views/instructor/InstructorStudentListView";
 import InstructorStatsView from "@/pages/dashboard/ui/views/instructor/InstructorStatsView";
 import InstructorClassesView from "@/pages/dashboard/ui/views/instructor/InstructorClassesView";
@@ -61,7 +61,7 @@ export const sidebarItems: SideBarItem[] = [
     title: "Class Information",
     subheading: "My Dashboard",
     roles: ALL_ROLES,
-    dashboardView: UserClassesView,
+    dashboardView: StudentClassesView,
   },
   {
     id: "user-register-classes",
@@ -70,7 +70,7 @@ export const sidebarItems: SideBarItem[] = [
     title: "Class Registration",
     subheading: "My Dashboard",
     roles: ALL_ROLES,
-    dashboardView: RegisterClassView,
+    dashboardView: StudentRegisterClassView,
   },
   {
     id: "user-logs",
@@ -79,7 +79,7 @@ export const sidebarItems: SideBarItem[] = [
     title: "Activity Details",
     subheading: "My Dashboard",
     roles: ALL_ROLES,
-    dashboardView: UserLogsView,
+    dashboardView: StudentLogsView,
   },
 
   // Teaching

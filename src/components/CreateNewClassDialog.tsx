@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { useUserData } from "../hooks/useUserData";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -23,6 +22,7 @@ import { createClass } from "../api/classes";
 import { Textarea } from "../components/ui/textarea";
 import { toast } from "sonner";
 import { ClassData } from "../api/types/user";
+import { useUser } from "@/context/UserContext";
 
 // Color Options for the class color picker
 const colorOptions = [
@@ -45,7 +45,7 @@ const colorOptions = [
  * @returns {JSX.Element} - A React component that renders a dialog for creating a new class.
  */
 export const CreateNewClassDialog = () => {
-  const { userData } = useUserData();
+  const { userData } = useUser();
   const [open, setOpen] = useState(false);
 
   const form = useForm({

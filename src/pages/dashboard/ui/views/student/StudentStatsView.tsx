@@ -15,6 +15,7 @@ import {
   LearningProgress,
   ResponseTimeAnalysis,
 } from "@/components/Charts";
+import { ClassData } from "@/api/types/user";
 
 Chart.register(...registerables);
 
@@ -90,7 +91,7 @@ const StudentStatsView = () => {
     <div className="space-y-8">
       <div className="flex justify-end">
         <ClassesDropdownMenu
-          classes={allClassOptions}
+          classes={allClassOptions as ClassData[]}
           onClassSelect={handleClassSelect}
           selectedId={selectedClassId}
         />

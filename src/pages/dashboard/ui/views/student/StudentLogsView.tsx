@@ -9,7 +9,7 @@ import { useUser } from "@/context/UserContext";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
 
-const UserLogsView = () => {
+const StudentLogsView = () => {
   const { userData } = useUser();
 
   const { selectedClassId, loading: userClassLoading } = useUserClasses();
@@ -84,4 +84,4 @@ const UserLogsView = () => {
   );
 };
 
-export default UserLogsView;
+export default StudentLogsView;

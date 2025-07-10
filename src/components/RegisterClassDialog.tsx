@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useUserData } from "../hooks/useUserData";
 import { supabase } from "../supabaseClient";
 import { getUserData } from "../api/user";
 import { registerUserToClass } from "../api/classes";
@@ -23,6 +22,7 @@ import { Skeleton } from "./ui/skeleton";
 import { toast } from "sonner";
 import { ClassData, User } from "../api/types/user";
 import Loading from "./Loading";
+import { useUser } from "@/context/UserContext";
 
 /**
  * RegisterClassDialog component allows users to search and register for classes.
@@ -32,7 +32,7 @@ import Loading from "./Loading";
  * @returns {JSX.Element} The rendered component.
  */
 export const RegisterClassDialog = () => {
-  const { userData } = useUserData();
+  const { userData } = useUser();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<ClassData[]>([]);

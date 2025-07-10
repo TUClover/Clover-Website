@@ -54,24 +54,27 @@ export type UserSettings = {
 };
 
 export interface ClassData {
-  id?: string;
-  createdAt?: string;
+  id: string;
+  createdAt: string;
   classTitle: string;
   classCode: string;
-  instructorId?: string;
+  instructorId: string;
   instructorName?: string;
-  classHexColor?: string;
+  classHexColor: string;
   classImageCover?: string | null;
-  classDescription?: string;
+  classDescription: string;
+  joinedAt: string;
+  enrollmentStatus?: EnrollmentStatus;
+  studentCount: number;
   students?: User[];
 }
-/**
- * UserClassInfo interface represents the structure of user class information.
- * It contains the user class and the student's status in that class.
- */
-export interface UserClassInfo {
-  userClass: ClassData;
-  joinedAt: string;
-  enrollmentStatus: EnrollmentStatus;
-  studentStatus: StudentStatus;
+
+export interface PaginatedClassResponse {
+  classes: ClassData[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }

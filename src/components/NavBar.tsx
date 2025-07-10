@@ -14,8 +14,8 @@ import { Button } from "./ui/button";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { DoorOpen, Menu, Settings2, User2 } from "lucide-react";
-import { useUserData } from "../hooks/useUserData";
 import { UserRole } from "../api/types/user";
+import { useUser } from "@/context/UserContext";
 
 /**
  * NavBar component that appears at the top of the page.
@@ -25,7 +25,7 @@ import { UserRole } from "../api/types/user";
  */
 export const NavBar = () => {
   const { isAuthenticated } = useAuth();
-  const { userData } = useUserData();
+  const { userData } = useUser();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -170,7 +170,7 @@ export const DropdownAvatar = ({
 }: {
   handleSignOut: () => void;
 }) => {
-  const { userData, loading } = useUserData();
+  const { userData, loading } = useUser();
 
   if (loading) return null;
 

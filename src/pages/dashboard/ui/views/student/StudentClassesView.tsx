@@ -11,8 +11,11 @@ import NoClasses from "@/components/NoClasses";
 import ClassesCarousel from "../../components/ClassesCarousel";
 import Loading from "@/components/Loading";
 import { useUser } from "@/context/UserContext";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Grid, List } from "lucide-react";
+import ClassesTable from "../../components/ClassesTable";
 
-export const UserClassesView = () => {
+const StudentClassesView = () => {
   const { userData } = useUser();
   const { allClasses, loading: userClassLoading } = useUserClasses(
     userData?.id
@@ -69,7 +72,7 @@ export const UserClassesView = () => {
     },
   ];
 
-  return (
+  const renderCarouselView = () => (
     <>
       {classGroups.map(({ status, title }) => {
         const filteredClasses = allClasses.filter(
@@ -87,6 +90,54 @@ export const UserClassesView = () => {
           />
         );
       })}
+    </>
+  );
+
+  const renderTableView = () => (
+    <>
+      {classGroups.map(({ status, title }) => {
+        const filteredClasses = allClasses.filter(
+          (c) => c.enrollmentStatus === status
+        );
+
+        if (filteredClasses.length === 0) return null;
+
+        return (
+          <ClassesTable
+            key={status}
+            classes={filteredClasses}
+            onClassSelect={handleClassSelect}
+            title={title}
+            showStatus
+            showActions
+          />
+        );
+      })}
+    </>
+  );
+
+  return (
+    <>
+      <Tabs defaultValue="carousel" className="w-full">
+        <div className="flex justify-end items-center mb-6">
+          <TabsList className="grid w-[200px] grid-cols-2">
+            <TabsTrigger value="carousel" className="flex items-center gap-2">
+              <Grid className="h-4 w-4" />
+            </TabsTrigger>
+            <TabsTrigger value="table" className="flex items-center gap-2">
+              <List className="h-4 w-4" />
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="carousel" className="w-full">
+          {renderCarouselView()}
+        </TabsContent>
+
+        <TabsContent value="table" className="w-full">
+          {renderTableView()}
+        </TabsContent>
+      </Tabs>
 
       {selectedClass && (
         <ClassDetails
@@ -99,4 +150,4 @@ export const UserClassesView = () => {
   );
 };
 
-export default UserClassesView;
+export default StudentClassesView;

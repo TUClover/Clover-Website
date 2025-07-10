@@ -1,6 +1,10 @@
 import { supabase } from "../supabaseClient";
 import { CLASS_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
-import { ClassData, EnrollmentStatus, UserClassInfo } from "./types/user";
+import {
+  ClassData,
+  EnrollmentStatus,
+  PaginatedClassResponse,
+} from "./types/user";
 
 /**
  * * Creates a new class in the database.
@@ -115,7 +119,7 @@ export const registerUserToClass = async (
  * @returns {Promise<{ data?: UserClassInfo[]; error?: string }>} - The response from the server or an error message
  */
 export async function getClassesbyStudent(studentId: string): Promise<{
-  data?: UserClassInfo[];
+  data?: ClassData[];
   error?: string;
 }> {
   try {
@@ -229,15 +233,32 @@ export const updateStudentEnrollmentStatus = async (
   return { success: true };
 };
 
-export async function getAllClasses(): Promise<{
-  classes?: ClassData[];
+export async function getAllClasses(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  userId?: string;
+}): Promise<{
+  data?: PaginatedClassResponse;
   error?: string;
 }> {
   console.log("Fetching all classes from API...");
 
   try {
-    const response = await fetch(`${CLASS_ENDPOINT}/`, {
+    // Build query parameters
+    const queryParams = new URLSearchParams();
+
+    if (params?.page) queryParams.set("page", params.page.toString());
+    if (params?.limit) queryParams.set("limit", params.limit.toString());
+    if (params?.search && params.search.trim())
+      queryParams.set("search", params.search.trim());
+    if (params?.userId) queryParams.set("user_id", params.userId);
+
+    const url = `${CLASS_ENDPOINT}/${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
+
+    const response = await fetch(url, {
       method: "GET",
+      headers: { "Content-Type": "application/json" },
     });
 
     const data = await response.json();
@@ -246,17 +267,19 @@ export async function getAllClasses(): Promise<{
       return {
         error:
           data.error ||
-          `Failed to get all users: ${response.status} ${response.statusText}`,
+          `Failed to get all classes: ${response.status} ${response.statusText}`,
       };
     }
 
-    if (!Array.isArray(data)) {
-      return { error: "Invalid response: expected an array of classes" };
+    if (!data.classes || !Array.isArray(data.classes) || !data.pagination) {
+      return {
+        error: "Invalid response: expected classes array and pagination object",
+      };
     }
 
     console.log("Fetched classes from API", JSON.stringify(data, null, 2));
 
-    return { classes: data };
+    return { data };
   } catch (err) {
     console.error(`Failed to get all classes:`, err);
     return {
@@ -264,3 +287,39 @@ export async function getAllClasses(): Promise<{
     };
   }
 }
+
+// export async function getAllClasses(): Promise<{
+//   classes?: ClassData[];
+//   error?: string;
+// }> {
+//   console.log("Fetching all classes from API...");
+
+//   try {
+//     const response = await fetch(`${CLASS_ENDPOINT}/`, {
+//       method: "GET",
+//     });
+
+//     const data = await response.json();
+
+//     if (!response.ok) {
+//       return {
+//         error:
+//           data.error ||
+//           `Failed to get all users: ${response.status} ${response.statusText}`,
+//       };
+//     }
+
+//     if (!Array.isArray(data)) {
+//       return { error: "Invalid response: expected an array of classes" };
+//     }
+
+//     console.log("Fetched classes from API", JSON.stringify(data, null, 2));
+
+//     return { classes: data };
+//   } catch (err) {
+//     console.error(`Failed to get all classes:`, err);
+//     return {
+//       error: err instanceof Error ? err.message : "Unknown error occurred",
+//     };
+//   }
+// }
