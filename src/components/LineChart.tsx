@@ -5,14 +5,8 @@ import InfoTooltip from "./InfoTooltip";
 import { Card } from "./ui/card";
 import { LogEvent } from "../api/types/event";
 import { UserActivityLogItem } from "../api/types/suggestion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
 import { InstructorLogResponse } from "../api/classes";
+import CustomSelect from "./CustomSelect";
 
 enum TimeInterval {
   DAY = "Day",
@@ -160,19 +154,16 @@ export const LineChart = ({
           </InfoTooltip>
         </div>
 
-        <Select
+        <CustomSelect
           value={interval}
           onValueChange={(value) => setInterval(value as TimeInterval)}
-        >
-          <SelectTrigger className="w-24">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={TimeInterval.DAY}>Day</SelectItem>
-            <SelectItem value={TimeInterval.WEEK}>Week</SelectItem>
-            <SelectItem value={TimeInterval.MONTH}>Month</SelectItem>
-          </SelectContent>
-        </Select>
+          options={[
+            { value: TimeInterval.DAY, label: "Day" },
+            { value: TimeInterval.WEEK, label: "Week" },
+            { value: TimeInterval.MONTH, label: "Month" },
+          ]}
+          className="w-24"
+        />
       </div>
 
       <div className="relative w-full h-60 md:h-64 lg:h-72">
@@ -215,11 +206,6 @@ export const LineChart = ({
               legend: {
                 labels: { color: textColor },
               },
-              title: {
-                display: true,
-                text: "User Activity",
-                color: textColor,
-              },
             },
             responsive: true,
             maintainAspectRatio: false,
@@ -250,6 +236,11 @@ export const LineChart = ({
                 beginAtZero: true,
                 ticks: { color: textColor, precision: 0 },
                 grid: { color: gridColor },
+                title: {
+                  display: true,
+                  text: "Number of Decisions",
+                  color: textColor,
+                },
               },
             },
           }}

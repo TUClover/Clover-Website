@@ -33,7 +33,8 @@ const NoData = ({ role }: NoDataProps) => {
             </h2>
             <p className="text-gray-500 mb-6">
               It seems there hasn't been any activity recorded from your
-              students yet. Please create a new class or check back later.
+              students yet. Please create a new class, or switch between modes,
+              or check back later.
             </p>
             <div className="flex flex-col items-center gap-4">
               <CreateNewClassDialog />

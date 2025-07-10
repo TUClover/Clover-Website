@@ -9,10 +9,10 @@ interface LoadingProps {
 }
 
 const sizeMap = {
-  sm: "h-4 w-4 text-sm",
-  md: "h-8 w-8 text-base",
-  lg: "h-12 w-12 text-lg",
-  xl: "h-16 w-16 text-xl",
+  sm: "size-4 text-sm",
+  md: "size-8 text-base",
+  lg: "size-10 text-lg",
+  xl: "size-14 text-xl",
 };
 
 const Loading = ({

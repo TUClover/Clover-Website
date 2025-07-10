@@ -39,6 +39,8 @@ export const useUserActivity = (
     staleTime: QUERY_INTERVALS.staleTime,
     gcTime: QUERY_INTERVALS.gcTime,
     retry: QUERY_INTERVALS.retry,
+    retryDelay: 500,
+    refetchOnWindowFocus: false,
   });
 
   const filteredUserActivity = useMemo(() => {

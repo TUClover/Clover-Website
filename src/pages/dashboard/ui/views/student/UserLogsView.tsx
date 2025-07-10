@@ -12,22 +12,13 @@ import { useUserClasses } from "@/hooks/useUserClasses";
 const UserLogsView = () => {
   const { userData } = useUser();
 
-  const {
-    selectedClassId,
-    selectedClassType,
-    loading: userClassLoading,
-  } = useUserClasses();
+  const { selectedClassId, loading: userClassLoading } = useUserClasses();
 
   const {
     userActivity,
     loading: userActivityLoading,
     progressData,
-  } = useUserActivity(
-    userData?.id,
-    userData?.settings.mode,
-    selectedClassId,
-    selectedClassType
-  );
+  } = useUserActivity(userData?.id, userData?.settings.mode, selectedClassId);
 
   const events = getEventsForMode(userData?.settings.mode || "CODE_BLOCK");
 
@@ -47,7 +38,7 @@ const UserLogsView = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loading size="lg" showText={false} />
+        <Loading size="lg" text="Loading your data" />
       </div>
     );
   }

@@ -5,14 +5,8 @@ import InfoTooltip from "./InfoTooltip";
 import { Card } from "./ui/card";
 import { LogEvent } from "../api/types/event";
 import { UserActivityLogItem } from "../api/types/suggestion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
 import { InstructorLogResponse } from "../api/classes";
+import CustomSelect from "./CustomSelect";
 
 enum TimeInterval {
   DAY = "Day",
@@ -60,7 +54,6 @@ export const StackedBarChart = ({
   const groupBy = (date: Date, interval: TimeInterval): string => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const day = date.getDate();
 
     switch (interval) {
       case TimeInterval.DAY:
@@ -68,8 +61,13 @@ export const StackedBarChart = ({
 
       case TimeInterval.WEEK: {
         const weekStart = new Date(date);
-        weekStart.setDate(day - date.getDay()); // Sunday
-        return weekStart.toISOString().split("T")[0];
+        weekStart.setDate(date.getDate() - date.getDay()); // Fix: use getDate() instead of day variable
+
+        const y = weekStart.getFullYear();
+        const m = String(weekStart.getMonth() + 1).padStart(2, "0");
+        const d = String(weekStart.getDate()).padStart(2, "0");
+
+        return `${y}-${m}-${d}`;
       }
 
       case TimeInterval.MONTH:
@@ -83,7 +81,6 @@ export const StackedBarChart = ({
   const dateMap: Record<string, { correct: number; incorrect: number }> = {};
 
   activities.forEach((activity) => {
-    // Handle both string and Date for createdAt
     const date =
       typeof activity.createdAt === "string"
         ? new Date(activity.createdAt)
@@ -106,12 +103,7 @@ export const StackedBarChart = ({
       activity.event === "USER_REJECT" ||
       activity.event.includes("REJECT");
 
-    // Only count decisions (accept or reject events)
     if (isAcceptEvent || isRejectEvent) {
-      // Logic for determining if the decision was correct
-      // Correct decisions: Accept good code (no bug) OR Reject bad code (has bug)
-      // Incorrect decisions: Accept bad code (has bug) OR Reject good code (no bug)
-
       const isCorrectDecision =
         (isAcceptEvent && !activity.hasBug) ||
         (isRejectEvent && activity.hasBug);
@@ -151,6 +143,7 @@ export const StackedBarChart = ({
 
       case TimeInterval.MONTH:
         for (let i = 6; i >= 0; i--) {
+          // Last 7 months + next month
           const date = new Date(today);
           date.setMonth(today.getMonth() - i);
           range.push(groupBy(date, interval));
@@ -187,11 +180,6 @@ export const StackedBarChart = ({
         labels: {
           color: textColor,
         },
-      },
-      title: {
-        display: true,
-        text: "Correct vs Incorrect Suggestions",
-        color: textColor,
       },
     },
     responsive: true,
@@ -260,19 +248,16 @@ export const StackedBarChart = ({
           </InfoTooltip>
         </div>
 
-        <Select
+        <CustomSelect
           value={interval}
           onValueChange={(value) => setInterval(value as TimeInterval)}
-        >
-          <SelectTrigger className="w-24">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={TimeInterval.DAY}>Day</SelectItem>
-            <SelectItem value={TimeInterval.WEEK}>Week</SelectItem>
-            <SelectItem value={TimeInterval.MONTH}>Month</SelectItem>
-          </SelectContent>
-        </Select>
+          options={[
+            { value: TimeInterval.DAY, label: "Day" },
+            { value: TimeInterval.WEEK, label: "Week" },
+            { value: TimeInterval.MONTH, label: "Month" },
+          ]}
+          className="w-32"
+        />
       </div>
 
       <div className="relative w-full h-60 md:h-64 lg:h-72">

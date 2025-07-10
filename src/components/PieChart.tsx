@@ -3,16 +3,10 @@ import { useEffect, useState } from "react";
 import InfoTooltip from "./InfoTooltip";
 import { Card } from "./ui/card";
 import { ProgressData } from "../api/types/suggestion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { InstructorLogResponse } from "../api/classes";
 import { ActiveUserMode } from "../api/types/user";
 import { getEventsForMode } from "../api/types/event";
+import CustomSelect from "./CustomSelect";
 
 type DataMode = "total" | "accepted" | "rejected";
 
@@ -31,7 +25,6 @@ interface PieChartProps {
  * @param props - The props for the PieChart component.
  * @param {string} props.title - The title of the chart.
  * @param {ProgressData} props.progressData - The progress data for the chart.
- * @returns {JSX.Element} - The rendered PieChart component.
  */
 export const PieChart = ({
   title = "Correct vs Incorrect",
@@ -44,7 +37,6 @@ export const PieChart = ({
   const [textColor, setTextColor] = useState("#000000");
 
   const getChartData = () => {
-    // If progressData is provided, use it (existing logic)
     if (progressData) {
       switch (dataMode) {
         case "accepted":
@@ -71,7 +63,6 @@ export const PieChart = ({
       }
     }
 
-    // If activities are provided, calculate from raw data
     if (activities && mode) {
       const events = getEventsForMode(mode);
       const acceptedLogs = activities.filter(
@@ -111,7 +102,6 @@ export const PieChart = ({
       }
     }
 
-    // Fallback
     return { correct: 0, incorrect: 0, total: 0 };
   };
 
@@ -166,16 +156,17 @@ export const PieChart = ({
           <div className="flex items-center gap-3">
             <h2 className="text-lg font-semibold text-main">{title}</h2>
           </div>
-          <Select value={dataMode} onValueChange={onDataModeChange}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="total">Total</SelectItem>
-              <SelectItem value="accepted">Accepted</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-            </SelectContent>
-          </Select>
+
+          <CustomSelect
+            value={dataMode}
+            onValueChange={onDataModeChange}
+            options={[
+              { value: "total", label: "Total" },
+              { value: "accepted", label: "Accepted" },
+              { value: "rejected", label: "Rejected" },
+            ]}
+            placeholder="Select Mode"
+          />
         </div>
         <div className="flex items-center justify-center h-60 md:h-64 lg:h-72">
           <p className="text-muted-foreground">No data available</p>
@@ -188,7 +179,9 @@ export const PieChart = ({
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-main">{title}</h2>
+          <h2 className="text-lg font-semibold text-main text-primary">
+            {title}
+          </h2>
           <InfoTooltip>
             <div className="space-y-2">
               <p className="text-sm">
@@ -207,16 +200,17 @@ export const PieChart = ({
           </InfoTooltip>
         </div>
 
-        <Select value={dataMode} onValueChange={onDataModeChange}>
-          <SelectTrigger className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="total">Total</SelectItem>
-            <SelectItem value="accepted">Accepted</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
-          </SelectContent>
-        </Select>
+        <CustomSelect
+          value={dataMode}
+          onValueChange={onDataModeChange}
+          options={[
+            { value: "total", label: "Total" },
+            { value: "accepted", label: "Accepted" },
+            { value: "rejected", label: "Rejected" },
+          ]}
+          placeholder="Select Mode"
+          className="w-32"
+        />
       </div>
 
       <div className="relative w-full h-60 md:h-64 lg:h-72">

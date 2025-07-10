@@ -10,6 +10,11 @@ import { useState } from "react";
 import { useUser } from "@/context/UserContext";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";
 import Loading from "@/components/Loading";
+import {
+  AccuracyOverTime,
+  LearningProgress,
+  ResponseTimeAnalysis,
+} from "@/components/Charts";
 
 Chart.register(...registerables);
 
@@ -42,7 +47,7 @@ const StudentStatsView = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loading size="lg" showText={false} />
+        <Loading size="lg" text="Loading your data" />
       </div>
     );
   }
@@ -93,7 +98,7 @@ const StudentStatsView = () => {
       {progressData.totalInteractions === 0 ? (
         <NoData role="student" />
       ) : (
-        <div className="">
+        <div className="space-y-8">
           {/* Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
             <StatCard
@@ -114,7 +119,7 @@ const StudentStatsView = () => {
           </div>
 
           {/* Charts Row */}
-          <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+          <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6">
             <PieChart
               progressData={progressData}
               dataMode={dataMode}
@@ -125,6 +130,21 @@ const StudentStatsView = () => {
 
           {/*Stacked Bar Graph*/}
           <StackedBarChart activities={userActivity} />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <ResponseTimeAnalysis
+              userActivity={userActivity}
+              title="Average Response Time"
+            />
+
+            <AccuracyOverTime userActivity={userActivity} />
+          </div>
+
+          <LearningProgress
+            userActivity={userActivity}
+            windowSize={20}
+            title="Learning Progress"
+          />
         </div>
       )}
     </div>

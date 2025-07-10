@@ -26,9 +26,30 @@ export const useUserClasses = (userId?: string | null) => {
     staleTime: QUERY_INTERVALS.staleTime,
     gcTime: QUERY_INTERVALS.gcTime,
     retry: QUERY_INTERVALS.retry,
+    retryDelay: 500,
+    refetchOnWindowFocus: false,
   });
 
   const allClassOptions = useMemo(() => {
+    if (!allClasses.length) {
+      return [
+        {
+          id: "all",
+          classTitle: "All Classes",
+          classCode: "",
+          classHexColor: "#e5e5e5",
+          students: [],
+        },
+        {
+          id: "non-class",
+          classTitle: "Non-class Activities",
+          classCode: "",
+          classHexColor: "#404040",
+          students: [],
+        },
+      ];
+    }
+
     const options: ClassData[] = [
       {
         id: "all",

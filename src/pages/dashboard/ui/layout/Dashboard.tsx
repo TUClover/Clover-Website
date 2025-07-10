@@ -63,7 +63,7 @@ const Dashboard = () => {
           <div className="w-full max-w-7xl mx-auto px-6">
             <ActiveComponentView />
           </div>
-          <div className="h-96" />
+          <div className="h-32" />
         </main>
       </div>
     </SidebarProvider>
