@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
+import { InstructorLogResponse } from "@/api/classes";
+import { UserActivityLogItem } from "@/api/types/suggestion";
+import CustomSelect from "@/components/CustomSelect";
+import InfoTooltip from "@/components/InfoTooltip";
+import { Card } from "@/components/ui/card";
+import { parseISODate } from "@/utils/timeConverter";
+import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { parseISODate } from "../utils/timeConverter";
-import InfoTooltip from "./InfoTooltip";
-import { Card } from "./ui/card";
-import { LogEvent } from "../api/types/event";
-import { UserActivityLogItem } from "../api/types/suggestion";
-import { InstructorLogResponse } from "../api/classes";
-import CustomSelect from "./CustomSelect";
 
 enum TimeInterval {
   DAY = "Day",
@@ -14,19 +13,15 @@ enum TimeInterval {
   MONTH = "Month",
 }
 
-/**
- * LineChart component displays a line chart of user activity over time.
- * @param {string} title - The title of the chart.
- * @param {Array} activities - An array of user activity log items.
- * @returns {JSX.Element} - A line chart component.
- **/
-export const LineChart = ({
-  title = "Decision Over Time",
-  activities,
-}: {
+interface AccuracyOverTimeProps {
   title?: string;
-  activities: UserActivityLogItem[] | InstructorLogResponse[];
-}) => {
+  userActivity: UserActivityLogItem[] | InstructorLogResponse[];
+}
+
+const AccuracyTimeLineChart = ({
+  title = "Accuracy Time Line",
+  userActivity,
+}: AccuracyOverTimeProps) => {
   const [interval, setInterval] = useState<TimeInterval>(TimeInterval.DAY);
   const [textColor, setTextColor] = useState("#000000");
   const [gridColor, setGridColor] = useState("rgba(255,255,255,0.1)");
@@ -72,29 +67,21 @@ export const LineChart = ({
     return "";
   };
 
-  const acceptedMap: Record<string, number> = {};
-  const rejectedMap: Record<string, number> = {};
+  // Group activities by time period and calculate accuracy
+  const accuracyMap: Record<string, { total: number; correct: number }> = {};
 
-  activities.forEach((activity) => {
-    const date =
-      typeof activity.createdAt === "string"
-        ? new Date(activity.createdAt)
-        : new Date(activity.createdAt);
-
+  userActivity.forEach((activity) => {
+    const date = new Date(activity.createdAt);
     const key = groupBy(date, interval);
+
     if (key) {
-      if (
-        activity.event === LogEvent.SUGGESTION_ACCEPT ||
-        activity.event === "SUGGESTION_ACCEPT" ||
-        activity.event.includes("ACCEPT")
-      ) {
-        acceptedMap[key] = (acceptedMap[key] || 0) + 1;
-      } else if (
-        activity.event === LogEvent.USER_REJECT ||
-        activity.event === "USER_REJECT" ||
-        activity.event.includes("REJECT")
-      ) {
-        rejectedMap[key] = (rejectedMap[key] || 0) + 1;
+      if (!accuracyMap[key]) {
+        accuracyMap[key] = { total: 0, correct: 0 };
+      }
+
+      accuracyMap[key].total++;
+      if (activity.hasBug === false) {
+        accuracyMap[key].correct++;
       }
     }
   });
@@ -112,7 +99,7 @@ export const LineChart = ({
     }
 
     if (interval === TimeInterval.WEEK) {
-      for (let i = 6; i >= 0; i--) {
+      for (let i = 5; i >= -1; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i * 7);
         range.push(groupBy(date, interval)!);
@@ -120,7 +107,7 @@ export const LineChart = ({
     }
 
     if (interval === TimeInterval.MONTH) {
-      for (let i = 6; i >= 0; i--) {
+      for (let i = 5; i >= -1; i--) {
         const date = new Date(today);
         date.setMonth(today.getMonth() - i);
         range.push(groupBy(date, interval)!);
@@ -131,8 +118,16 @@ export const LineChart = ({
   };
 
   const labels = getLabelRange();
-  const acceptedValues = labels.map((key) => acceptedMap[key] || 0);
-  const rejectedValues = labels.map((key) => rejectedMap[key] || 0);
+
+  // Calculate accuracy percentages for each time period
+  const accuracyValues = labels.map((key) => {
+    const stats = accuracyMap[key];
+    if (!stats || stats.total === 0) return null; // No data for this period
+    return (stats.correct / stats.total) * 100;
+  });
+
+  // Calculate total suggestions for each time period (for tooltip)
+  const totalValues = labels.map((key) => accuracyMap[key]?.total || 0);
 
   return (
     <Card className="p-6">
@@ -142,13 +137,14 @@ export const LineChart = ({
           <InfoTooltip>
             <div className="space-y-2">
               <p className="text-sm">
-                This line chart shows how many code suggestions users{" "}
-                <span className="font-semibold text-alpha">accepted</span> or{" "}
-                <span className="font-semibold text-beta">rejected</span> over
-                time.
+                This chart shows your accuracy percentage over time.{" "}
+                <span className="font-semibold text-alpha">Accuracy</span> is
+                calculated as the percentage of suggestions that were correct
+                (no bugs detected).
               </p>
               <p className="text-xs text-muted-foreground">
-                Time range can be adjusted (daily/weekly/monthly)
+                Time range can be adjusted (daily/weekly/monthly). Periods with
+                no activity are not shown on the chart.
               </p>
             </div>
           </InfoTooltip>
@@ -172,32 +168,19 @@ export const LineChart = ({
             labels,
             datasets: [
               {
-                label: "Accepted Suggestions",
-                data: acceptedValues,
+                label: "Accuracy (%)",
+                data: accuracyValues,
                 borderColor: "#50B498",
                 backgroundColor: "#50B498",
-                borderWidth: 2,
+                borderWidth: 3,
                 tension: 0.3,
                 fill: false,
                 pointBackgroundColor: "#50B498",
                 pointBorderColor: "#FFFFFF",
-                pointBorderWidth: 1,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-              },
-              {
-                label: "Rejected Suggestions",
-                data: rejectedValues,
-                borderColor: "#F59E0B",
-                backgroundColor: "#F59E0B",
-                borderWidth: 2,
-                tension: 0.3,
-                fill: false,
-                pointBackgroundColor: "#F59E0B",
-                pointBorderColor: "#FFFFFF",
-                pointBorderWidth: 1,
-                pointRadius: 5,
-                pointHoverRadius: 7,
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                spanGaps: true, // Connect line across null values
               },
             ],
           }}
@@ -205,6 +188,18 @@ export const LineChart = ({
             plugins: {
               legend: {
                 labels: { color: textColor },
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const accuracy = context.parsed.y;
+                    const total = totalValues[context.dataIndex];
+
+                    if (accuracy === null) return "No data";
+
+                    return `Accuracy: ${accuracy.toFixed(1)}% (${total} suggestions)`;
+                  },
+                },
               },
             },
             responsive: true,
@@ -223,7 +218,10 @@ export const LineChart = ({
                         year: "numeric",
                       });
                     if (interval === TimeInterval.WEEK)
-                      return `Week of ${date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
+                      return `Week of ${date.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}`;
                     return date.toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -234,13 +232,24 @@ export const LineChart = ({
               },
               y: {
                 beginAtZero: true,
-                ticks: { color: textColor, precision: 0 },
+                max: 100,
+                ticks: {
+                  color: textColor,
+                  callback: function (value) {
+                    return value + "%";
+                  },
+                },
                 grid: { color: gridColor },
                 title: {
                   display: true,
-                  text: "Number of Decisions",
+                  text: "Accuracy (%)",
                   color: textColor,
                 },
+              },
+            },
+            elements: {
+              point: {
+                hoverBackgroundColor: "#50B498",
               },
             },
           }}
@@ -250,4 +259,4 @@ export const LineChart = ({
   );
 };
 
-export default LineChart;
+export default AccuracyTimeLineChart;

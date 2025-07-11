@@ -4,11 +4,7 @@ import DashboardSidebar from "@/pages/dashboard/ui/components/DashboardSidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import {
-  getDashboardViewById,
-  getTitleById,
-  sidebarItems,
-} from "@/constants/sidebarConfigs";
+import { sidebarItems } from "@/constants/sidebarConfigs";
 import DashboardHeader from "@/pages/dashboard/ui/components/DashboardHeader";
 import Loading from "@/components/Loading";
 
@@ -44,8 +40,13 @@ const Dashboard = () => {
     }
   };
 
-  const ActiveComponentView = getDashboardViewById(currentTab);
-  const title = getTitleById(currentTab);
+  const currentSidebarItem = sidebarItems.find(
+    (item) => item.id === currentTab
+  );
+  const ActiveComponentView = currentSidebarItem?.dashboardView;
+  const title = currentSidebarItem?.title || "Dashboard";
+  const description =
+    currentSidebarItem?.description || "Welcome to your dashboard";
 
   return (
     <SidebarProvider>
@@ -61,7 +62,9 @@ const Dashboard = () => {
           <DashboardHeader title={title} role={effectiveRole} />
 
           <div className="w-full max-w-7xl mx-auto px-6">
-            <ActiveComponentView />
+            {ActiveComponentView && (
+              <ActiveComponentView description={description} />
+            )}
           </div>
           <div className="h-32" />
         </main>

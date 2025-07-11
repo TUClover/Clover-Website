@@ -157,7 +157,7 @@ export const RegisterClassDialog = () => {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4" />
-          <span className="hidden sm:block ml-1">Register</span>
+          <span className="ml-1">Register</span>
         </Button>
       </DialogTrigger>
 

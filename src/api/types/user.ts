@@ -55,17 +55,17 @@ export type UserSettings = {
 
 export interface ClassData {
   id: string;
-  createdAt: string;
+  createdAt?: string;
   classTitle: string;
-  classCode: string;
-  instructorId: string;
+  classCode?: string;
+  instructorId?: string;
   instructorName?: string;
   classHexColor: string;
   classImageCover?: string | null;
-  classDescription: string;
-  joinedAt: string;
+  classDescription?: string;
+  joinedAt?: string;
   enrollmentStatus?: EnrollmentStatus;
-  studentCount: number;
+  studentCount?: number;
   students?: User[];
 }
 

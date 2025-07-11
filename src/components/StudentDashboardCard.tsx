@@ -1,6 +1,6 @@
 import StatCard from "./StatCard";
-import LineChart from "./LineChart";
-import StackedBarChart from "./StackedBarChart";
+import LineChart from "../pages/dashboard/ui/components/DecisionLineChart";
+import StackedBarChart from "../pages/dashboard/ui/components/AccuracyDistributionBarChart";
 import { X } from "lucide-react";
 import { StudentStatus } from "../api/types/user";
 import StudentStatusBadge from "./StudentStatusBadge";

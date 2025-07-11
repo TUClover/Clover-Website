@@ -37,7 +37,7 @@ const ClassesDropdownMenu = ({
         onClassSelect(value);
       }}
     >
-      <SelectTrigger className="w-full md:w-80">
+      <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

@@ -88,8 +88,8 @@ const ClassesTable = ({
           <TableHeader className="bg-[#f5f5f5] dark:bg-[#262626]">
             <TableRow className="font-semibold">
               <TableHead className="w-[25%]">Title</TableHead>
-              <TableHead className="w-[10%]">Code</TableHead>
-              <TableHead className="w-[15%]">Instructor</TableHead>
+              <TableHead className="w-[12%]">Code</TableHead>
+              <TableHead className="w-[20%]">Instructor</TableHead>
               <TableHead className="w-[10%] text-center">Students</TableHead>
               {showStatus && (
                 <TableHead className="w-[15%] text-center">Status</TableHead>

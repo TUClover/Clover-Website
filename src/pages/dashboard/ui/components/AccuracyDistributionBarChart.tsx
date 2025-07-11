@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
-import { parseISODate } from "../utils/timeConverter";
-import InfoTooltip from "./InfoTooltip";
-import { Card } from "./ui/card";
-import { LogEvent } from "../api/types/event";
-import { UserActivityLogItem } from "../api/types/suggestion";
-import { InstructorLogResponse } from "../api/classes";
-import CustomSelect from "./CustomSelect";
+import { parseISODate } from "@/utils/timeConverter";
+import InfoTooltip from "@/components/InfoTooltip";
+import { Card } from "@/components/ui/card";
+import { LogEvent } from "@/api/types/event";
+import { UserActivityLogItem } from "@/api/types/suggestion";
+import { InstructorLogResponse } from "@/api/classes";
+import CustomSelect from "@/components/CustomSelect";
 
 enum TimeInterval {
   DAY = "Day",
@@ -22,7 +22,7 @@ enum TimeInterval {
  * @param {UserActivityLogItem[]} props.activities - The user activity log items to be displayed in the chart.
  * @returns
  */
-export const StackedBarChart = ({
+export const AccuracyDistributionBarChart = ({
   title = "Correct vs Incorrect Over Time",
   activities,
 }: {
@@ -267,4 +267,4 @@ export const StackedBarChart = ({
   );
 };
 
-export default StackedBarChart;
+export default AccuracyDistributionBarChart;

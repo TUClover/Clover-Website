@@ -12,11 +12,13 @@ import { useInstructorClasses } from "@/hooks/useInstructorClasses";
 import { useState } from "react";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";
 import StatCard from "@/components/StatCard";
-import PieChart from "@/components/PieChart";
-import LineChart from "@/components/LineChart";
-import StackedBarChart from "@/components/StackedBarChart";
+import AccuracyPieChart from "@/pages/dashboard/ui/components/AccuracyPieChart";
+import AccuracyDistributionBarChart from "@/pages/dashboard/ui/components/AccuracyDistributionBarChart";
 import NoData from "@/components/NoData";
 import Loading from "@/components/Loading";
+import DecisionLineChart from "@/pages/dashboard/ui/components/DecisionLineChart";
+import ResponseTimeBarChart from "@/pages/dashboard/ui/components/ResponseTimeBarChart";
+import AccuracyTimeLineChart from "@/pages/dashboard/ui/components/AccuracyTimeLineChart";
 
 const InstructorStatsView = () => {
   const { userData } = useUser();
@@ -84,7 +86,7 @@ const InstructorStatsView = () => {
   return (
     <div className="space-y-8">
       <div className="col-span-2 flex items-center justify-end gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-end w-full">
           <Select
             value={selectedMode as string}
             onValueChange={(value: ActiveUserMode) => setSelectedMode(value)}
@@ -147,22 +149,30 @@ const InstructorStatsView = () => {
 
           {/* Charts Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-            <PieChart
+            <AccuracyPieChart
               progressData={progressData}
               dataMode={dataMode}
               onDataModeChange={setDataMode}
             />
-            <LineChart
+            <DecisionLineChart
               activities={
                 selectedClassId === "all" ? allActivity : classActivity
               }
             />
           </div>
 
-          {/* Stacked Bar Graph */}
-          <StackedBarChart
+          <AccuracyDistributionBarChart
             activities={selectedClassId === "all" ? allActivity : classActivity}
           />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <ResponseTimeBarChart
+              userActivity={allActivity}
+              title="Average Response Time"
+            />
+
+            <AccuracyTimeLineChart userActivity={allActivity} />
+          </div>
         </div>
       ) : (
         <NoData role="instructor" />

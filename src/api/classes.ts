@@ -157,7 +157,7 @@ export interface InstructorLogResponse {
   duration: number;
   userId: string;
   classId?: string;
-  createdAt: string; // ISO string from time.Time JSON serialization
+  createdAt: string;
   hasBug?: boolean;
   suggestionId?: string;
   lineSuggestionId?: string;
@@ -170,6 +170,8 @@ export interface InstructorLogResponse {
 export async function getClassActivityByInstructorId(
   instructorId: string
 ): Promise<{ data: InstructorLogResponse[]; error?: string }> {
+  console.log("Fetching class activity for instructor:", instructorId);
+
   try {
     const response = await fetch(`${LOG_ENDPOINT}/instructor/${instructorId}`, {
       method: "GET",

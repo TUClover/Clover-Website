@@ -168,7 +168,7 @@ export const SuggestionTable = ({
 
       {selectedLogItem && (
         <div
-          className="fixed inset-0 bg-black/40 z-50 flex justify-center items-center p-4"
+          className="fixed inset-0 bg-black/60 dark:bg-white/20 z-50 flex justify-center items-center p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setSelectedLogItem(null);

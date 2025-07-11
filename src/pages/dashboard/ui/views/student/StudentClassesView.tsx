@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Grid, List } from "lucide-react";
 import ClassesTable from "../../components/ClassesTable";
 
-const StudentClassesView = () => {
+const StudentClassesView = ({ description }: { description?: string }) => {
   const { userData } = useUser();
   const { allClasses, loading: userClassLoading } = useUserClasses(
     userData?.id
@@ -119,8 +119,11 @@ const StudentClassesView = () => {
   return (
     <>
       <Tabs defaultValue="carousel" className="w-full">
-        <div className="flex justify-end items-center mb-6">
-          <TabsList className="grid w-[200px] grid-cols-2">
+        <div className="flex justify-between gap-6 items-center mb-6">
+          <p className="text-sm text-muted-foreground hidden md:block">
+            {description}
+          </p>
+          <TabsList className="grid w-full md:w-[200px] grid-cols-2">
             <TabsTrigger value="carousel" className="flex items-center gap-2">
               <Grid className="h-4 w-4" />
             </TabsTrigger>

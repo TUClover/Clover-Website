@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { ActiveUserMode } from "../api/types/user";
 import { ProgressData } from "../api/types/suggestion";
 import { getEventsForMode } from "../api/types/event";
@@ -6,6 +5,9 @@ import {
   getClassActivityByInstructorId,
   InstructorLogResponse,
 } from "../api/classes";
+import { useQuery } from "@tanstack/react-query";
+import QUERY_INTERVALS from "@/constants/queryIntervals";
+import { useMemo } from "react";
 
 /**
  * Custom hook to fetch and manage class activity logs.
@@ -14,95 +16,75 @@ import {
  * @param selectedClassId - The ID of the selected class to filter activity logs by.
  * @returns An object containing the following properties:
  */
+
 export const useClassActivity = (
-  instructorId: string,
-  selectedClassId: string | null,
+  instructorId?: string | null,
+  selectedClassId: string | null = null,
   mode?: ActiveUserMode | null
 ) => {
-  const [allActivity, setAllActivity] = useState<InstructorLogResponse[]>([]);
-  const [classActivity, setClassActivity] = useState<InstructorLogResponse[]>(
-    []
-  );
-  const [progressData, setProgressData] = useState<ProgressData>({
-    totalAccepted: 0,
-    totalRejected: 0,
-    totalInteractions: 0,
-    correctSuggestions: 0,
-    accuracyPercentage: 0,
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!instructorId) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchInstructorActivity = async () => {
-      try {
-        setError(null);
-        setLoading(true);
-
-        const { data, error } =
-          await getClassActivityByInstructorId(instructorId);
-
-        if (error) {
-          throw new Error(error);
-        }
-
-        const activityData = data || [];
-        console.log("Fetched instructor activity:", data.length);
-
-        setAllActivity(activityData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error");
-      } finally {
-        setLoading(false);
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["classActivity", instructorId],
+    queryFn: async () => {
+      if (!instructorId) {
+        return [];
       }
-    };
 
-    fetchInstructorActivity();
-  }, [instructorId]);
+      const { data, error } =
+        await getClassActivityByInstructorId(instructorId);
+      if (error || !data) throw new Error(error);
 
-  useEffect(() => {
-    if (!mode) return;
+      return data as InstructorLogResponse[];
+    },
+    enabled: !!instructorId,
+    staleTime: QUERY_INTERVALS.staleTime,
+    gcTime: QUERY_INTERVALS.gcTime,
+    retry: QUERY_INTERVALS.retry,
+    retryDelay: 500,
+    refetchOnWindowFocus: false,
+  });
 
-    const activeMode = mode as ActiveUserMode;
-    const events = getEventsForMode(activeMode);
+  const filteredClassActivity = useMemo(() => {
+    if (!data || !data.length) return [];
 
-    const filteredByMode = allActivity.filter(
-      (log) => log.event === events?.accept || log.event === events?.reject
-    );
+    let filtered = [...data];
 
-    // Then filter by selected class
-    let filteredByClass: InstructorLogResponse[];
-    if (selectedClassId && selectedClassId !== "all") {
-      // Filter to specific class
-      filteredByClass = filteredByMode.filter(
-        (log) => log.classId === selectedClassId
+    if (mode) {
+      const events = getEventsForMode(mode as ActiveUserMode);
+      filtered = filtered.filter(
+        (log) => log.event === events?.accept || log.event === events?.reject
       );
-    } else {
-      // Show all classes
-      filteredByClass = filteredByMode;
     }
 
-    setClassActivity(filteredByClass);
+    if (selectedClassId === "non-class") {
+      filtered = filtered.filter((activity) => !activity.classId);
+    } else if (selectedClassId && selectedClassId !== "all") {
+      filtered = filtered.filter(
+        (activity) => activity.classId === selectedClassId
+      );
+    }
 
-    const progress = calculateProgressFromInstructorLogs(
-      filteredByClass,
-      activeMode
+    return filtered;
+  }, [data, selectedClassId, mode]);
+
+  const progressData = useMemo(() => {
+    if (!filteredClassActivity.length || !mode) {
+      return getEmptyProgressData();
+    }
+
+    return calculateProgressFromInstructorLogs(
+      filteredClassActivity,
+      mode as ActiveUserMode
     );
-    setProgressData(progress);
-  }, [allActivity, selectedClassId, mode]);
+  }, [filteredClassActivity, mode]);
 
   return {
-    allActivity,
-    classActivity,
+    allActivity: data || [],
+    classActivity: filteredClassActivity,
     progressData,
-    loading,
-    error,
-    isEmpty: !loading && classActivity.length === 0,
+    loading: isLoading,
+    error: error?.message || null,
+    refetch,
+    isEmpty: !isLoading && filteredClassActivity.length === 0,
   };
 };
 
@@ -132,3 +114,11 @@ function calculateProgressFromInstructorLogs(
     accuracyPercentage,
   };
 }
+
+const getEmptyProgressData = (): ProgressData => ({
+  totalAccepted: 0,
+  totalRejected: 0,
+  totalInteractions: 0,
+  correctSuggestions: 0,
+  accuracyPercentage: 0,
+});

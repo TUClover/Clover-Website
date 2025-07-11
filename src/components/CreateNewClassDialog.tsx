@@ -61,7 +61,7 @@ export const CreateNewClassDialog = () => {
     const newClass: ClassData = {
       classTitle: form.getValues("classTitle"),
       classCode: form.getValues("classCode"),
-      instructorId: userData?.id,
+      instructorId: userData?.id || "",
       classHexColor: form.getValues("classHexColor"),
       classImageCover: null,
       classDescription: form.getValues("classDescription") || "",

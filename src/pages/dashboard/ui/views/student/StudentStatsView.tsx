@@ -1,8 +1,8 @@
 import { Chart, registerables } from "chart.js";
-import LineChart from "@/components/LineChart";
+import DecisionLineChart from "@/pages/dashboard/ui/components/DecisionLineChart";
 import StatCard from "@/components/StatCard";
-import StackedBarChart from "@/components/StackedBarChart";
-import PieChart from "@/components/PieChart";
+import AccuracyDistributionBarChart from "@/pages/dashboard/ui/components/AccuracyDistributionBarChart";
+import AccuracyPieChart from "@/pages/dashboard/ui/components/AccuracyPieChart";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import NoData from "@/components/NoData";
@@ -10,12 +10,10 @@ import { useState } from "react";
 import { useUser } from "@/context/UserContext";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";
 import Loading from "@/components/Loading";
-import {
-  AccuracyOverTime,
-  LearningProgress,
-  ResponseTimeAnalysis,
-} from "@/components/Charts";
 import { ClassData } from "@/api/types/user";
+import LearningProgressChart from "@/pages/dashboard/ui/components/LearningProgressChart";
+import AccuracyTimeLineChart from "@/pages/dashboard/ui/components/AccuracyTimeLineChart";
+import ResponseTimeBarChart from "@/pages/dashboard/ui/components/ResponseTimeBarChart";
 
 Chart.register(...registerables);
 
@@ -24,7 +22,7 @@ Chart.register(...registerables);
  * @param userData - The user data to display in the dashboard.
  * @returns StudentStatsView component that displays user activity and progress.
  */
-const StudentStatsView = () => {
+const StudentStatsView = ({ description }: { description?: string }) => {
   const { userData } = useUser();
 
   const {
@@ -89,12 +87,17 @@ const StudentStatsView = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-end">
-        <ClassesDropdownMenu
-          classes={allClassOptions as ClassData[]}
-          onClassSelect={handleClassSelect}
-          selectedId={selectedClassId}
-        />
+      <div className="flex w-full justify-between gap-6 items-center">
+        <p className="text-sm text-muted-foreground hidden md:block">
+          {description}
+        </p>
+        <div className="w-full md:w-80">
+          <ClassesDropdownMenu
+            classes={allClassOptions as ClassData[]}
+            onClassSelect={handleClassSelect}
+            selectedId={selectedClassId}
+          />
+        </div>
       </div>
       {progressData.totalInteractions === 0 ? (
         <NoData role="student" />
@@ -119,29 +122,27 @@ const StudentStatsView = () => {
             />
           </div>
 
-          {/* Charts Row */}
           <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <PieChart
+            <AccuracyPieChart
               progressData={progressData}
               dataMode={dataMode}
               onDataModeChange={setDataMode}
             />
-            <LineChart activities={userActivity} />
+            <DecisionLineChart activities={userActivity} />
           </div>
 
-          {/*Stacked Bar Graph*/}
-          <StackedBarChart activities={userActivity} />
+          <AccuracyDistributionBarChart activities={userActivity} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <ResponseTimeAnalysis
+            <ResponseTimeBarChart
               userActivity={userActivity}
               title="Average Response Time"
             />
 
-            <AccuracyOverTime userActivity={userActivity} />
+            <AccuracyTimeLineChart userActivity={userActivity} />
           </div>
 
-          <LearningProgress
+          <LearningProgressChart
             userActivity={userActivity}
             windowSize={20}
             title="Learning Progress"

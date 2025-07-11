@@ -1,8 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import MiniPieChart from "./MiniPieChart";
-import { calculateProgress } from "../utils/calculateProgress";
-import { StudentStatus } from "../api/types/user";
-import { supabase } from "../supabaseClient";
+import { ActiveUserMode, StudentStatus } from "../api/types/user";
 import PaginatedTable from "./PaginatedTable";
 import { Input } from "./ui/input";
 import {
@@ -14,29 +12,241 @@ import {
 } from "./ui/select";
 import StudentDashboardCard from "./StudentDashboardCard";
 import { UserActivityLogItem } from "../api/types/suggestion";
-import { InstructorLogResponse } from "../api/classes";
+import { useStudentData } from "@/hooks/useUserData";
+import { Badge } from "./ui/badge";
 
 interface StudentClassData {
+  userId: string;
   fullName?: string;
+  classId?: string;
   classTitle: string;
   studentStatus?: StudentStatus;
   totalAccepted: number;
   correctSuggestions: number;
   percentageCorrect: number;
   lastActivity: string;
+  mode: ActiveUserMode; // Always specific mode, never mixed
   logs?: UserActivityLogItem[];
 }
 
-/**
- * A row in the student data table.
- * It displays the student's information and allows for interaction.
- * @param param0 - The props for the StudentRow component.
- * @param {StudentClassData} param0.student - The student data to be displayed.
- * @param {number} param0.index - The index of the student in the list.
- * @param {boolean} [param0.isLoading] - Whether the row is in a loading state.
- * @param {function} param0.onClick - The function to call when the row is clicked.
- * @returns {JSX.Element} - The rendered row element.
- */
+interface StudentDataTableProps {
+  instructorId: string;
+}
+
+export const StudentDataTable = ({ instructorId }: StudentDataTableProps) => {
+  const [selectedStudent, setSelectedStudent] =
+    useState<StudentClassData | null>(null);
+  const [nameFilter, setNameFilter] = useState("");
+  const [classFilter, setClassFilter] = useState<string>("all");
+  const [modeFilter, setModeFilter] = useState<ActiveUserMode | "all">("all");
+
+  // Use the custom hook to fetch student data
+  const { students, classOptions, isLoading, error } = useStudentData({
+    instructorId,
+    classFilter,
+    modeFilter,
+  });
+
+  const filteredStudents = useMemo(() => {
+    return students.filter((student) => {
+      const matchName = student
+        .fullName!.toLowerCase()
+        .includes(nameFilter.toLowerCase());
+
+      const matchClass =
+        classFilter === "all" || student.classId === classFilter;
+
+      return matchName && matchClass;
+    });
+  }, [students, nameFilter, classFilter]);
+
+  const handleRowClick = (student: StudentClassData) => {
+    setSelectedStudent(student);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedStudent(null);
+  };
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <div className="text-red-500 text-center py-8">
+          Error loading student data: {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <StudentFilters
+          nameFilter={nameFilter}
+          setNameFilter={setNameFilter}
+          modeFilter={modeFilter}
+          setModeFilter={setModeFilter}
+          classFilter={classFilter}
+          setClassFilter={setClassFilter}
+          classOptions={[]}
+        />
+
+        <table className="w-full text-sm text-left text-text">
+          <thead>
+            <tr className="border-b border-gray-900 dark:border-gray-100 font-semibold">
+              <th className="p-2 font-bold w-4">No.</th>
+              <th className="p-2">Class</th>
+              <th className="p-2">Name</th>
+              <th className="p-2">Accuracy</th>
+              <th className="p-2 w-32">Status</th>
+              <th className="p-2 w-24">Mode</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-400 dark:divide-gray-100">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <StudentRow
+                key={`loading-${index}`}
+                student={{
+                  userId: "",
+                  classTitle: "",
+                  totalAccepted: 0,
+                  correctSuggestions: 0,
+                  percentageCorrect: 0,
+                  lastActivity: new Date().toISOString(),
+                  mode: "LINE_BY_LINE",
+                }}
+                index={index}
+                isLoading={true}
+                onClick={() => {}}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-2 my-4">
+        <StudentFilters
+          nameFilter={nameFilter}
+          setNameFilter={setNameFilter}
+          modeFilter={modeFilter}
+          setModeFilter={setModeFilter}
+          classFilter={classFilter}
+          setClassFilter={setClassFilter}
+          classOptions={classOptions}
+        />
+
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {filteredStudents.length}{" "}
+          {filteredStudents.length === 1 ? "student" : "students"} found
+        </p>
+      </div>
+
+      <PaginatedTable
+        data={filteredStudents}
+        renderTable={(currentItems, startIndex) => (
+          <table className="w-full text-sm text-left text-text">
+            <thead>
+              <tr className="border-b border-gray-900 dark:border-gray-100 font-semibold">
+                <th className="p-2 w-4">No.</th>
+                <th className="p-2">Class</th>
+                <th className="p-2">Name</th>
+                <th className="p-2">Accuracy</th>
+                <th className="p-2 w-32">Status</th>
+                <th className="p-2 w-24">Mode</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-400 dark:divide-gray-100">
+              {currentItems.map((student, index) => (
+                <StudentRow
+                  key={`${student.userId}-${student.classId}-${index}`}
+                  student={student}
+                  index={startIndex + index}
+                  onClick={handleRowClick}
+                />
+              ))}
+            </tbody>
+          </table>
+        )}
+      />
+
+      {selectedStudent && (
+        <StudentDashboardCard
+          student={selectedStudent}
+          onClose={handleCloseModal}
+        />
+      )}
+    </div>
+  );
+};
+
+// Updated StudentFilters component
+interface StudentFiltersProps {
+  nameFilter: string;
+  setNameFilter: (value: string) => void;
+  modeFilter: ActiveUserMode | "all";
+  setModeFilter: (value: ActiveUserMode | "all") => void;
+  classFilter: string;
+  setClassFilter: (value: string) => void;
+  classOptions: Array<{ id: string; title: string }>;
+}
+
+export function StudentFilters({
+  nameFilter,
+  setNameFilter,
+  modeFilter,
+  setModeFilter,
+  classFilter,
+  setClassFilter,
+  classOptions,
+}: StudentFiltersProps) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <Input
+        type="text"
+        placeholder="Filter by name"
+        className="border-b-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0"
+        value={nameFilter}
+        onChange={(e) => setNameFilter(e.target.value)}
+      />
+
+      <Select value={classFilter} onValueChange={setClassFilter}>
+        <SelectTrigger className="border-b-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0">
+          <SelectValue placeholder="Select class" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Classes</SelectItem>
+          {classOptions.map((classOption) => (
+            <SelectItem key={classOption.id} value={classOption.id}>
+              {classOption.title}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={String(modeFilter)}
+        onValueChange={(value) =>
+          setModeFilter(value as ActiveUserMode | "all")
+        }
+      >
+        <SelectTrigger className="border-b-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0">
+          <SelectValue placeholder="Select mode" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Modes</SelectItem>
+          <SelectItem value="LINE_BY_LINE">Line by Line</SelectItem>
+          <SelectItem value="CODE_BLOCK">Code Block</SelectItem>
+          <SelectItem value="CODE_SELECTION">Code Selection</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 export const StudentRow = ({
   student,
   index,
@@ -48,6 +258,14 @@ export const StudentRow = ({
   isLoading?: boolean;
   onClick: (student: StudentClassData) => void;
 }) => {
+  const isOnline = () => {
+    const now = new Date();
+    const lastActivity = new Date(student.lastActivity);
+    const diffInMinutes =
+      (now.getTime() - lastActivity.getTime()) / (1000 * 60);
+    return diffInMinutes <= 5;
+  };
+
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
     const datePart = date.toLocaleString("en-US", {
@@ -71,6 +289,40 @@ export const StudentRow = ({
     );
   };
 
+  const getOfflineStatus = () => (
+    <div className="flex items-center gap-2">
+      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+      {formatTimestamp(student.lastActivity)}
+    </div>
+  );
+
+  const getModeDisplay = (mode: ActiveUserMode) => {
+    switch (mode) {
+      case "LINE_BY_LINE":
+        return (
+          <Badge className="text-xs bg-blue-700 px-2 py-1 rounded">Line</Badge>
+        );
+      case "CODE_BLOCK":
+        return (
+          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+            Block
+          </span>
+        );
+      case "CODE_SELECTION":
+        return (
+          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
+            Selection
+          </span>
+        );
+      default:
+        return (
+          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+            Unknown
+          </span>
+        );
+    }
+  };
+
   if (isLoading) {
     return (
       <tr>
@@ -84,15 +336,15 @@ export const StudentRow = ({
           <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-3/4"></div>
         </td>
         <td className="p-2">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-1/2"></div>
-        </td>
-        <td className="p-2">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
             <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-8"></div>
           </div>
         </td>
-        <td className="p-2 w-40">
+        <td className="p-2 w-32">
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+        </td>
+        <td className="p-2 w-24">
           <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
         </td>
       </tr>
@@ -107,12 +359,6 @@ export const StudentRow = ({
       <td className="p-2">{index + 1}</td>
       <td className="p-2">{student.classTitle}</td>
       <td className="p-2">{student.fullName}</td>
-      {/* <td className="p-2">
-        <StudentStatusBadge
-          status={student.studentStatus as StudentStatus}
-          size="sm"
-        />
-      </td> */}
       <td className="p-2">
         <div className="flex flex-col items-center sm:flex-row sm:items-center gap-1">
           <MiniPieChart
@@ -124,337 +370,28 @@ export const StudentRow = ({
           </span>
         </div>
       </td>
-      <td className="p-2 w-40">{formatTimestamp(student.lastActivity)}</td>
+      <td className="p-2 w-32">
+        {isOnline() ? <GreenDot /> : getOfflineStatus()}
+      </td>
+      <td className="p-2 w-24">{getModeDisplay(student.mode)}</td>
     </tr>
-  );
-};
-
-/**
- * A table component that displays student data and allows for filtering and sorting.
- * It fetches data from Supabase and displays it in a paginated format.
- * @param param0 - The props for the StudentDataTable component.
- * @param {UserActivityLogItem[]} param0.logs - The logs to be displayed in the table.
- * @param {"all" | "class"} [param0.classFilter="all"] - The filter for the class type.
- * @returns
- */
-export type ActivityLogItem = InstructorLogResponse | UserActivityLogItem;
-
-export const StudentDataTable = ({
-  logs,
-  classFilter = "all",
-}: {
-  logs: ActivityLogItem[];
-  classFilter?: "all" | "class";
-}) => {
-  const [loading, setLoading] = useState(true);
-  const [classDataMap, setClassDataMap] = useState<
-    Record<string, { classTitle: string }>
-  >({});
-  const [selectedStudent, setSelectedStudent] =
-    useState<StudentClassData | null>(null);
-
-  const [nameFilter, setNameFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StudentStatus | "ALL">(
-    "ALL"
-  );
-
-  const [fullDataStudents, setFullDataStudents] = useState<StudentClassData[]>(
-    []
-  );
-
-  useEffect(() => {
-    const fetchClassData = async () => {
-      const uniqueClassIds = [
-        ...new Set(logs.map((log) => log.classId)),
-      ].filter(Boolean);
-
-      if (uniqueClassIds.length === 0) return;
-
-      const { data } = await supabase
-        .from("classes")
-        .select("id, class_title")
-        .in("id", uniqueClassIds);
-
-      if (data) {
-        const map = data.reduce(
-          (acc, curr) => ({
-            ...acc,
-            [curr.id]: { classTitle: curr.class_title },
-          }),
-          {}
-        );
-        setClassDataMap(map);
-      }
-    };
-
-    fetchClassData();
-  }, [logs]);
-
-  useEffect(() => {
-    const buildData = async () => {
-      setLoading(true);
-      const activityLogsMap = new Map<string, ActivityLogItem[]>();
-
-      for (const log of logs) {
-        const userId = log.userId ?? "Unknown";
-        const classId = log.classId ?? "Unknown";
-        const compositeKey =
-          classFilter === "all" ? `${userId}&${classId}` : userId;
-
-        if (!activityLogsMap.has(compositeKey)) {
-          activityLogsMap.set(compositeKey, []);
-        }
-        activityLogsMap.get(compositeKey)!.push(log);
-      }
-
-      const baseData = Array.from(activityLogsMap.entries()).map(
-        ([compositeKey, userLogs]) => {
-          const [userId, classId] =
-            classFilter === "all"
-              ? compositeKey.split("&")
-              : [compositeKey, userLogs[0]?.classId ?? "Unknown"];
-
-          const userActivityLogs = userLogs.filter(
-            (log): log is UserActivityLogItem =>
-              (log as UserActivityLogItem).event !== undefined
-          );
-          const { totalAccepted, correctSuggestions, accuracyPercentage } =
-            calculateProgress(userActivityLogs, "LINE_BY_LINE");
-
-          const lastActivity = userLogs.reduce(
-            (latest, log) =>
-              new Date(log.createdAt) > new Date(latest)
-                ? log.createdAt
-                : latest,
-            userLogs[0].createdAt
-          );
-
-          const classTitle = classDataMap[classId]?.classTitle || "Unknown";
-
-          return {
-            userId,
-            classId,
-            classTitle,
-            totalAccepted,
-            correctSuggestions,
-            percentageCorrect: Math.round(accuracyPercentage),
-            lastActivity,
-            logs: userLogs,
-          };
-        }
-      );
-
-      const additionalData = await Promise.all(
-        baseData.map(async (student) => {
-          const [userData] = await Promise.all([
-            fetchUserData(student.userId),
-            // fetchStudentStatus(student.userId, student.classId),
-          ]);
-
-          // Filter logs to only UserActivityLogItem[]
-          const userLogs = (student.logs as ActivityLogItem[]).filter(
-            (log): log is UserActivityLogItem =>
-              (log as UserActivityLogItem).event !== undefined
-          );
-
-          return {
-            ...student,
-            logs: userLogs,
-            fullName:
-              `${userData?.firstName || ""} ${userData?.lastName || ""}`.trim(),
-            // studentStatus: studentStatus,
-          };
-        })
-      );
-
-      setFullDataStudents(additionalData);
-      setLoading(false);
-    };
-
-    buildData();
-  }, [logs, classFilter, classDataMap]);
-
-  const filteredStudents = useMemo(() => {
-    return fullDataStudents.filter((s) => {
-      const matchName = s
-        .fullName!.toLowerCase()
-        .includes(nameFilter.toLowerCase());
-      const matchStatus =
-        statusFilter === "ALL" || s.studentStatus === statusFilter;
-      return matchName && matchStatus;
-    });
-  }, [fullDataStudents, nameFilter, statusFilter]);
-
-  const fetchUserData = async (userId: string) => {
-    const { data } = await supabase
-      .from("users")
-      .select("first_name, last_name")
-      .eq("id", userId)
-      .single();
-    return data
-      ? { firstName: data.first_name, lastName: data.last_name }
-      : null;
-  };
-
-  // const fetchStudentStatus = async (userId: string, classId: string) => {
-  //   const { data } = await supabase
-  //     .from("class_users")
-  //     .select("user_class_status")
-  //     .match({ student_id: userId, class_id: classId })
-  //     .single();
-  //   return data?.user_class_status ?? null;
-  // };
-
-  const handleRowClick = (student: StudentClassData) => {
-    setSelectedStudent(student);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedStudent(null);
-  };
-
-  if (loading) {
-    return (
-      <table className="w-full text-sm text-left text-text">
-        <thead>
-          <tr className="border-b border-gray-900 dark:border-gray-100 font-semibold">
-            <th className="p-2 font-bold w-4">No.</th>
-            <th className="p-2">Class</th>
-            <th className="p-2">Name</th>
-            {/* <th className="p-2">Status</th> */}
-            <th className="p-2">Accuracy</th>
-            <th className="p-2 w-40">Last Active</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-400 dark:divide-gray-100">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <StudentRow
-              key={`loading-${index}`}
-              student={{
-                classTitle: "",
-                // studentStatus: undefined,
-                totalAccepted: 0,
-                correctSuggestions: 0,
-                percentageCorrect: 0,
-                lastActivity: new Date().toISOString(),
-              }}
-              index={index}
-              isLoading={true}
-              onClick={() => {}}
-            />
-          ))}
-        </tbody>
-      </table>
-    );
-  }
-
-  return (
-    <>
-      <div className="flex items-center justify-between">
-        <StudentFilters
-          nameFilter={nameFilter}
-          setNameFilter={setNameFilter}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-        />
-
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {filteredStudents.length}{" "}
-            {filteredStudents.length == 1 ? "student" : "students"} found
-          </span>
-        </div>
-      </div>
-
-      <PaginatedTable
-        data={filteredStudents}
-        renderTable={(currentItems, startIndex) => (
-          <table className="w-full text-sm text-left text-text">
-            <thead>
-              <tr className="border-b border-gray-900 dark:border-gray-100 font-semibold">
-                <th className="p-2 w-4">No.</th>
-                <th className="p-2">Class</th>
-                <th className="p-2">Name</th>
-                {/* <th className="p-2">Status</th> */}
-                <th className="p-2">Accuracy</th>
-                <th className="p-2 w-40">Last Active</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-400 dark:divide-gray-100">
-              {currentItems.map((student, index) => (
-                <StudentRow
-                  key={index}
-                  student={student}
-                  index={startIndex + index}
-                  onClick={handleRowClick}
-                />
-              ))}
-            </tbody>
-          </table>
-        )}
-      />
-
-      {selectedStudent && (
-        <StudentDashboardCard
-          student={selectedStudent}
-          onClose={handleCloseModal}
-        />
-      )}
-    </>
   );
 };
 
 export default StudentDataTable;
 
-interface StudentFiltersProps {
-  nameFilter: string;
-  setNameFilter: (value: string) => void;
-  statusFilter: StudentStatus | "ALL";
-  setStatusFilter: (value: StudentStatus | "ALL") => void;
+interface GreenDotProps {
+  className?: string;
 }
 
-/**
- * A component that provides filters for the student data table.
- * It allows filtering by name and status.
- * @param param0 - The props for the StudentFilters component.
- * @param {string} param0.nameFilter - The current name filter value.
- * @param {function} param0.setNameFilter - The function to set the name filter value.
- * @param {StudentStatus | "ALL"} param0.statusFilter - The current status filter value.
- * @param {function} param0.setStatusFilter - The function to set the status filter value.
- * @returns {JSX.Element} - The rendered filters component.
- */
-export function StudentFilters({
-  nameFilter,
-  setNameFilter,
-  statusFilter,
-  setStatusFilter,
-}: StudentFiltersProps) {
+export const GreenDot = ({ className = "" }: GreenDotProps) => {
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 my-4">
-      <Input
-        type="text"
-        placeholder="Filter by name"
-        className="w-64 border-b-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0"
-        value={nameFilter}
-        onChange={(e) => setNameFilter(e.target.value)}
-      />
-
-      <Select
-        value={statusFilter}
-        onValueChange={(value) =>
-          setStatusFilter(value as StudentStatus | "ALL")
-        }
-      >
-        <SelectTrigger className="w-64 sm:w-32 border-b-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0">
-          <SelectValue placeholder="Select status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="ALL">All</SelectItem>
-          <SelectItem value={StudentStatus.ACTIVE}>Active</SelectItem>
-          <SelectItem value={StudentStatus.SUSPENDED}>Suspended</SelectItem>
-          <SelectItem value={StudentStatus.LOCKED}>Locked</SelectItem>
-        </SelectContent>
-      </Select>
+    <div className={`flex items-center gap-2 ${className}`}>
+      <div className="relative">
+        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+        <div className="absolute inset-0 w-2 h-2 bg-gray-700 dark:bg-white rounded-full animate-ping opacity-75"></div>
+      </div>
+      <span className="text-xs text-green-600 font-medium">Online</span>
     </div>
   );
-}
+};

@@ -1,16 +1,16 @@
 import { Pie } from "react-chartjs-2";
 import { useEffect, useState } from "react";
-import InfoTooltip from "./InfoTooltip";
-import { Card } from "./ui/card";
-import { ProgressData } from "../api/types/suggestion";
-import { InstructorLogResponse } from "../api/classes";
-import { ActiveUserMode } from "../api/types/user";
-import { getEventsForMode } from "../api/types/event";
-import CustomSelect from "./CustomSelect";
+import InfoTooltip from "../../../../components/InfoTooltip";
+import { Card } from "../../../../components/ui/card";
+import { ProgressData } from "../../../../api/types/suggestion";
+import { InstructorLogResponse } from "../../../../api/classes";
+import { ActiveUserMode } from "../../../../api/types/user";
+import { getEventsForMode } from "../../../../api/types/event";
+import CustomSelect from "../../../../components/CustomSelect";
 
 type DataMode = "total" | "accepted" | "rejected";
 
-interface PieChartProps {
+interface AccuracyPieChartProps {
   title?: string;
   progressData?: ProgressData;
   activities?: InstructorLogResponse[];
@@ -26,14 +26,14 @@ interface PieChartProps {
  * @param {string} props.title - The title of the chart.
  * @param {ProgressData} props.progressData - The progress data for the chart.
  */
-export const PieChart = ({
+export const AccuracyPieChart = ({
   title = "Correct vs Incorrect",
   progressData,
   activities,
   dataMode,
   onDataModeChange,
   mode,
-}: PieChartProps) => {
+}: AccuracyPieChartProps) => {
   const [textColor, setTextColor] = useState("#000000");
 
   const getChartData = () => {
@@ -220,4 +220,4 @@ export const PieChart = ({
   );
 };
 
-export default PieChart;
+export default AccuracyPieChart;

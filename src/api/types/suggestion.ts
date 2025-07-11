@@ -62,17 +62,22 @@ interface BaseLogResponse {
   hasBug?: boolean;
 }
 
-interface BlockSuggestionLogResponse extends BaseLogResponse {
+export interface BlockSuggestionLogResponse extends BaseLogResponse {
   suggestionId: string;
 }
 
-interface LineSuggestionLogResponse extends BaseLogResponse {
+export interface LineSuggestionLogResponse extends BaseLogResponse {
   lineSuggestionId: string;
 }
 
-interface SelectionSuggestionLogResponse extends BaseLogResponse {
+export interface SelectionSuggestionLogResponse extends BaseLogResponse {
   selectionSuggestionItemId: string;
 }
+
+export type UserActivityLogItem =
+  | BlockSuggestionLogResponse
+  | LineSuggestionLogResponse
+  | SelectionSuggestionLogResponse;
 
 export type LogResponse<T extends ActiveUserMode> = T extends "CODE_BLOCK"
   ? BlockSuggestionLogResponse[]
@@ -81,11 +86,6 @@ export type LogResponse<T extends ActiveUserMode> = T extends "CODE_BLOCK"
     : T extends "CODE_SELECTION"
       ? SelectionSuggestionLogResponse[]
       : never;
-
-export type UserActivityLogItem =
-  | BlockSuggestionLogResponse
-  | LineSuggestionLogResponse
-  | SelectionSuggestionLogResponse;
 
 export function getSuggestionIdByMode(
   logItem: UserActivityLogItem,

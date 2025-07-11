@@ -33,10 +33,7 @@ export const useInstructorClasses = (userId?: string | null) => {
       {
         id: "all",
         classTitle: "All Classes",
-        classCode: "",
         classHexColor: "#e5e5e5",
-        classDescription: "All class info",
-        students: [],
       },
       ...allClasses.filter(
         (classItem) => classItem?.id && classItem?.classTitle
@@ -50,7 +47,6 @@ export const useInstructorClasses = (userId?: string | null) => {
   }, []);
 
   const selectedClass = useMemo(() => {
-    // Only return actual class data for real classes (not "all")
     if (selectedClassId && selectedClassId !== "all") {
       return allClasses.find((c) => c.id === selectedClassId) || null;
     }
@@ -68,102 +64,6 @@ export const useInstructorClasses = (userId?: string | null) => {
     refetch,
   };
 };
-
-/**
- * Custom hook to fetch instructor classes based on user ID or authenticated user.
- * @param {string} userID - Optional user ID to fetch specific instructor classes.
- * @returns {Object} - Contains classes, loading state, error message, and selected class information.
- */
-// export const useInstructorClasses = (userID?: string | null) => {
-//   const { user } = useAuth();
-//   const [classes, setClasses] = useState<ClassData[]>([]);
-//   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
-//   const [selectedClassType, setSelectedClassType] = useState<
-//     "all" | "class" | "non-class"
-//   >("all");
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState<string | null>(null);
-
-//   const allClass: ClassData = {
-//     id: "all",
-//     classTitle: "All",
-//     classCode: "",
-//     classHexColor: "#e5e5e5",
-//     classDescription: "All class info",
-//     classImageCover: "",
-//     students: [],
-//   };
-
-//   const modifiedClasses = useMemo(() => [allClass, ...classes], [classes]);
-
-//   const selectedClass = useMemo(
-//     () => modifiedClasses.find((c) => c.id === selectedClassId),
-//     [modifiedClasses, selectedClassId]
-//   );
-
-//   useEffect(() => {
-//     const currentUserId = userID ?? user?.id;
-//     if (!currentUserId) return;
-
-//     const fetchClasses = async () => {
-//       if (!user?.id) return;
-
-//       setLoading(true);
-//       setError(null);
-
-//       try {
-//         const { data, error } = await getClassesByInstructor(currentUserId);
-
-//         if (error) {
-//           setError(error);
-//           return;
-//         }
-
-//         setClasses(data || []);
-//       } catch (err) {
-//         setError(err instanceof Error ? err.message : "Unknown error occurred");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchClasses();
-//   }, [userID, user?.id]);
-
-//   const handleClassSelect = useCallback(
-//     (selection: { id: string | null; type: "all" | "class" | "non-class" }) => {
-//       setSelectedClassId(
-//         selection.type === "class" ? selection.id : selection.type
-//       );
-//       setSelectedClassType(selection.type);
-//     },
-//     []
-//   );
-
-//   return useMemo(
-//     () => ({
-//       classes: modifiedClasses,
-//       originalClasses: classes,
-//       selectedClassId:
-//         selectedClassType === "class" ? selectedClassId : selectedClassType,
-//       selectedClassType,
-//       loading,
-//       error,
-//       handleClassSelect,
-//       getSelectedClass: () => selectedClass,
-//     }),
-//     [
-//       modifiedClasses,
-//       classes,
-//       selectedClassId,
-//       selectedClassType,
-//       loading,
-//       error,
-//       handleClassSelect,
-//       selectedClass,
-//     ]
-//   );
-// };
 
 /**
  * Custom hook to fetch students enrolled and waitlisted in a class.

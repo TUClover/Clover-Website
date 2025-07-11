@@ -10,7 +10,11 @@ import { ClassData, StudentStatus, User } from "@/api/types/user";
 import { useState } from "react";
 import ClassDetails from "@/components/ClassDetails";
 
-const StudentRegisterClassView = () => {
+const StudentRegisterClassView = ({
+  description,
+}: {
+  description?: string;
+}) => {
   const { userData } = useUser();
 
   const [selectedClass, setSelectedClass] = useState<{
@@ -168,13 +172,10 @@ const StudentRegisterClassView = () => {
 
   return (
     <div className="w-full space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Browse Classes</h1>
-          <p className="text-muted-foreground">
-            Discover and register for available classes
-          </p>
-        </div>
+      <div className="flex justify-end md:justify-between items-center gap-6">
+        <p className="text-sm text-muted-foreground hidden md:block">
+          {description}
+        </p>
         <RegisterClassDialog />
       </div>
 
