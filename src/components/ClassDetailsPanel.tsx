@@ -53,18 +53,19 @@ export const ClassDetailsPanel: React.FC<{
           {/* Student List */}
           <div>
             <h3 className="text-2xl font-semibold mb-3">Students</h3>
-            {singleClass.students.length > 0 ? (
+            {singleClass.studentCount && singleClass.studentCount > 0 ? (
               <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                {singleClass.students.map((student) => (
-                  <li key={student.id} className="py-2">
-                    <span className="font-medium">
-                      {student.firstName} {student.lastName}
-                    </span>{" "}
-                    <span className="text-gray-500 text-sm">
-                      ({student.email})
-                    </span>
-                  </li>
-                ))}
+                {singleClass.students &&
+                  singleClass.students.map((student) => (
+                    <li key={student.id} className="py-2">
+                      <span className="font-medium">
+                        {student.firstName} {student.lastName}
+                      </span>{" "}
+                      <span className="text-gray-500 text-sm">
+                        ({student.email})
+                      </span>
+                    </li>
+                  ))}
               </ul>
             ) : (
               <p className="text-gray-500">No students enrolled.</p>
@@ -102,7 +103,7 @@ const ClassSettingsSection: React.FC<{
 
   return (
     <div className="bg-gray-100 dark:bg-gray-900 rounded shadow-sm p-6 mb-4">
-      <UserSettings user={allStudents} />
+      <UserSettings user={allStudents as User[]} />
     </div>
   );
 };

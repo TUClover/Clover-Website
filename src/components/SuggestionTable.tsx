@@ -22,6 +22,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { getSuggestionByModeAndId } from "../api/suggestion";
 import Loading from "./Loading";
+import ModalContainer from "./ModalContainer";
 
 interface SuggestionTableProps {
   logItems: UserActivityLogItem[];
@@ -167,13 +168,9 @@ export const SuggestionTable = ({
       </div>
 
       {selectedLogItem && (
-        <div
-          className="fixed inset-0 bg-black/60 dark:bg-white/20 z-50 flex justify-center items-center p-4"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setSelectedLogItem(null);
-            }
-          }}
+        <ModalContainer
+          isOpen={!!selectedLogItem}
+          onClose={() => setSelectedLogItem(null)}
         >
           <Card className="p-6 max-w-3xl lg:max-w-5xl w-full max-h-[90vh] relative bg-white dark:bg-black border border-gray-200 dark:border-gray-900 overflow-y-auto">
             <Button
@@ -209,7 +206,7 @@ export const SuggestionTable = ({
               </p>
             )}
           </Card>
-        </div>
+        </ModalContainer>
       )}
     </>
   );

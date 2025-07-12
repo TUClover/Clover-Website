@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Card } from "./ui/card";
 import Loading from "./Loading";
 import { useUser } from "@/context/UserContext";
+import ModalContainer from "./ModalContainer";
 
 /**
  * ClassDetails component displays the details of a class, including the instructor and enrolled students.
@@ -67,10 +68,7 @@ export const ClassDetails = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
-      onClick={onClose}
-    >
+    <ModalContainer isOpen={true} onClose={onClose}>
       {loading ? (
         <Loading size="lg" showText={false} />
       ) : (
@@ -184,7 +182,7 @@ export const ClassDetails = ({
           </div>
         </Card>
       )}
-    </div>
+    </ModalContainer>
   );
 };
 

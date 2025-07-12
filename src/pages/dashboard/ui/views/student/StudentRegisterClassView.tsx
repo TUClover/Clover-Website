@@ -69,10 +69,10 @@ const StudentRegisterClassView = ({
 
   const newClasses = availableClasses.filter(
     (cls) =>
-      new Date(cls.createdAt).toDateString() === new Date().toDateString()
+      new Date(cls.createdAt!).toDateString() === new Date().toDateString()
   );
 
-  const hotClasses = classes.filter((cls) => cls.studentCount > 0);
+  const hotClasses = classes.filter((cls) => cls.studentCount! > 0);
 
   const renderNewClasses = () => {
     if (newClasses.length === 0) return null;

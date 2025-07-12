@@ -1,10 +1,10 @@
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import PingDot from "./PingDot";
-import { StudentStatus, ClassData, UserClassInfo } from "../api/types/user";
+import { StudentStatus, ClassData } from "../api/types/user";
 import { Card } from "./ui/card";
 
 type ClassCardProps = {
-  classInfo: ClassData | UserClassInfo;
+  classInfo: ClassData;
   onSelect: (userClass: ClassData, studentStatus?: StudentStatus) => void;
   isInstructor?: boolean;
 };
@@ -23,20 +23,6 @@ export const ClassInfoCard = ({
   onSelect,
   isInstructor = false,
 }: ClassCardProps) => {
-  const isUserClassInfo = (
-    info: ClassData | UserClassInfo
-  ): info is UserClassInfo => {
-    return (info as UserClassInfo).userClass !== undefined;
-  };
-
-  const userClass = isUserClassInfo(classInfo)
-    ? classInfo.userClass
-    : classInfo;
-
-  const studentStatus = isUserClassInfo(classInfo)
-    ? classInfo.studentStatus
-    : undefined;
-
   const {
     classTitle,
     classDescription,
@@ -44,7 +30,7 @@ export const ClassInfoCard = ({
     classHexColor,
     instructorName,
     id,
-  } = userClass;
+  } = classInfo;
 
   const { waitlistedStudents } = useClassStudentsInfo(id as string);
 
@@ -52,7 +38,7 @@ export const ClassInfoCard = ({
     <div
       className="group hover:no-underline flex"
       onClick={() => {
-        onSelect(userClass, studentStatus);
+        onSelect(classInfo);
       }}
     >
       <Card className="pt-0 rounded-xl overflow-hidden shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-95 border border-border flex flex-col flex-1">

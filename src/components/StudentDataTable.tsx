@@ -14,8 +14,16 @@ import StudentDashboardCard from "./StudentDashboardCard";
 import { UserActivityLogItem } from "../api/types/suggestion";
 import { useStudentData } from "@/hooks/useUserData";
 import { Badge } from "./ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 
-interface StudentClassData {
+export interface StudentClassData {
   userId: string;
   fullName?: string;
   classId?: string;
@@ -91,18 +99,18 @@ export const StudentDataTable = ({ instructorId }: StudentDataTableProps) => {
           classOptions={[]}
         />
 
-        <table className="w-full text-sm text-left text-text">
-          <thead>
-            <tr className="border-b border-gray-900 dark:border-gray-100 font-semibold">
-              <th className="p-2 font-bold w-4">No.</th>
-              <th className="p-2">Class</th>
-              <th className="p-2">Name</th>
-              <th className="p-2">Accuracy</th>
-              <th className="p-2 w-32">Status</th>
-              <th className="p-2 w-24">Mode</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-400 dark:divide-gray-100">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[5%]">No.</TableHead>
+              <TableHead className="w-[30%]">Class</TableHead>
+              <TableHead className="w-[20%]">Name</TableHead>
+              <TableHead className="w-[15%]">Accuracy</TableHead>
+              <TableHead className="w-[20%]">Status</TableHead>
+              <TableHead className="w-[10%]">Mode</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {Array.from({ length: 5 }).map((_, index) => (
               <StudentRow
                 key={`loading-${index}`}
@@ -120,8 +128,8 @@ export const StudentDataTable = ({ instructorId }: StudentDataTableProps) => {
                 onClick={() => {}}
               />
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     );
   }
@@ -139,40 +147,43 @@ export const StudentDataTable = ({ instructorId }: StudentDataTableProps) => {
           classOptions={classOptions}
         />
 
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        {/* <p className="text-sm text-muted-foreground">
           {filteredStudents.length}{" "}
           {filteredStudents.length === 1 ? "student" : "students"} found
-        </p>
+        </p> */}
       </div>
 
       <PaginatedTable
         data={filteredStudents}
         renderTable={(currentItems, startIndex) => (
-          <table className="w-full text-sm text-left text-text">
-            <thead>
-              <tr className="border-b border-gray-900 dark:border-gray-100 font-semibold">
-                <th className="p-2 w-4">No.</th>
-                <th className="p-2">Class</th>
-                <th className="p-2">Name</th>
-                <th className="p-2">Accuracy</th>
-                <th className="p-2 w-32">Status</th>
-                <th className="p-2 w-24">Mode</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-400 dark:divide-gray-100">
-              {currentItems.map((student, index) => (
-                <StudentRow
-                  key={`${student.userId}-${student.classId}-${index}`}
-                  student={student}
-                  index={startIndex + index}
-                  onClick={handleRowClick}
-                />
-              ))}
-            </tbody>
-          </table>
+          <div className="border rounded-md shadow-sm overflow-hidden">
+            <Table className="table-fixed">
+              <TableHeader className="bg-[#f5f5f5] dark:bg-[#262626]">
+                <TableRow className="bg-muted">
+                  <TableHead className="w-[5%]">No.</TableHead>
+                  <TableHead className="w-[30%]">Class</TableHead>
+                  <TableHead className="w-[20%]">Name</TableHead>
+                  <TableHead className="w-[15%]">Accuracy</TableHead>
+                  <TableHead className="w-[20%]">Status</TableHead>
+                  <TableHead className="w-[10%] hidden sm:block">
+                    Mode
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentItems.map((student, index) => (
+                  <StudentRow
+                    key={`${student.userId}-${student.classId}-${index}`}
+                    student={student}
+                    index={startIndex + index}
+                    onClick={handleRowClick}
+                  />
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
       />
-
       {selectedStudent && (
         <StudentDashboardCard
           student={selectedStudent}
@@ -208,13 +219,12 @@ export function StudentFilters({
       <Input
         type="text"
         placeholder="Filter by name"
-        className="border-b-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0"
         value={nameFilter}
         onChange={(e) => setNameFilter(e.target.value)}
       />
 
       <Select value={classFilter} onValueChange={setClassFilter}>
-        <SelectTrigger className="border-b-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0">
+        <SelectTrigger>
           <SelectValue placeholder="Select class" />
         </SelectTrigger>
         <SelectContent>
@@ -233,7 +243,7 @@ export function StudentFilters({
           setModeFilter(value as ActiveUserMode | "all")
         }
       >
-        <SelectTrigger className="border-b-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0">
+        <SelectTrigger>
           <SelectValue placeholder="Select mode" />
         </SelectTrigger>
         <SelectContent>
@@ -282,116 +292,127 @@ export const StudentRow = ({
     return (
       <div className="flex flex-col gap-1">
         <span className="text-sm">{datePart}</span>
-        <span className="text-xs text-gray-500 dark:text-gray-400">
-          {timePart}
-        </span>
+        <span className="text-xs text-muted-foreground">{timePart}</span>
       </div>
     );
   };
-
-  const getOfflineStatus = () => (
-    <div className="flex items-center gap-2">
-      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-      {formatTimestamp(student.lastActivity)}
-    </div>
-  );
 
   const getModeDisplay = (mode: ActiveUserMode) => {
     switch (mode) {
       case "LINE_BY_LINE":
         return (
-          <Badge className="text-xs bg-blue-700 px-2 py-1 rounded">Line</Badge>
+          <Badge
+            variant="secondary"
+            className="bg-blue-900 text-blue-200 w-20 rounded-xl justify-center py-1"
+          >
+            Line
+          </Badge>
         );
       case "CODE_BLOCK":
         return (
-          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+          <Badge
+            variant="secondary"
+            className="bg-green-900 text-green-200 w-20 rounded-xl justify-center py-1"
+          >
             Block
-          </span>
+          </Badge>
         );
       case "CODE_SELECTION":
         return (
-          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
+          <Badge
+            variant="secondary"
+            className="bg-purple-900 text-purple-200 w-20 rounded-xl justify-center py-1"
+          >
             Selection
-          </span>
-        );
-      default:
-        return (
-          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-            Unknown
-          </span>
+          </Badge>
         );
     }
   };
 
   if (isLoading) {
     return (
-      <tr>
-        <td className="p-2 w-4">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-        </td>
-        <td className="p-2">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-3/4"></div>
-        </td>
-        <td className="p-2">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-3/4"></div>
-        </td>
-        <td className="p-2">
+      <TableRow>
+        <TableCell>
+          <div className="h-4 bg-muted rounded animate-pulse"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-muted rounded animate-pulse w-3/4"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-muted rounded animate-pulse w-3/4"></div>
+        </TableCell>
+        <TableCell>
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-8"></div>
+            <div className="w-10 h-10 bg-muted rounded-full animate-pulse"></div>
+            <div className="h-4 bg-muted rounded animate-pulse w-8"></div>
           </div>
-        </td>
-        <td className="p-2 w-32">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-        </td>
-        <td className="p-2 w-24">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-        </td>
-      </tr>
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-muted rounded animate-pulse"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-muted rounded animate-pulse"></div>
+        </TableCell>
+      </TableRow>
     );
   }
 
   return (
-    <tr
+    <TableRow
       onClick={() => onClick(student)}
-      className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+      className="cursor-pointer hover:bg-muted/50 transition-colors"
     >
-      <td className="p-2">{index + 1}</td>
-      <td className="p-2">{student.classTitle}</td>
-      <td className="p-2">{student.fullName}</td>
-      <td className="p-2">
+      <TableCell>{index + 1}</TableCell>
+      <TableCell>{student.classTitle}</TableCell>
+      <TableCell>{student.fullName}</TableCell>
+      <TableCell>
         <div className="flex flex-col items-center sm:flex-row sm:items-center gap-1">
           <MiniPieChart
             correct={student.correctSuggestions}
             incorrect={student.totalAccepted - student.correctSuggestions}
           />
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             ({student.correctSuggestions}/{student.totalAccepted})
           </span>
         </div>
-      </td>
-      <td className="p-2 w-32">
-        {isOnline() ? <GreenDot /> : getOfflineStatus()}
-      </td>
-      <td className="p-2 w-24">{getModeDisplay(student.mode)}</td>
-    </tr>
+      </TableCell>
+      <TableCell>
+        {isOnline() ? (
+          <GreenDot isOnline />
+        ) : (
+          <div className="flex items-center gap-3">
+            <GreenDot /> <span>{formatTimestamp(student.lastActivity)}</span>
+          </div>
+        )}
+      </TableCell>
+      <TableCell className="hidden md:table-cell">
+        {getModeDisplay(student.mode)}
+      </TableCell>
+    </TableRow>
   );
 };
 
 export default StudentDataTable;
 
 interface GreenDotProps {
+  isOnline?: boolean;
   className?: string;
 }
 
-export const GreenDot = ({ className = "" }: GreenDotProps) => {
+export const GreenDot = ({ className = "", isOnline }: GreenDotProps) => {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-3 ${className}`}>
       <div className="relative">
-        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-        <div className="absolute inset-0 w-2 h-2 bg-gray-700 dark:bg-white rounded-full animate-ping opacity-75"></div>
+        {isOnline ? (
+          <>
+            <div className="w-2 h-2 bg-green-500 rounded-full" />
+            <div className="absolute inset-0 w-2 h-2 bg-gray-700 dark:bg-white rounded-full animate-ping opacity-75" />
+            <span className="text-xs text-green-600 font-medium">Online</span>
+          </>
+        ) : (
+          <div className="w-2 h-2 bg-gray-400 rounded-full" />
+        )}
       </div>
-      <span className="text-xs text-green-600 font-medium">Online</span>
     </div>
   );
 };

@@ -19,9 +19,9 @@ import { Slider } from "./ui/slider";
 import { Input } from "./ui/input";
 
 const defaultSettings: UserSettingsType = {
-  bug_percentage: 50,
-  show_notifications: true,
-  enable_quiz: true,
+  bugPercentage: 50,
+  showNotifications: true,
+  enableQuiz: true,
   mode: UserMode.BLOCK,
 };
 
@@ -38,30 +38,30 @@ export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
   }, [user, isMulti]);
 
   const [bugPercentage, setBugPercentage] = useState(
-    initialSettings.bug_percentage
+    initialSettings.bugPercentage
   );
   const [mode, setMode] = useState(initialSettings.mode);
   const [showNotifications, setShowNotifications] = useState(
-    initialSettings.show_notifications
+    initialSettings.showNotifications
   );
-  const [enableQuiz, setEnableQuiz] = useState(initialSettings.enable_quiz);
+  const [enableQuiz, setEnableQuiz] = useState(initialSettings.enableQuiz);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">(
     "idle"
   );
 
   useEffect(() => {
-    setBugPercentage(initialSettings.bug_percentage);
-    setShowNotifications(initialSettings.show_notifications);
-    setEnableQuiz(initialSettings.enable_quiz);
+    setBugPercentage(initialSettings.bugPercentage);
+    setShowNotifications(initialSettings.showNotifications);
+    setEnableQuiz(initialSettings.enableQuiz);
     setMode(initialSettings.mode);
   }, [initialSettings]);
 
   const handleSave = async () => {
     setStatus("saving");
     const settings: UserSettingsType = {
-      bug_percentage: bugPercentage,
-      show_notifications: showNotifications,
-      enable_quiz: enableQuiz,
+      bugPercentage: bugPercentage,
+      showNotifications: showNotifications,
+      enableQuiz: enableQuiz,
       mode: mode,
     };
 

@@ -232,7 +232,7 @@ const AccuracyTimeLineChart = ({
               },
               y: {
                 beginAtZero: true,
-                max: 100,
+                max: 120,
                 ticks: {
                   color: textColor,
                   callback: function (value) {

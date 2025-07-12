@@ -1,23 +1,14 @@
 import StatCard from "./StatCard";
-import LineChart from "../pages/dashboard/ui/components/DecisionLineChart";
-import StackedBarChart from "../pages/dashboard/ui/components/AccuracyDistributionBarChart";
+import { DecisionLineChart } from "../pages/dashboard/ui/components/DecisionLineChart";
+import { AccuracyDistributionBarChart } from "../pages/dashboard/ui/components/AccuracyDistributionBarChart";
 import { X } from "lucide-react";
-import { StudentStatus } from "../api/types/user";
-import StudentStatusBadge from "./StudentStatusBadge";
 import { Card } from "./ui/card";
-import { UserActivityLogItem } from "../api/types/suggestion";
-import MiniPieChart from "./MiniPieChart";
-
-interface StudentClassData {
-  fullName?: string;
-  classTitle: string;
-  studentStatus?: StudentStatus | null;
-  totalAccepted: number;
-  correctSuggestions: number;
-  percentageCorrect: number;
-  lastActivity?: string;
-  logs?: UserActivityLogItem[];
-}
+import ModalContainer from "./ModalContainer";
+import AccuracyPieChart from "@/pages/dashboard/ui/components/AccuracyPieChart";
+import { useUserActivity } from "@/hooks/useUserActivity";
+import { useState } from "react";
+import Loading from "./Loading";
+import { StudentClassData } from "./StudentDataTable";
 
 interface StudentDashboardCardProps {
   student: StudentClassData;
@@ -36,27 +27,62 @@ export const StudentDashboardCard = ({
   student,
   onClose,
 }: StudentDashboardCardProps) => {
-  const {
-    fullName,
-    classTitle,
-    studentStatus,
-    logs,
-    totalAccepted,
-    correctSuggestions,
-    percentageCorrect,
-  } = student;
+  const { userActivity, progressData, loading } = useUserActivity(
+    student.userId,
+    student.mode,
+    student.classId
+  );
+
+  const [dataMode, setDataMode] = useState<"total" | "accepted" | "rejected">(
+    "total"
+  );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading size="lg" text="Loading your data" />
+      </div>
+    );
+  }
+
+  const getStatCardData = () => {
+    switch (dataMode) {
+      case "accepted":
+        return {
+          total: progressData.totalAccepted,
+          correct: progressData.correctSuggestions,
+          accuracy: progressData.accuracyPercentage,
+          title: "Accepted",
+        };
+      case "rejected":
+        return {
+          total: progressData.totalRejected,
+          correct: 0,
+          accuracy: 0,
+          title: "Rejected",
+        };
+      case "total":
+      default:
+        return {
+          total: progressData.totalInteractions,
+          correct: progressData.correctSuggestions,
+          accuracy:
+            progressData.totalInteractions > 0
+              ? (progressData.correctSuggestions /
+                  progressData.totalInteractions) *
+                100
+              : 0,
+          title: "Total",
+        };
+    }
+  };
+
+  const statData = getStatCardData();
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && onClose) {
-          onClose();
-        }
-      }}
-    >
+    <ModalContainer isOpen={!!student} onClose={() => onClose && onClose()}>
       <Card
-        className="overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pt-8 pb-8"
+        className="overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pt-8 pb-8 !bg-black"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -67,11 +93,12 @@ export const StudentDashboardCard = ({
             <div>
               <div className="flex items-center gap-3">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white pb-1">
-                  {fullName}
+                  {student.fullName || "Student Details"}
                 </h2>
-                {studentStatus && <StudentStatusBadge status={studentStatus} />}
               </div>
-              <p className="text-gray-600 dark:text-gray-400">{classTitle}</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                {student.classTitle}
+              </p>
             </div>
             {onClose && (
               <button
@@ -88,29 +115,37 @@ export const StudentDashboardCard = ({
         {/* Card Content */}
         <div className="px-6 space-y-6">
           {/* Metrics Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <StatCard title="Accepted" value={totalAccepted} />
-            <StatCard title="Correct" value={correctSuggestions} />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <StatCard
+              title={statData.title}
+              value={statData.total}
+              tooltipContent={`Total ${dataMode} suggestions.`}
+            />
+            <StatCard
+              title="Correct"
+              value={statData.correct}
+              tooltipContent={`Number of ${dataMode} suggestions that were correct.`}
+            />
             <StatCard
               title="Accuracy"
-              value={`${percentageCorrect.toFixed(2)}%`}
+              value={`${statData.accuracy.toFixed(1)}%`}
+              tooltipContent={`Accuracy rate for ${dataMode} suggestions.`}
             />
           </div>
 
-          {/* Charts Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <MiniPieChart
-              correct={correctSuggestions}
-              incorrect={totalAccepted - correctSuggestions}
+          <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <AccuracyPieChart
+              progressData={progressData}
+              dataMode={dataMode}
+              onDataModeChange={setDataMode}
             />
-            <LineChart activities={logs as UserActivityLogItem[]} />
+            <DecisionLineChart activities={userActivity} />
           </div>
 
-          {/* Stacked Bar Chart */}
-          <StackedBarChart activities={logs as UserActivityLogItem[]} />
+          <AccuracyDistributionBarChart activities={userActivity} />
         </div>
       </Card>
-    </div>
+    </ModalContainer>
   );
 };
 
