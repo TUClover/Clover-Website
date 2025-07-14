@@ -1,4 +1,4 @@
-import { StudentStatus, ClassData, User } from "../api/types/user";
+import { UserStatus, ClassData, User } from "../api/types/user";
 import {
   Carousel,
   CarouselContent,
@@ -9,7 +9,7 @@ import {
 import { useUserClasses } from "../hooks/useUserClasses";
 import ClassInfoCard from "../components/ClassInfoCard";
 import { useState } from "react";
-import ClassDetails from "../components/ClassDetails";
+import ClassDetails from "./ClassDetailsView";
 import RegisterClassDialog from "../components/RegisterClassDialog";
 import ProfileCard from "../components/ProfileCard";
 import Loading from "@/components/Loading";

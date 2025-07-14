@@ -20,6 +20,7 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Loading from "./components/Loading";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ClassDetailsView from "./pages/ClassDetailsView";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = (): JSX.Element => {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
+        x
         <main className="flex flex-col">
           <Routes>
             <Route element={<RootLayout />}>
@@ -58,6 +60,10 @@ const App = (): JSX.Element => {
                 <Route path="/quiz" element={<QuizPage />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route
+                  path="/classes/:classId"
+                  element={<ClassDetailsView />}
+                />
               </Route>
               {/* Public Routes */}
               <Route path="/" element={<Landing />} />

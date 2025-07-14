@@ -11,11 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { DoorOpen, Menu, Settings2, User2 } from "lucide-react";
 import { UserRole } from "../api/types/user";
 import { useUser } from "@/context/UserContext";
+import UserAvatar from "./UserAvatar";
 
 /**
  * NavBar component that appears at the top of the page.
@@ -178,19 +178,11 @@ export const DropdownAvatar = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-12 w-12 rounded-full">
-          <Avatar className="w-10 h-10">
-            {userData?.avatarUrl ? (
-              <img
-                src={userData.avatarUrl ?? ""}
-                alt={`${userData.firstName} ${userData.lastName}`}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <AvatarFallback className="bg-alpha text-white text-lg font-semibold">
-                {userData?.firstName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            )}
-          </Avatar>
+          <UserAvatar
+            firstName={userData?.firstName}
+            avatarUrl={userData?.avatarUrl}
+            size="md"
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end" forceMount>

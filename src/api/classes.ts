@@ -4,6 +4,7 @@ import {
   ClassData,
   EnrollmentStatus,
   PaginatedClassResponse,
+  UserSettings,
 } from "./types/user";
 
 /**
@@ -46,15 +47,20 @@ export const createClass = async (
 /**
  * Fetches all classes from the database for an instructor.
  * @param {string} instructorId - The ID of the instructor
- * @returns {Promise<{ data?: UserClass[]; error?: string }>} - The response from the server
+ * @param {boolean} includeStudents - Whether to include enrolled students data
+ * @returns {Promise<{ data?: ClassData[]; error?: string }>} - The response from the server
  */
 export const getClassesByInstructor = async (
-  instructorId: string
+  instructorId: string,
+  includeStudents: boolean = false
 ): Promise<{ data?: ClassData[]; error?: string }> => {
   try {
-    const response = await fetch(
-      `${CLASS_ENDPOINT}/instructor/${instructorId}`
-    );
+    const url = new URL(`${CLASS_ENDPOINT}/instructor/${instructorId}`);
+    if (includeStudents) {
+      url.searchParams.append("includeStudents", "true");
+    }
+
+    const response = await fetch(url.toString());
 
     const data = await response.json();
 
@@ -240,6 +246,7 @@ export async function getAllClasses(params?: {
   limit?: number;
   search?: string;
   userId?: string;
+  includeStudents?: boolean;
 }): Promise<{
   data?: PaginatedClassResponse;
   error?: string;
@@ -255,6 +262,7 @@ export async function getAllClasses(params?: {
     if (params?.search && params.search.trim())
       queryParams.set("search", params.search.trim());
     if (params?.userId) queryParams.set("user_id", params.userId);
+    if (params?.includeStudents) queryParams.set("includeStudents", "true");
 
     const url = `${CLASS_ENDPOINT}/${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
 
@@ -290,38 +298,36 @@ export async function getAllClasses(params?: {
   }
 }
 
-// export async function getAllClasses(): Promise<{
-//   classes?: ClassData[];
-//   error?: string;
-// }> {
-//   console.log("Fetching all classes from API...");
+export async function updateClassStudentsSettings(
+  classId: string,
+  studentIds: string[],
+  settings: UserSettings
+): Promise<{ data?: boolean; error?: string }> {
+  try {
+    const response = await fetch(
+      `${CLASS_ENDPOINT}/${classId}/students/settings`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentIds,
+          settings,
+        }),
+      }
+    );
 
-//   try {
-//     const response = await fetch(`${CLASS_ENDPOINT}/`, {
-//       method: "GET",
-//     });
+    const data = await response.json();
 
-//     const data = await response.json();
+    if (!response.ok) {
+      return {
+        error: data.error || `Failed to update settings: ${response.status}`,
+      };
+    }
 
-//     if (!response.ok) {
-//       return {
-//         error:
-//           data.error ||
-//           `Failed to get all users: ${response.status} ${response.statusText}`,
-//       };
-//     }
-
-//     if (!Array.isArray(data)) {
-//       return { error: "Invalid response: expected an array of classes" };
-//     }
-
-//     console.log("Fetched classes from API", JSON.stringify(data, null, 2));
-
-//     return { classes: data };
-//   } catch (err) {
-//     console.error(`Failed to get all classes:`, err);
-//     return {
-//       error: err instanceof Error ? err.message : "Unknown error occurred",
-//     };
-//   }
-// }
+    return { data };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}

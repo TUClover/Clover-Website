@@ -105,15 +105,15 @@ export const SuggestionTable = ({
 
   return (
     <>
-      <div className="w-full">
+      <div className="border rounded-md shadow-sm overflow-hidden">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted">
             <TableRow>
-              <TableHead className="w-16">No.</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Decision</TableHead>
-              <TableHead>Has Bug</TableHead>
-              <TableHead>Result</TableHead>
+              <TableHead className="w-16 text-center">No.</TableHead>
+              <TableHead className="w-32 text-center">Date</TableHead>
+              <TableHead className="w-32 text-center">Decision</TableHead>
+              <TableHead className="w-32 text-center">Has Bug</TableHead>
+              <TableHead className="w-32 text-center">Result</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -125,10 +125,12 @@ export const SuggestionTable = ({
               return (
                 <TableRow
                   key={logItem.id}
-                  className="cursor-pointer hover:bg-muted/50"
+                  className="cursor-pointer hover:bg-muted/50 text-center"
                   onClick={() => setSelectedLogItem(logItem)}
                 >
-                  <TableCell>{startIndex + index + 1}</TableCell>
+                  <TableCell className="py-3">
+                    {startIndex + index + 1}
+                  </TableCell>
                   <TableCell>
                     {new Date(
                       logItem.createdAt || logItem.createdAt

@@ -1,19 +1,9 @@
 import { useMemo, useState } from "react";
 import MiniPieChart from "./MiniPieChart";
-import { ActiveUserMode, StudentStatus } from "../api/types/user";
+import { ActiveUserMode, UserMode } from "../api/types/user";
 import PaginatedTable from "./PaginatedTable";
-import { Input } from "./ui/input";
-import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-} from "./ui/select";
 import StudentDashboardCard from "./StudentDashboardCard";
-import { UserActivityLogItem } from "../api/types/suggestion";
 import { useStudentData } from "@/hooks/useUserData";
-import { Badge } from "./ui/badge";
 import {
   Table,
   TableBody,
@@ -22,19 +12,27 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { InstructorLogResponse } from "@/api/classes";
+import { ProgressData } from "@/api/types/suggestion";
+import { Card, CardContent } from "./ui/card";
+import UserDataSearchFilters from "@/pages/dashboard/ui/components/UserDataSearchFilter";
+import UserInfoTableCard from "@/pages/dashboard/ui/components/UserInfoTableCard";
+import { formatActivityTimestamp, isOnline } from "@/lib/utils";
+import ModeBadge from "./ModeBadge";
 
 export interface StudentClassData {
   userId: string;
   fullName?: string;
   classId?: string;
   classTitle: string;
-  studentStatus?: StudentStatus;
   totalAccepted: number;
+  totalRejected: number;
+  totalInteractions: number;
   correctSuggestions: number;
-  percentageCorrect: number;
+  accuracyPercentage: number;
   lastActivity: string;
-  mode: ActiveUserMode; // Always specific mode, never mixed
-  logs?: UserActivityLogItem[];
+  mode: ActiveUserMode;
+  logs?: InstructorLogResponse[];
 }
 
 interface StudentDataTableProps {
@@ -89,172 +87,165 @@ export const StudentDataTable = ({ instructorId }: StudentDataTableProps) => {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <StudentFilters
+        <UserDataSearchFilters
           nameFilter={nameFilter}
           setNameFilter={setNameFilter}
-          modeFilter={modeFilter}
+          modeFilter={modeFilter as string}
           setModeFilter={setModeFilter}
           classFilter={classFilter}
           setClassFilter={setClassFilter}
-          classOptions={[]}
+          classOptions={classOptions}
+          className="space-y-4"
+          gridClassName="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"
         />
-
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[5%]">No.</TableHead>
-              <TableHead className="w-[30%]">Class</TableHead>
-              <TableHead className="w-[20%]">Name</TableHead>
-              <TableHead className="w-[15%]">Accuracy</TableHead>
-              <TableHead className="w-[20%]">Status</TableHead>
-              <TableHead className="w-[10%]">Mode</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <StudentRow
-                key={`loading-${index}`}
-                student={{
-                  userId: "",
-                  classTitle: "",
-                  totalAccepted: 0,
-                  correctSuggestions: 0,
-                  percentageCorrect: 0,
-                  lastActivity: new Date().toISOString(),
-                  mode: "LINE_BY_LINE",
-                }}
-                index={index}
-                isLoading={true}
-                onClick={() => {}}
-              />
-            ))}
-          </TableBody>
-        </Table>
+        {/* Loading skeleton for mobile cards */}
+        <div className="block md:hidden space-y-3">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Card key={`loading-card-${index}`} className="animate-pulse">
+              <CardContent className="p-4">
+                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-muted rounded w-1/2 mb-3"></div>
+                <div className="flex justify-between items-center">
+                  <div className="w-12 h-12 bg-muted rounded-full"></div>
+                  <div className="h-6 bg-muted rounded w-16"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        {/* Loading skeleton for desktop table */}
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[5%]">No.</TableHead>
+                <TableHead className="w-[30%]">Class</TableHead>
+                <TableHead className="w-[20%]">Name</TableHead>
+                <TableHead className="w-[15%]">Accuracy</TableHead>
+                <TableHead className="w-[20%]">Last Active</TableHead>
+                <TableHead className="w-[10%]">Mode</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <StudentRow
+                  key={`loading-${index}`}
+                  student={{
+                    userId: "",
+                    classTitle: "",
+                    totalAccepted: 0,
+                    totalRejected: 0,
+                    totalInteractions: 0,
+                    correctSuggestions: 0,
+                    accuracyPercentage: 0,
+                    lastActivity: new Date().toISOString(),
+                    mode: "LINE_BY_LINE",
+                  }}
+                  index={index}
+                  isLoading={true}
+                  onClick={() => {}}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <>
       <div className="flex flex-col gap-2 my-4">
-        <StudentFilters
+        <UserDataSearchFilters
           nameFilter={nameFilter}
           setNameFilter={setNameFilter}
-          modeFilter={modeFilter}
+          modeFilter={modeFilter as string}
           setModeFilter={setModeFilter}
           classFilter={classFilter}
           setClassFilter={setClassFilter}
           classOptions={classOptions}
+          className="space-y-4"
+          gridClassName="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"
         />
-
-        {/* <p className="text-sm text-muted-foreground">
-          {filteredStudents.length}{" "}
-          {filteredStudents.length === 1 ? "student" : "students"} found
-        </p> */}
       </div>
 
-      <PaginatedTable
-        data={filteredStudents}
-        renderTable={(currentItems, startIndex) => (
-          <div className="border rounded-md shadow-sm overflow-hidden">
-            <Table className="table-fixed">
-              <TableHeader className="bg-[#f5f5f5] dark:bg-[#262626]">
-                <TableRow className="bg-muted">
-                  <TableHead className="w-[5%]">No.</TableHead>
-                  <TableHead className="w-[30%]">Class</TableHead>
-                  <TableHead className="w-[20%]">Name</TableHead>
-                  <TableHead className="w-[15%]">Accuracy</TableHead>
-                  <TableHead className="w-[20%]">Status</TableHead>
-                  <TableHead className="w-[10%] hidden sm:block">
-                    Mode
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {currentItems.map((student, index) => (
-                  <StudentRow
-                    key={`${student.userId}-${student.classId}-${index}`}
-                    student={student}
-                    index={startIndex + index}
-                    onClick={handleRowClick}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      />
+      {/* Mobile Card View */}
+      <div className="block lg:hidden space-y-3">
+        <PaginatedTable
+          data={filteredStudents}
+          renderTable={(currentItems, startIndex) => (
+            <div className="space-y-3">
+              {currentItems.map((student, index) => (
+                <UserInfoTableCard
+                  key={`${student.userId}-${student.classId}-${index}`}
+                  index={startIndex + index}
+                  name={student.fullName || "Unknown User"}
+                  onClick={() => handleRowClick(student)}
+                  totalAccepted={student.totalAccepted}
+                  totalRejected={student.totalRejected}
+                  totalInteractions={student.totalInteractions}
+                  correctSuggestions={student.correctSuggestions}
+                  accuracyPercentage={student.accuracyPercentage}
+                  lastActivity={student.lastActivity}
+                  classTitle={student.classTitle}
+                  mode={student.mode as UserMode}
+                />
+              ))}
+            </div>
+          )}
+        />
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden lg:block">
+        <PaginatedTable
+          data={filteredStudents}
+          renderTable={(currentItems, startIndex) => (
+            <div className="border rounded-md shadow-sm overflow-hidden">
+              <Table className="table-fixed">
+                <TableHeader className="bg-[#f5f5f5] dark:bg-[#262626]">
+                  <TableRow className="bg-muted">
+                    <TableHead className="w-[5%] text-center">No.</TableHead>
+                    <TableHead className="w-[30%]">Class</TableHead>
+                    <TableHead className="w-[20%]">Name</TableHead>
+                    <TableHead className="w-[10%] text-center">
+                      Accuracy
+                    </TableHead>
+                    <TableHead className="w-[15%]">Last Active</TableHead>
+                    <TableHead className="w-[15%] pl-7">Mode</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {currentItems.map((student, index) => (
+                    <StudentRow
+                      key={`${student.userId}-${student.classId}-${index}`}
+                      student={student}
+                      index={startIndex + index}
+                      onClick={handleRowClick}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        />
+      </div>
+
       {selectedStudent && (
         <StudentDashboardCard
           student={selectedStudent}
           onClose={handleCloseModal}
         />
       )}
-    </div>
+    </>
   );
 };
 
-// Updated StudentFilters component
-interface StudentFiltersProps {
-  nameFilter: string;
-  setNameFilter: (value: string) => void;
-  modeFilter: ActiveUserMode | "all";
-  setModeFilter: (value: ActiveUserMode | "all") => void;
-  classFilter: string;
-  setClassFilter: (value: string) => void;
-  classOptions: Array<{ id: string; title: string }>;
-}
-
-export function StudentFilters({
-  nameFilter,
-  setNameFilter,
-  modeFilter,
-  setModeFilter,
-  classFilter,
-  setClassFilter,
-  classOptions,
-}: StudentFiltersProps) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <Input
-        type="text"
-        placeholder="Filter by name"
-        value={nameFilter}
-        onChange={(e) => setNameFilter(e.target.value)}
-      />
-
-      <Select value={classFilter} onValueChange={setClassFilter}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select class" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Classes</SelectItem>
-          {classOptions.map((classOption) => (
-            <SelectItem key={classOption.id} value={classOption.id}>
-              {classOption.title}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      <Select
-        value={String(modeFilter)}
-        onValueChange={(value) =>
-          setModeFilter(value as ActiveUserMode | "all")
-        }
-      >
-        <SelectTrigger>
-          <SelectValue placeholder="Select mode" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Modes</SelectItem>
-          <SelectItem value="LINE_BY_LINE">Line by Line</SelectItem>
-          <SelectItem value="CODE_BLOCK">Code Block</SelectItem>
-          <SelectItem value="CODE_SELECTION">Code Selection</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-  );
+interface StudentRowProps {
+  student: StudentClassData;
+  index: number;
+  isLoading?: boolean;
+  onClick: (student: StudentClassData) => void;
 }
 
 export const StudentRow = ({
@@ -262,71 +253,17 @@ export const StudentRow = ({
   index,
   isLoading = false,
   onClick,
-}: {
-  student: StudentClassData;
-  index: number;
-  isLoading?: boolean;
-  onClick: (student: StudentClassData) => void;
-}) => {
-  const isOnline = () => {
-    const now = new Date();
-    const lastActivity = new Date(student.lastActivity);
-    const diffInMinutes =
-      (now.getTime() - lastActivity.getTime()) / (1000 * 60);
-    return diffInMinutes <= 5;
-  };
+}: StudentRowProps) => {
+  const isUserOnline = isOnline(student.lastActivity);
+  const activityTimestamp = formatActivityTimestamp(student.lastActivity);
 
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const datePart = date.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-    const timePart = date.toLocaleString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-    return (
-      <div className="flex flex-col gap-1">
-        <span className="text-sm">{datePart}</span>
-        <span className="text-xs text-muted-foreground">{timePart}</span>
-      </div>
-    );
-  };
-
-  const getModeDisplay = (mode: ActiveUserMode) => {
-    switch (mode) {
-      case "LINE_BY_LINE":
-        return (
-          <Badge
-            variant="secondary"
-            className="bg-blue-900 text-blue-200 w-20 rounded-xl justify-center py-1"
-          >
-            Line
-          </Badge>
-        );
-      case "CODE_BLOCK":
-        return (
-          <Badge
-            variant="secondary"
-            className="bg-green-900 text-green-200 w-20 rounded-xl justify-center py-1"
-          >
-            Block
-          </Badge>
-        );
-      case "CODE_SELECTION":
-        return (
-          <Badge
-            variant="secondary"
-            className="bg-purple-900 text-purple-200 w-20 rounded-xl justify-center py-1"
-          >
-            Selection
-          </Badge>
-        );
-    }
+  // Create progress data from student data
+  const progressData: ProgressData = {
+    totalAccepted: student.totalAccepted,
+    totalRejected: student.totalRejected,
+    totalInteractions: student.totalInteractions,
+    correctSuggestions: student.correctSuggestions,
+    accuracyPercentage: student.accuracyPercentage,
   };
 
   if (isLoading) {
@@ -343,15 +280,15 @@ export const StudentRow = ({
         </TableCell>
         <TableCell>
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-muted rounded-full animate-pulse"></div>
-            <div className="h-4 bg-muted rounded animate-pulse w-8"></div>
+            <div className="w-12 h-12 bg-muted rounded-full animate-pulse"></div>
+            <div className="h-4 bg-muted rounded animate-pulse w-12"></div>
           </div>
         </TableCell>
         <TableCell>
           <div className="h-4 bg-muted rounded animate-pulse"></div>
         </TableCell>
         <TableCell>
-          <div className="h-4 bg-muted rounded animate-pulse"></div>
+          <div className="h-6 bg-muted rounded animate-pulse w-16"></div>
         </TableCell>
       </TableRow>
     );
@@ -360,33 +297,49 @@ export const StudentRow = ({
   return (
     <TableRow
       onClick={() => onClick(student)}
-      className="cursor-pointer hover:bg-muted/50 transition-colors"
+      className="cursor-pointer bg-white/40 dark:bg-black/40 hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors border-b border-muted"
     >
-      <TableCell>{index + 1}</TableCell>
-      <TableCell>{student.classTitle}</TableCell>
-      <TableCell>{student.fullName}</TableCell>
+      <TableCell className="font-medium text-center">{index + 1}</TableCell>
+
+      <TableCell className="font-medium">
+        <div className="truncate max-w-[200px]" title={student.classTitle}>
+          {student.classTitle}
+        </div>
+      </TableCell>
+
       <TableCell>
-        <div className="flex flex-col items-center sm:flex-row sm:items-center gap-1">
-          <MiniPieChart
-            correct={student.correctSuggestions}
-            incorrect={student.totalAccepted - student.correctSuggestions}
+        <div className="truncate max-w-[150px]" title={student.fullName}>
+          {student.fullName}
+        </div>
+      </TableCell>
+
+      <TableCell>
+        <div className="flex items-center gap-3 justify-center">
+          <MiniPieChart progressData={progressData} size="sm" />
+        </div>
+      </TableCell>
+
+      <TableCell>
+        <div className="flex items-center gap-2 text-xs">
+          <div
+            className={`w-2 h-2 rounded-full ${
+              isUserOnline ? "bg-green-500" : "bg-gray-400"
+            }`}
           />
-          <span className="text-xs text-muted-foreground">
-            ({student.correctSuggestions}/{student.totalAccepted})
+          <span
+            className={
+              isUserOnline
+                ? "text-green-600 font-medium"
+                : "text-muted-foreground"
+            }
+          >
+            {activityTimestamp}
           </span>
         </div>
       </TableCell>
-      <TableCell>
-        {isOnline() ? (
-          <GreenDot isOnline />
-        ) : (
-          <div className="flex items-center gap-3">
-            <GreenDot /> <span>{formatTimestamp(student.lastActivity)}</span>
-          </div>
-        )}
-      </TableCell>
+
       <TableCell className="hidden md:table-cell">
-        {getModeDisplay(student.mode)}
+        <ModeBadge mode={student.mode as UserMode} />
       </TableCell>
     </TableRow>
   );

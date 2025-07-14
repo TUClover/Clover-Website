@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import { parseISODate } from "../../../../utils/timeConverter";
-import InfoTooltip from "../../../../components/InfoTooltip";
+import { CustomTooltip } from "../../../../components/CustomTooltip";
 import { Card } from "../../../../components/ui/card";
 import { LogEvent } from "../../../../api/types/event";
 import { UserActivityLogItem } from "../../../../api/types/suggestion";
@@ -136,10 +136,12 @@ export const DecisionLineChart = ({
 
   return (
     <Card className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-alpha">{title}</h2>
-          <InfoTooltip>
+      <div className="flex items-center justify-between mb-4 gap-3">
+        <CustomTooltip
+          trigger={
+            <h2 className="text-lg font-semibold text-alpha">{title}</h2>
+          }
+          children={
             <div className="space-y-2">
               <p className="text-sm">
                 This line chart shows how many code suggestions users{" "}
@@ -151,8 +153,8 @@ export const DecisionLineChart = ({
                 Time range can be adjusted (daily/weekly/monthly)
               </p>
             </div>
-          </InfoTooltip>
-        </div>
+          }
+        />
 
         <CustomSelect
           value={interval}

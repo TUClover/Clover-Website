@@ -1,9 +1,4 @@
-import {
-  ClassData,
-  StudentStatus,
-  User,
-  UserClassInfo,
-} from "@/api/types/user";
+import { ClassData, User, UserStatus } from "@/api/types/user";
 import ClassInfoCard from "@/components/ClassInfoCard";
 import {
   Carousel,
@@ -14,10 +9,10 @@ import {
 } from "@/components/ui/carousel";
 
 interface ClassesCarouselProps {
-  classes: ClassData[] | UserClassInfo[];
+  classes: ClassData[];
   onClassSelect: (
     userClass: ClassData,
-    studentStatus?: StudentStatus,
+    studentStatus?: UserStatus,
     instructorData?: User,
     studentCount?: number
   ) => void;
@@ -29,8 +24,6 @@ const ClassesCarousel = ({
   onClassSelect,
   title,
 }: ClassesCarouselProps) => {
-  console.log("ClassesCarousel rendered", JSON.stringify(classes, null, 2));
-
   return (
     <div className="width-container grid grid-cols-1 md:grid-cols-5 lg:grid-cols-3 gap-6 mb-6">
       <div className="col-span-1 md:col-span-3 lg:col-span-2 space-y-4">

@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -15,6 +16,7 @@ interface CustomSelectProps<T = string> {
   value: T;
   onValueChange: (value: T) => void;
   options: SelectOption<T>[];
+  disabled?: boolean;
   placeholder?: string;
   className?: string;
   width?: string;
@@ -25,14 +27,21 @@ const CustomSelect = <T extends string>({
   onValueChange,
   options,
   placeholder,
-  className = "w-16",
+  disabled = false,
+  className = "w-full",
 }: CustomSelectProps<T>) => {
   return (
     <Select
       value={value as string}
       onValueChange={(val) => onValueChange(val as T)}
+      disabled={disabled}
     >
-      <SelectTrigger className={className}>
+      <SelectTrigger
+        className={cn(
+          "text-sm text-muted-foreground border-b border-slate-400 dark:border-sidebar-accent bg-gray-100 dark:bg-transparent",
+          className
+        )}
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

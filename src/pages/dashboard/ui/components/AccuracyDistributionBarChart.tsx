@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { parseISODate } from "@/utils/timeConverter";
-import InfoTooltip from "@/components/InfoTooltip";
 import { Card } from "@/components/ui/card";
 import { LogEvent } from "@/api/types/event";
 import { UserActivityLogItem } from "@/api/types/suggestion";
 import { InstructorLogResponse } from "@/api/classes";
 import CustomSelect from "@/components/CustomSelect";
+import { CustomTooltip } from "@/components/CustomTooltip";
 
 enum TimeInterval {
   DAY = "Day",
@@ -226,18 +226,16 @@ export const AccuracyDistributionBarChart = ({
 
   return (
     <Card className="p-6 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-[#50B498]">{title}</h2>
-          <InfoTooltip>
+      <div className="flex items-center justify-between mb-4 gap-3">
+        <CustomTooltip
+          trigger={
+            <h2 className="text-lg font-semibold text-[#50B498]">{title}</h2>
+          }
+          children={
             <div className="space-y-2">
               <p className="text-sm">
-                This stacked bar chart visualizes the accuracy of user decisions
-                over time. It shows the number of{" "}
-                <span className="font-semibold text-[#50B498]">correct</span>{" "}
-                and{" "}
-                <span className="font-semibold text-[#F59E0B]">incorrect</span>{" "}
-                decisions made each day/week/month.
+                This chart shows the distribution of correct and incorrect
+                decisions made by the user over time.
               </p>
               <p className="text-xs text-muted-foreground">
                 Correct: Accepting good suggestions or rejecting bad ones
@@ -245,8 +243,8 @@ export const AccuracyDistributionBarChart = ({
                 Incorrect: Accepting bad suggestions or rejecting good ones
               </p>
             </div>
-          </InfoTooltip>
-        </div>
+          }
+        />
 
         <CustomSelect
           value={interval}

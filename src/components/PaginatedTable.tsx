@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { Button } from "./ui/button";
+import CustomSelect from "./CustomSelect";
 
 interface PaginatedTableProps<T> {
   data: T[];
@@ -59,23 +53,22 @@ export const PaginatedTable = <T,>({
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <label className="text-sm font-medium">Show:</label>
-          <Select
+          <CustomSelect
             value={itemsPerPage.toString()}
             onValueChange={(value) => setItemsPerPage(Number(value))}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10 per page</SelectItem>
-              <SelectItem value="20">20 per page</SelectItem>
-              <SelectItem value="50">50 per page</SelectItem>
-            </SelectContent>
-          </Select>
+            options={[
+              { value: "10", label: "10 per page" },
+              { value: "20", label: "20 per page" },
+              { value: "50", label: "50 per page" },
+            ]}
+            placeholder="Items per page"
+            className="w-32"
+          />
         </div>
 
         <div className="text-sm text-muted-foreground">
-          Page {currentPage} of {totalPages} ({filteredData.length} total items)
+          Page {currentPage} of {totalPages} ({filteredData.length} total{" "}
+          {filteredData.length === 1 ? "result" : "results"})
         </div>
       </div>
 

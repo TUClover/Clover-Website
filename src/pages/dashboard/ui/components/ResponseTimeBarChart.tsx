@@ -1,6 +1,6 @@
 import { InstructorLogResponse } from "@/api/classes";
 import { UserActivityLogItem } from "@/api/types/suggestion";
-import InfoTooltip from "@/components/InfoTooltip";
+import { CustomTooltip } from "@/components/CustomTooltip";
 import { Card } from "@/components/ui/card";
 import { useEffect, useMemo, useState } from "react";
 import { Bar } from "react-chartjs-2";
@@ -103,15 +103,19 @@ const ResponseTimeBarChart = ({
     return (
       <Card className="p-6">
         <div className="flex items-center gap-3 mb-4">
-          <h2 className="text-lg font-semibold text-alpha">{title}</h2>
-          <InfoTooltip>
-            <div className="space-y-2">
-              <p className="text-sm">
-                This chart shows average response times for different
-                categories.
-              </p>
-            </div>
-          </InfoTooltip>
+          <CustomTooltip
+            trigger={
+              <h2 className="text-lg font-semibold text-alpha">{title}</h2>
+            }
+            children={
+              <div className="space-y-2">
+                <p className="text-sm">
+                  This chart shows average response times for different
+                  categories.
+                </p>
+              </div>
+            }
+          />
         </div>
         <div className="flex items-center justify-center h-60 text-muted-foreground">
           No response time data available
@@ -123,20 +127,24 @@ const ResponseTimeBarChart = ({
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-4">
-        <h2 className="text-lg font-semibold text-alpha">{title}</h2>
-        <InfoTooltip>
-          <div className="space-y-2">
-            <p className="text-sm">
-              This chart compares your average{" "}
-              <span className="font-semibold text-alpha">response times</span>{" "}
-              across different suggestion categories.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Faster response times might indicate more confidence in your
-              decisions.
-            </p>
-          </div>
-        </InfoTooltip>
+        <CustomTooltip
+          trigger={
+            <h2 className="text-lg font-semibold text-alpha">{title}</h2>
+          }
+          children={
+            <div className="space-y-2">
+              <p className="text-sm">
+                This chart compares your average{" "}
+                <span className="font-semibold text-alpha">response times</span>{" "}
+                across different suggestion categories.
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Faster response times might indicate more confidence in your
+                decisions.
+              </p>
+            </div>
+          }
+        />
       </div>
 
       <div className="relative w-full h-60 md:h-64 lg:h-72">

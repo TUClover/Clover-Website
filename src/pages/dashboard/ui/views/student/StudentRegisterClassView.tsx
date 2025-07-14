@@ -6,9 +6,9 @@ import { useUserClasses } from "@/hooks/useUserClasses";
 import ClassesTable from "../../components/ClassesTable";
 import { BookOpen, Calendar, Flame } from "lucide-react";
 import Loading from "@/components/Loading";
-import { ClassData, StudentStatus, User } from "@/api/types/user";
+import { ClassData, User, UserStatus } from "@/api/types/user";
 import { useState } from "react";
-import ClassDetails from "@/components/ClassDetails";
+import ClassDetails from "@/pages/ClassDetailsView";
 
 const StudentRegisterClassView = ({
   description,
@@ -19,7 +19,7 @@ const StudentRegisterClassView = ({
 
   const [selectedClass, setSelectedClass] = useState<{
     userClass: ClassData;
-    studentStatus?: StudentStatus;
+    studentStatus?: UserStatus;
     instructorData?: User;
     studentCount?: number;
   } | null>(null);
@@ -35,7 +35,7 @@ const StudentRegisterClassView = ({
 
   const handleClassSelect = (
     userClass: ClassData,
-    studentStatus?: StudentStatus,
+    studentStatus?: UserStatus,
     instructorData?: User,
     studentCount?: number
   ) => {
@@ -171,8 +171,8 @@ const StudentRegisterClassView = ({
   };
 
   return (
-    <div className="w-full space-y-8">
-      <div className="flex justify-end md:justify-between items-center gap-6">
+    <div className="w-full">
+      <div className="flex justify-end md:justify-between items-center gap-6 mb-6">
         <p className="text-sm text-muted-foreground hidden md:block">
           {description}
         </p>

@@ -1,7 +1,7 @@
 import { MailIcon } from "lucide-react";
 import { User } from "../api/types/user";
-import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Card } from "./ui/card";
+import UserAvatar from "./UserAvatar";
 
 interface StatItem {
   label: string;
@@ -14,23 +14,15 @@ interface ProfileCardProps {
 }
 
 const ProfileCard = ({ userData, detailsContent }: ProfileCardProps) => {
-  const { avatarUrl, firstName, lastName, email, role } = userData || {};
+  const { avatarUrl, firstName, email, role } = userData || {};
   return (
     <Card className="p-6 m-6">
       <div className="flex items-center mb-4 justify-center">
-        <Avatar className="size-16">
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={`${firstName} ${lastName}`}
-              className="w-full h-full rounded-full object-cover"
-            />
-          ) : (
-            <AvatarFallback className="bg-alpha text-white text-2xl font-semibold">
-              {firstName.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          )}
-        </Avatar>
+        <UserAvatar
+          firstName={firstName}
+          avatarUrl={avatarUrl}
+          size="xl"
+        />
       </div>
 
       <div className="text-center">

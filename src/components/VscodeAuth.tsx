@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { handleAuthRedirect } from "../utils/handleAuth";
 
 export default function VSCodeAuthCallback() {
-  let called = useRef(false);
+  const called = useRef(false);
   useEffect(() => {
     if (called.current) return;
     called.current = true;

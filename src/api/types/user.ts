@@ -5,9 +5,8 @@ export enum UserRole {
   DEV = "DEVELOPER",
 }
 
-export enum StudentStatus {
+export enum UserStatus {
   ACTIVE = "ACTIVE",
-  SUSPENDED = "SUSPENDED",
   LOCKED = "LOCKED",
 }
 
@@ -32,12 +31,12 @@ export const AUTH_CONTEXT = "authContext";
 
 export interface User {
   id: string;
-  createdAt: string; // ISO date string from Go's time.Time
+  createdAt: string;
   firstName: string;
   lastName: string;
   email: string;
   role: UserRole;
-  status: StudentStatus;
+  status: UserStatus;
   avatarUrl?: string;
   settings: UserSettings;
   last_updated_at?: string;
@@ -50,7 +49,7 @@ export type UserSettings = {
   enableQuiz: boolean;
   bugPercentage: number;
   showNotifications: boolean;
-  mode: string;
+  mode: UserMode;
 };
 
 export interface ClassData {

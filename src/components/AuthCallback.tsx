@@ -8,7 +8,7 @@ import { handleAuthRedirect } from "../utils/handleAuth";
  */
 export const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
-  let called = useRef(false);
+  const called = useRef(false);
 
   useEffect(() => {
     if (called.current) return;

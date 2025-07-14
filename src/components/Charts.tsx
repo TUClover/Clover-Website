@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { Pie } from "react-chartjs-2";
-import InfoTooltip from "./InfoTooltip";
 import { Card } from "./ui/card";
 import { SuggestionData } from "../api/types/suggestion";
+import { CustomTooltip } from "./CustomTooltip";
 
 const COLORS = [
   "#8884d8",
@@ -88,15 +88,23 @@ const LanguagePerformance: React.FC<LanguagePerformanceProps> = ({
     return (
       <Card className="p-6">
         <div className="flex items-center gap-3 mb-4">
-          <h2 className="text-lg font-semibold text-alpha">{title}</h2>
-          <InfoTooltip>
-            <div className="space-y-2">
-              <p className="text-sm">
-                This chart shows your performance across different programming
-                languages.
-              </p>
-            </div>
-          </InfoTooltip>
+          <CustomTooltip
+            trigger={
+              <span className="text-lg font-semibold text-alpha">{title}</span>
+            }
+            children={
+              <div className="space-y-2">
+                <p className="text-sm">
+                  This donut chart shows your performance across different
+                  programming languages.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  The size of each slice represents usage volume, and accuracy
+                  percentages are shown in the legend.
+                </p>
+              </div>
+            }
+          />
         </div>
         <div className="flex items-center justify-center h-60 text-muted-foreground">
           No language data available
@@ -108,22 +116,23 @@ const LanguagePerformance: React.FC<LanguagePerformanceProps> = ({
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-4">
-        <h2 className="text-lg font-semibold text-alpha">{title}</h2>
-        <InfoTooltip>
-          <div className="space-y-2">
-            <p className="text-sm">
-              This donut chart shows your usage and accuracy across different{" "}
-              <span className="font-semibold text-alpha">
-                programming languages
-              </span>
-              .
-            </p>
-            <p className="text-xs text-muted-foreground">
-              The size of each slice represents usage volume, and accuracy
-              percentages are shown in the legend.
-            </p>
-          </div>
-        </InfoTooltip>
+        <CustomTooltip
+          trigger={
+            <span className="text-lg font-semibold text-alpha">{title}</span>
+          }
+          children={
+            <div className="space-y-2">
+              <p className="text-sm">
+                This donut chart shows your performance across different
+                programming languages.
+              </p>
+              <p className="text-xs text-muted-foreground">
+                The size of each slice represents usage volume, and accuracy
+                percentages are shown in the legend.
+              </p>
+            </div>
+          }
+        />
       </div>
 
       <div className="flex items-center justify-between">

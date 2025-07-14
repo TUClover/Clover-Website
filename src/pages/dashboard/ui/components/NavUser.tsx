@@ -9,13 +9,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../../../components/ui/dropdown-menu";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../../../components/ui/avatar";
 import { SidebarMenuButton } from "../../../../components/ui/sidebar";
 import { useUser } from "../../../../context/UserContext";
+import UserAvatar from "@/components/UserAvatar";
 
 interface NavUserProps {
   isMobile: boolean;
@@ -39,12 +35,11 @@ function NavUser({ isMobile }: NavUserProps) {
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground space-x-1"
         >
-          <Avatar className="size-9 rounded-full">
-            <AvatarImage src={user.avatarUrl} alt={user.firstName} />
-            <AvatarFallback className="rounded-lg font-semibold text-lg">
-              {user.firstName[0]}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            firstName={user.firstName}
+            avatarUrl={user.avatarUrl}
+            size="md"
+          />
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-medium">
               {user.firstName + " " + user.lastName}
@@ -63,12 +58,11 @@ function NavUser({ isMobile }: NavUserProps) {
       >
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage src={user.avatarUrl} alt={user.firstName} />
-              <AvatarFallback className="rounded-lg">
-                {user.firstName[0]}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar
+              firstName={user.firstName}
+              avatarUrl={user.avatarUrl}
+              size="sm"
+            />
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">
                 {user.firstName + " " + user.lastName}

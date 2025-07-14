@@ -9,11 +9,12 @@ import { LogResponse } from "./types/suggestion";
  * @returns {Promise<boolean>} - Returns true if the settings were saved successfully, false otherwise
  */
 export async function saveUserSettings(
-  user_id: string,
+  userId: string,
   settings: UserSettings
 ): Promise<{ data?: boolean; error?: string }> {
+  console.log("Saving user settings:", userId, settings);
   try {
-    const response = await fetch(`${USER_ENDPOINT}/${user_id}/settings`, {
+    const response = await fetch(`${USER_ENDPOINT}/${userId}/settings`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -130,11 +131,77 @@ export async function getUserActivity(
     };
   }
 }
-// export async function getUserActivity(
-//   userId: string
-// ): Promise<{ data?: UserActivityLogItem[] | null; error?: string }> {
+
+interface UsersResponse {
+  users: User[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+interface UsersPaginationParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export async function getAllUsers(params: UsersPaginationParams = {}): Promise<{
+  data?: UsersResponse;
+  error?: string;
+}> {
+  try {
+    const url = new URL(`${USER_ENDPOINT}/`);
+
+    if (params.page) url.searchParams.append("page", params.page.toString());
+    if (params.limit) url.searchParams.append("limit", params.limit.toString());
+    if (params.search) url.searchParams.append("search", params.search);
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error:
+          data.error ||
+          data.message ||
+          `Failed to get users: ${response.status} ${response.statusText}`,
+      };
+    }
+
+    if (!data.users || !Array.isArray(data.users)) {
+      return { error: "Invalid response: expected users array" };
+    }
+
+    if (!data.pagination) {
+      return { error: "Invalid response: expected pagination data" };
+    }
+
+    return { data: data as UsersResponse };
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}
+
+// /**
+//  * Function to get all users from the database.
+//  * @returns {Promise<{ data?: User[]; error?: string } | null>} - The response from the server or an error message
+//  */
+// export async function getAllUsers(): Promise<{
+//   data?: User[];
+//   error?: string;
+// } | null> {
 //   try {
-//     const response = await fetch(`${LOG_ENDPOINT}/${userId}`, {
+//     const response = await fetch(`${USER_ENDPOINT}/`, {
 //       method: "GET",
 //       headers: { "Content-Type": "application/json" },
 //     });
@@ -145,62 +212,22 @@ export async function getUserActivity(
 //       return {
 //         error:
 //           data.message ||
-//           `Failed to get user activity: ${response.status} ${response.statusText}`,
+//           `Failed to get all users: ${response.status} ${response.statusText}`,
 //       };
 //     }
 
-//     if (data == null) {
-//       return { data: [] };
-//     }
-
 //     if (!Array.isArray(data)) {
-//       return { error: "Invalid response: expected an array of activity logs" };
+//       return { error: "Invalid response: expected an array of users" };
 //     }
 
-//     return { data: data as UserActivityLogItem[] };
+//     return { data: data };
 //   } catch (err) {
+//     console.error(err);
 //     return {
 //       error: err instanceof Error ? err.message : "Unknown error occurred",
 //     };
 //   }
 // }
-
-/**
- * Function to get all users from the database.
- * @returns {Promise<{ data?: User[]; error?: string } | null>} - The response from the server or an error message
- */
-export async function getAllUsers(): Promise<{
-  data?: User[];
-  error?: string;
-} | null> {
-  try {
-    const response = await fetch(`${USER_ENDPOINT}/`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return {
-        error:
-          data.message ||
-          `Failed to get all users: ${response.status} ${response.statusText}`,
-      };
-    }
-
-    if (!Array.isArray(data)) {
-      return { error: "Invalid response: expected an array of users" };
-    }
-
-    return { data: data };
-  } catch (err) {
-    console.error(err);
-    return {
-      error: err instanceof Error ? err.message : "Unknown error occurred",
-    };
-  }
-}
 
 /**
  * Function to delete a user from the database.

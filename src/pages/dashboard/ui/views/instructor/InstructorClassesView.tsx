@@ -1,5 +1,4 @@
-import { ClassData, StudentStatus, User, UserRole } from "@/api/types/user";
-import ClassDetails from "@/components/ClassDetails";
+import { UserRole } from "@/api/types/user";
 import ClassInfoCard from "@/components/ClassInfoCard";
 import CreateNewClassDialog from "@/components/CreateNewClassDialog";
 import Loading from "@/components/Loading";
@@ -13,32 +12,20 @@ import {
 } from "@/components/ui/carousel";
 import { useUser } from "@/context/UserContext";
 import { useInstructorClasses } from "@/hooks/useInstructorClasses";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const InstructorClassesView = () => {
   const { userData } = useUser();
   const { allClasses, loading: userClassLoading } = useInstructorClasses(
     userData?.id
   );
-  const [selectedClass, setSelectedClass] = useState<{
-    userClass: ClassData;
-    studentStatus?: StudentStatus;
-    instructorData?: User;
-  } | null>(null);
 
-  const handleCloseDetails = () => {
-    setSelectedClass(null);
-  };
-  const handleClassSelect = (
-    userClass: ClassData,
-    studentStatus?: StudentStatus,
-    instructorData?: User
-  ) => {
-    setSelectedClass({
-      userClass,
-      studentStatus,
-      instructorData,
-    });
+  const navigate = useNavigate();
+
+  const handleClassSelect = (classId: string) => {
+    if (classId) {
+      navigate(`/classes/${classId}`);
+    }
   };
 
   if (userClassLoading) {
@@ -73,7 +60,7 @@ export const InstructorClassesView = () => {
                   <div className="p-1">
                     <ClassInfoCard
                       classInfo={userClass}
-                      onSelect={handleClassSelect}
+                      onSelect={() => handleClassSelect(userClass.id)}
                       isInstructor={
                         userData?.role === UserRole.INSTRUCTOR ||
                         userData?.role === UserRole.ADMIN
@@ -96,14 +83,6 @@ export const InstructorClassesView = () => {
           </Carousel>
         </div>
       </div>
-
-      {selectedClass && (
-        <ClassDetails
-          userClass={selectedClass.userClass}
-          instructorData={selectedClass.instructorData as User}
-          onClose={handleCloseDetails}
-        />
-      )}
     </div>
   );
 };

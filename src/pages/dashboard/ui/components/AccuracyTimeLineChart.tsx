@@ -1,7 +1,7 @@
 import { InstructorLogResponse } from "@/api/classes";
 import { UserActivityLogItem } from "@/api/types/suggestion";
 import CustomSelect from "@/components/CustomSelect";
-import InfoTooltip from "@/components/InfoTooltip";
+import { CustomTooltip } from "@/components/CustomTooltip";
 import { Card } from "@/components/ui/card";
 import { parseISODate } from "@/utils/timeConverter";
 import { useEffect, useState } from "react";
@@ -131,23 +131,27 @@ const AccuracyTimeLineChart = ({
 
   return (
     <Card className="p-6">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-3">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-alpha">{title}</h2>
-          <InfoTooltip>
-            <div className="space-y-2">
-              <p className="text-sm">
-                This chart shows your accuracy percentage over time.{" "}
-                <span className="font-semibold text-alpha">Accuracy</span> is
-                calculated as the percentage of suggestions that were correct
-                (no bugs detected).
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Time range can be adjusted (daily/weekly/monthly). Periods with
-                no activity are not shown on the chart.
-              </p>
-            </div>
-          </InfoTooltip>
+          <CustomTooltip
+            trigger={
+              <h2 className="text-lg font-semibold text-alpha">{title}</h2>
+            }
+            children={
+              <div className="space-y-2">
+                <p className="text-sm">
+                  This chart shows your accuracy percentage over time.{" "}
+                  <span className="font-semibold text-alpha">Accuracy</span> is
+                  calculated as the percentage of suggestions that were correct
+                  (no bugs detected).
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Time range can be adjusted (daily/weekly/monthly). Periods
+                  with no activity are not shown on the chart.
+                </p>
+              </div>
+            }
+          />
         </div>
 
         <CustomSelect
@@ -236,6 +240,7 @@ const AccuracyTimeLineChart = ({
                 ticks: {
                   color: textColor,
                   callback: function (value) {
+                    if (value === 120) return "";
                     return value + "%";
                   },
                 },

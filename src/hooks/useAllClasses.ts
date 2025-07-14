@@ -10,6 +10,7 @@ export const useAllClasses = (options?: {
   search?: string;
   userId?: string;
   enabled?: boolean;
+  includeStudents?: boolean;
 }) => {
   const {
     page = 1,
@@ -17,17 +18,22 @@ export const useAllClasses = (options?: {
     search = "",
     userId,
     enabled = true,
+    includeStudents = false,
   } = options || {};
 
   const { data, isLoading, error, refetch, isFetching, isRefetching } =
     useQuery({
-      queryKey: ["allClasses", { page, limit, search, userId }],
+      queryKey: [
+        "allClasses",
+        { page, limit, search, userId, includeStudents },
+      ],
       queryFn: async () => {
         const { data, error } = await getAllClasses({
           page,
           limit,
           search,
           userId,
+          includeStudents,
         });
         if (error) {
           throw new Error(error);
@@ -58,7 +64,10 @@ export const useAllClasses = (options?: {
   };
 };
 
-export const useAllClassesWithSearch = (initialSearch = "") => {
+export const useAllClassesWithSearch = (
+  initialSearch = "",
+  includeStudents = false
+) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(initialSearch);
   const [limit] = useState(50);
@@ -78,7 +87,8 @@ export const useAllClassesWithSearch = (initialSearch = "") => {
     page,
     limit,
     search,
-    userId: userData?.id, // Include user enrollment status
+    userId: userData?.id,
+    includeStudents,
   });
 
   // Reset page when search changes

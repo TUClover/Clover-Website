@@ -82,7 +82,7 @@ export const StudentDashboardCard = ({
   return (
     <ModalContainer isOpen={!!student} onClose={() => onClose && onClose()}>
       <Card
-        className="overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pt-8 pb-8 !bg-black"
+        className="overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pt-8 pb-8 bg-white dark:bg-gray-900"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",

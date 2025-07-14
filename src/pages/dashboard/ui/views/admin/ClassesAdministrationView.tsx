@@ -1,44 +1,16 @@
-import { ClassData } from "@/api/types/user";
-import ClassDetailsPanel from "@/components/ClassDetailsPanel";
-import ClassSideBar from "@/components/ClassSideBar";
-import { useAllClasses } from "@/hooks/useAllClasses";
-import { useAllUsers } from "@/hooks/useAllUsers";
-import { useState } from "react";
-import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
+import ClassesDataTable from "../../components/ClassesDataTable";
 
 const ClassesAdministrationView = () => {
-  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
-  const { classes: allClasses, isLoading: isLoadingClasses } = useAllClasses();
-  const { users, error } = useAllUsers();
-
-  if (error) {
-    toast.error("Error fetching users. Please try again later.");
-    return null;
-  }
-
   return (
-    <div className="flex flex-col md:flex-row gap-6 mb-6">
-      <ClassSideBar
-        classes={allClasses}
-        selectedClasses={selectedClasses}
-        onSelectClass={(classData) => {
-          setSelectedClasses([classData]);
-        }}
-        onSetSelectedClasses={setSelectedClasses}
-        loading={isLoadingClasses}
-        setSelectedClassId={(id) => {
-          const selected = allClasses.find((cls) => cls.id === id);
-          if (selected) {
-            setSelectedClasses([selected]);
-          }
-        }}
-      />
-      <ClassDetailsPanel
-        users={users}
-        classDetails={selectedClasses}
-        isLoading={isLoadingClasses}
-      />
-    </div>
+    <Card className="p-6 mt-8">
+      <div className="flex items-center mb-2 gap-3">
+        <h2 className="text-md font-semibold text-primary">
+          Insights About Users
+        </h2>
+      </div>
+      <ClassesDataTable />
+    </Card>
   );
 };
 

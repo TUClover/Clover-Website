@@ -1,0 +1,285 @@
+import { useState, useCallback, useMemo } from "react";
+import { useQuery, useQueries } from "@tanstack/react-query";
+import { getEventsForMode } from "@/api/types/event";
+import { ActiveUserMode, User } from "@/api/types/user";
+import { getAllUsers, getUserActivity } from "@/api/user";
+import { ProgressData, UserActivityLogItem } from "@/api/types/suggestion";
+import { calculateProgress } from "@/utils/calculateProgress";
+import QUERY_INTERVALS from "@/constants/queryIntervals";
+
+interface UserWithActivity extends User {
+  totalAccepted: number;
+  totalRejected: number;
+  totalInteractions: number;
+  correctSuggestions: number;
+  accuracyPercentage: number;
+  lastActivity: string | null;
+  activityMode: ActiveUserMode | null;
+}
+
+interface UseUsersWithActivityOptions {
+  page?: number;
+  limit?: number;
+  search?: string;
+  enabled?: boolean;
+}
+
+const getEmptyProgressData = (): ProgressData => ({
+  totalAccepted: 0,
+  totalRejected: 0,
+  totalInteractions: 0,
+  correctSuggestions: 0,
+  accuracyPercentage: 0,
+});
+
+export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
+  const { page = 1, limit = 50, search = "", enabled = true } = options || {};
+
+  // First, fetch the users
+  const {
+    data: usersData,
+    isLoading: usersLoading,
+    error: usersError,
+  } = useQuery({
+    queryKey: ["allUsers", { page, limit, search }],
+    queryFn: async () => {
+      const { data, error } = await getAllUsers({ page, limit, search });
+      if (error) throw new Error(error);
+      return data!;
+    },
+    enabled,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+    retry: 2,
+  });
+
+  const users = useMemo(() => usersData?.users || [], [usersData]);
+
+  const activityQueries = useQueries({
+    queries: users.map((user) => ({
+      queryKey: ["userActivity", user.id, "all"],
+      queryFn: async () => {
+        if (!user.settings?.mode) {
+          return {
+            userId: user.id,
+            activities: [],
+            progressData: getEmptyProgressData(),
+          };
+        }
+
+        try {
+          const { logs, error } = await getUserActivity(
+            user.id,
+            user.settings.mode as ActiveUserMode
+          );
+
+          if (error || !logs) {
+            return {
+              userId: user.id,
+              activities: [],
+              progressData: getEmptyProgressData(),
+            };
+          }
+
+          const events = getEventsForMode(user.settings.mode as ActiveUserMode);
+          const logArray = logs as UserActivityLogItem[];
+
+          const filteredActivities = logArray.filter(
+            (activity) =>
+              activity.event === events?.accept ||
+              activity.event === events?.reject
+          );
+
+          const progressData =
+            filteredActivities.length > 0
+              ? calculateProgress(
+                  filteredActivities,
+                  user.settings.mode as ActiveUserMode
+                )
+              : getEmptyProgressData();
+
+          return {
+            userId: user.id,
+            activities: filteredActivities,
+            progressData,
+          };
+        } catch (err) {
+          console.warn(`Failed to fetch activity for user ${user.id}:`, err);
+          return {
+            userId: user.id,
+            activities: [],
+            progressData: getEmptyProgressData(),
+          };
+        }
+      },
+      enabled: enabled && !!user.id && !!user.settings?.mode,
+      staleTime: QUERY_INTERVALS.staleTime,
+      retry: 1,
+    })),
+  });
+
+  // Combine users with their activity data
+  const usersWithActivity = useMemo(() => {
+    return users.map((user, index): UserWithActivity => {
+      const activityQuery = activityQueries[index];
+      const activityData = activityQuery?.data;
+
+      if (!activityData) {
+        return {
+          ...user,
+          totalAccepted: 0,
+          totalRejected: 0,
+          totalInteractions: 0,
+          correctSuggestions: 0,
+          accuracyPercentage: 0,
+          lastActivity: null,
+          activityMode: (user.settings?.mode as ActiveUserMode) || null,
+        };
+      }
+
+      // Get the last activity timestamp
+      const lastActivity =
+        activityData.activities.length > 0
+          ? activityData.activities.reduce(
+              (latest, activity) =>
+                new Date(activity.createdAt) > new Date(latest)
+                  ? activity.createdAt
+                  : latest,
+              activityData.activities[0].createdAt
+            )
+          : null;
+
+      return {
+        ...user,
+        totalAccepted: activityData.progressData.totalAccepted,
+        totalRejected: activityData.progressData.totalRejected,
+        totalInteractions: activityData.progressData.totalInteractions,
+        correctSuggestions: activityData.progressData.correctSuggestions,
+        accuracyPercentage: activityData.progressData.accuracyPercentage,
+        lastActivity,
+        activityMode: (user.settings?.mode as ActiveUserMode) || null,
+      };
+    });
+  }, [users, activityQueries]);
+
+  // Loading states
+  const isLoading =
+    usersLoading || activityQueries.some((query) => query.isLoading);
+  const isFetching = activityQueries.some((query) => query.isFetching);
+
+  // Error handling
+  const error =
+    usersError?.message ||
+    activityQueries.find((query) => query.error)?.error?.message ||
+    null;
+
+  return {
+    users: usersWithActivity,
+    pagination: usersData?.pagination,
+    isLoading,
+    isFetching,
+    error,
+    hasNextPage: usersData?.pagination
+      ? usersData.pagination.page < usersData.pagination.totalPages
+      : false,
+    hasPreviousPage: usersData?.pagination
+      ? usersData.pagination.page > 1
+      : false,
+    totalUsers: usersData?.pagination?.total || 0,
+  };
+};
+
+// Enhanced hook with search and pagination state management
+export const useUsersWithActivityAndSearch = (initialSearch = "") => {
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState(initialSearch);
+  const [limit] = useState(20);
+
+  const {
+    users,
+    pagination,
+    isLoading,
+    isFetching,
+    error,
+    hasNextPage,
+    hasPreviousPage,
+    totalUsers,
+  } = useUsersWithActivity({
+    page,
+    limit,
+    search,
+  });
+
+  const sortedUsers = useMemo(() => {
+    return [...users].sort((a, b) => {
+      // Users with activity first, then by most recent activity
+      if (!a.lastActivity && !b.lastActivity) return 0;
+      if (!a.lastActivity) return 1; // a goes to end
+      if (!b.lastActivity) return -1; // b goes to end
+
+      // Both have activity, sort by most recent first
+      return (
+        new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime()
+      );
+    });
+  }, [users]);
+
+  const handleSearch = useCallback((newSearch: string) => {
+    setSearch(newSearch);
+    setPage(1);
+  }, []);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const nextPage = useCallback(() => {
+    if (hasNextPage) {
+      setPage((prev) => prev + 1);
+    }
+  }, [hasNextPage]);
+
+  const previousPage = useCallback(() => {
+    if (hasPreviousPage) {
+      setPage((prev) => prev - 1);
+    }
+  }, [hasPreviousPage]);
+
+  const firstPage = useCallback(() => {
+    setPage(1);
+  }, []);
+
+  const lastPage = useCallback(() => {
+    if (pagination) {
+      setPage(pagination.totalPages);
+    }
+  }, [pagination]);
+
+  return {
+    // Data
+    users: sortedUsers,
+    pagination,
+    totalUsers,
+
+    // Loading states
+    isLoading,
+    isFetching,
+    error,
+
+    // Search
+    search,
+    handleSearch,
+
+    // Pagination
+    page,
+    hasNextPage,
+    hasPreviousPage,
+    handlePageChange,
+    nextPage,
+    previousPage,
+    firstPage,
+    lastPage,
+  };
+};
+
+export type { UserWithActivity };

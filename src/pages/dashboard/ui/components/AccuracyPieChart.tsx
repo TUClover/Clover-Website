@@ -1,12 +1,12 @@
 import { Pie } from "react-chartjs-2";
 import { useEffect, useState } from "react";
-import InfoTooltip from "../../../../components/InfoTooltip";
 import { Card } from "../../../../components/ui/card";
 import { ProgressData } from "../../../../api/types/suggestion";
 import { InstructorLogResponse } from "../../../../api/classes";
 import { ActiveUserMode } from "../../../../api/types/user";
 import { getEventsForMode } from "../../../../api/types/event";
 import CustomSelect from "../../../../components/CustomSelect";
+import { CustomTooltip } from "@/components/CustomTooltip";
 
 type DataMode = "total" | "accepted" | "rejected";
 
@@ -106,8 +106,6 @@ export const AccuracyPieChart = ({
   };
 
   const chartData = getChartData();
-  const correctPercentage =
-    chartData.total > 0 ? (chartData.correct / chartData.total) * 100 : 0;
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -148,7 +146,6 @@ export const AccuracyPieChart = ({
     },
   };
 
-  // Don't render if no data
   if (chartData.total === 0) {
     return (
       <Card className="p-6">
@@ -177,28 +174,33 @@ export const AccuracyPieChart = ({
 
   return (
     <Card className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-main text-primary">
-            {title}
-          </h2>
-          <InfoTooltip>
-            <div className="space-y-2">
-              <p className="text-sm">
-                This pie chart illustrates the accuracy of code suggestions
-                based on the selected view.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-alpha">Correct</span>:{" "}
-                {chartData.correct} decisions ({correctPercentage.toFixed(1)}%)
-                <br />
-                <span className="font-medium text-beta">Incorrect</span>:{" "}
-                {chartData.incorrect} decisions (
-                {(100 - correctPercentage).toFixed(1)}%)
-              </p>
-            </div>
-          </InfoTooltip>
-        </div>
+      <div className="flex items-center justify-between mb-4 gap-3">
+        <CustomTooltip
+          trigger={
+            <h2 className="text-lg font-semibold text-main text-primary">
+              {title}
+            </h2>
+          }
+          side="top"
+          align="center"
+        >
+          <div className="space-y-2">
+            <p className="text-sm">
+              This pie chart illustrates the accuracy of code suggestions based
+              on the selected view.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-alpha">Correct</span>:{" "}
+              {chartData.correct} decisions (
+              {((chartData.correct / chartData.total) * 100).toFixed(1)}%)
+              <br />
+              <span className="font-medium text-beta">Incorrect</span>:{" "}
+              {chartData.incorrect} decisions (
+              {(100 - (chartData.correct / chartData.total) * 100).toFixed(1)}
+              %)
+            </p>
+          </div>
+        </CustomTooltip>
 
         <CustomSelect
           value={dataMode}

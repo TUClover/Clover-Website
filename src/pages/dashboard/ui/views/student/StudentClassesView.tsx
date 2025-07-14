@@ -6,7 +6,7 @@ import {
   StudentStatus,
   User,
 } from "@/api/types/user";
-import ClassDetails from "@/components/ClassDetails";
+import ClassDetails from "@/pages/ClassDetailsView";
 import NoClasses from "@/components/NoClasses";
 import ClassesCarousel from "../../components/ClassesCarousel";
 import Loading from "@/components/Loading";

@@ -1,5 +1,5 @@
 import { getEventsForMode } from "@/api/types/event";
-import InfoTooltip from "@/components/InfoTooltip";
+import { CustomTooltip } from "@/components/CustomTooltip";
 import Loading from "@/components/Loading";
 import NoData from "@/components/NoData";
 import PaginatedTable from "@/components/PaginatedTable";
@@ -50,25 +50,23 @@ const StudentLogsView = () => {
   return (
     <Card className="p-6">
       <div className="flex items-center mb-3 gap-3">
-        <h2 className="text-lg font-semibold text-[#50B498]">
-          User Insights Table
-        </h2>
-        <InfoTooltip>
-          <div className="text-sm space-y-2">
-            <p>
-              The table displays each student's individual decisions on code
-              suggestions — including whether they accepted them and if the
-              suggestions contained bugs.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              • <strong>Correct:</strong> Accepting good suggestions or
-              rejecting bad ones
-              <br />• <strong>Incorrect:</strong> Accepting bad suggestions or
-              rejecting good ones
-              <br />• Click any row to view detailed suggestion information
-            </p>
-          </div>
-        </InfoTooltip>
+        <CustomTooltip
+          trigger={
+            <h2 className="text-lg font-semibold text-[#50B498]">
+              User Insights Table
+            </h2>
+          }
+          children={
+            <div className="space-y-2">
+              <p className="text-sm">
+                This table shows your recent interactions with code suggestions.
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Click on any row to view detailed suggestion information.
+              </p>
+            </div>
+          }
+        />
       </div>
       <PaginatedTable
         data={sortedLogItems}
