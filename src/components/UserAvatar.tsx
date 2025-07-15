@@ -6,6 +6,7 @@ interface UserAvatarProps {
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
   fallbackClassName?: string;
+  hexColor?: string; // Optional hex color for fallback background
 }
 
 const UserAvatar = ({
@@ -14,6 +15,7 @@ const UserAvatar = ({
   size = "md",
   className,
   fallbackClassName,
+  hexColor,
 }: UserAvatarProps) => {
   const getSizeClasses = () => {
     switch (size) {
@@ -41,6 +43,8 @@ const UserAvatar = ({
     return "U";
   };
 
+  const backgroundColor = hexColor || "#50B498";
+
   return (
     <Avatar className={`${sizeClasses.container} ${className || ""}`}>
       {avatarUrl ? (
@@ -51,7 +55,8 @@ const UserAvatar = ({
         />
       ) : (
         <AvatarFallback
-          className={`bg-alpha text-white ${sizeClasses.text} font-semibold ${fallbackClassName || ""}`}
+          className={` text-white ${sizeClasses.text} font-semibold ${fallbackClassName || ""}`}
+          style={{ backgroundColor }}
         >
           {getInitials()}
         </AvatarFallback>

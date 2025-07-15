@@ -1,4 +1,3 @@
-import { supabase } from "../supabaseClient";
 import { CLASS_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
 import {
   ClassData,
@@ -90,31 +89,62 @@ export const getClassesByInstructor = async (
  * @param {string} studentId - The ID of the student
  * @returns {Promise<{ data?: UserClass[]; error?: string }>} - The response from the server or an error message.
  */
-export const registerUserToClass = async (
-  user_id: string,
-  class_id: string
-): Promise<{ error?: string }> => {
+export const registerUserClass = async (
+  userId: string,
+  classId: string
+): Promise<{ success: boolean; error?: string }> => {
   try {
     const response = await fetch(`${CLASS_ENDPOINT}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id, class_id }),
+      body: JSON.stringify({ userId, classId }),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
       return {
+        success: false,
         error:
           data.error ||
           `Failed to register: ${response.status} ${response.statusText}`,
       };
     }
 
-    return {};
+    return { success: true };
   } catch (err) {
     return {
+      success: false,
       error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+};
+
+export const unregisterUserClass = async (
+  userId: string,
+  classId: string
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const response = await fetch(`${CLASS_ENDPOINT}/unregister`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        classId,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: data.error };
+    }
+
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Unknown error",
     };
   }
 };
@@ -211,7 +241,7 @@ export async function getClassActivityByInstructorId(
 }
 
 /**
- * Updates the enrollment status of a student in a class.
+ * Updates the enrollment status of a student in a class via backend API.
  * @param {string} classId - The ID of the class
  * @param {string} studentId - The ID of the student
  * @param {EnrollmentStatus} newStatus - The new enrollment status
@@ -222,23 +252,35 @@ export const updateStudentEnrollmentStatus = async (
   studentId: string,
   newStatus: EnrollmentStatus
 ): Promise<{ success: boolean; error?: string }> => {
-  const updateFields = {
-    enrollmentStatus: newStatus,
-    userClassStatus: newStatus === "ENROLLED" ? "ACTIVE" : null,
-  };
+  try {
+    const response = await fetch(`${CLASS_ENDPOINT}/enrollment-status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: studentId,
+        classId,
+        status: newStatus,
+      }),
+    });
 
-  const { error } = await supabase
-    .from("user_class")
-    .update(updateFields)
-    .eq("class_id", classId)
-    .eq("student_id", studentId);
+    const data = await response.json();
 
-  if (error) {
-    console.error(`Failed to update enrollment status:`, error.message);
-    return { success: false, error: error.message };
+    if (!response.ok) {
+      return {
+        success: false,
+        error:
+          data.error ||
+          `Failed to update enrollment status: ${response.status} ${response.statusText}`,
+      };
+    }
+
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
   }
-
-  return { success: true };
 };
 
 export async function getAllClasses(params?: {
@@ -325,6 +367,53 @@ export async function updateClassStudentsSettings(
     }
 
     return { data };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}
+
+export async function getClassById(
+  classId: string,
+  options?: {
+    includeStudents?: boolean;
+    userId?: string;
+  }
+): Promise<{
+  data?: ClassData;
+  error?: string;
+}> {
+  try {
+    const searchParams = new URLSearchParams();
+
+    if (options?.includeStudents) {
+      searchParams.append("includeStudents", "true");
+    }
+
+    if (options?.userId) {
+      searchParams.append("user_id", options.userId);
+    }
+
+    const queryString = searchParams.toString();
+    const url = `${CLASS_ENDPOINT}/${classId}${queryString ? `?${queryString}` : ""}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      return {
+        error:
+          responseData.error ||
+          `Failed to get class: ${response.status} ${response.statusText}`,
+      };
+    }
+
+    return { data: responseData.class };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",

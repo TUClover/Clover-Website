@@ -1,160 +1,411 @@
-import { useParams } from "react-router-dom";
+import { ClassActionDialog } from "@/components/ClassActionDialog";
+import TagBadge from "@/components/TagBadge";
+import { Button } from "@/components/ui/button";
+import UserInfoItem from "@/components/UserInfoItem";
+import { ProgrammingTag } from "@/constants/tags";
+import { useUser } from "@/context/UserContext";
+import { useClassActionDialog } from "@/hooks/useClassActionDialog";
+import { useClassData } from "@/hooks/useClassData";
+import { useQueryClient } from "@tanstack/react-query";
+import { BookOpen, Star, Users } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const ClassDetailsView = () => {
   const { classId } = useParams();
+  const { userData } = useUser();
+  const navigate = useNavigate();
 
-  console.log("Class ID:", classId);
+  const {
+    data: classData,
+    isLoading,
+    error,
+    isError,
+    refetch,
+  } = useClassData(classId, {
+    includeStudents: true,
+    userId: userData?.id,
+  });
 
-  // const { userData } = useUser();
-  // const { classTitle, classCode, classDescription, classHexColor } =
-  //   userClass || {};
+  const queryClient = useQueryClient();
 
-  // const {
-  //   enrolledStudents,
-  //   waitlistedStudents,
-  //   totalStudents,
-  //   refetch,
-  //   loading,
-  // } = useClassStudentsInfo(userClass.id || "");
+  const classActionDialog = useClassActionDialog({
+    onSuccess: () => {
+      refetch();
+      if (userData?.id) {
+        queryClient.invalidateQueries({
+          queryKey: ["userClasses", userData.id],
+        });
 
-  // const handleStatusUpdate = async (
-  //   studentId: string,
-  //   newStatus: EnrollmentStatus
-  // ) => {
-  //   if (!userClass.id) return;
+        queryClient.invalidateQueries({
+          queryKey: ["allClasses", { userId: userData.id }],
+        });
+      }
+    },
+  });
 
-  //   try {
-  //     const { success, error } = await updateStudentEnrollmentStatus(
-  //       userClass.id,
-  //       studentId,
-  //       newStatus
-  //     );
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600" />
+      </div>
+    );
+  }
 
-  //     if (success) {
-  //       toast.success(
-  //         `Student ${newStatus === EnrollmentStatus.ENROLLED ? "enrolled" : "removed"} successfully!`
-  //       );
-  //       refetch();
-  //     } else {
-  //       throw new Error(error);
-  //     }
-  //   } catch (err) {
-  //     console.error("Error updating enrollment status:", err);
-  //     toast.error(
-  //       `Failed to ${newStatus === EnrollmentStatus.ENROLLED ? "enroll" : "remove"} student.`
-  //     );
-  //   }
-  // };
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-2">Error</h2>
+          <p className="text-gray-600 mb-4">
+            {typeof error === "string"
+              ? error
+              : error instanceof Error
+                ? error.message
+                : "Failed to load class data"}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!classData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Class Not Found
+          </h2>
+          <p className="text-gray-600">
+            The requested class could not be found.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const {
+    classTitle,
+    classCode,
+    classDescription,
+    classHexColor,
+    classImageCover,
+    instructorName,
+    studentCount,
+    enrollmentStatus,
+    students = [],
+  } = classData;
+
+  const isUserEnrolled = enrollmentStatus === "ENROLLED";
+  const isUserWaitlisted = enrollmentStatus === "WAITLISTED";
+  const isUserRejected = enrollmentStatus === "REJECTED";
+
+  const isInstructor = userData && classData.instructorId === userData.id;
+
+  const handleSaveClick = () => {
+    console.log("Saving class...");
+  };
+
+  const handlePreviewClick = () => {
+    navigate("/dashboard", {
+      state: {
+        preselectedClassId: classId,
+      },
+    });
+  };
+
+  const handleClassAction = (
+    action: "join" | "leave" | "cancel" | "remove"
+  ) => {
+    if (!userData?.id || !classId) return;
+
+    classActionDialog.openDialog({
+      classId: classId,
+      userId: userData.id,
+      classTitle: classData.classTitle,
+      action: action,
+    });
+  };
 
   return (
-    <div
-      className="pt-0 overflow-hidden w-full max-w-2xl lg:max-w-4xl space-y-6 max-h-[85vh] flex flex-col overflow-y-auto pb-8 bg-sidebar"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* <div className="relative h-56 w-full flex-shrink-0">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <ClassActionDialog
+        isOpen={classActionDialog.isOpen}
+        isLoading={classActionDialog.isLoading}
+        classInfo={classActionDialog.classInfo}
+        onClose={classActionDialog.closeDialog}
+        onConfirm={classActionDialog.handleConfirm}
+      />
+
+      <div className="w-full">
         <div
-          className="absolute top-0 left-0 h-48 w-full rounded-t-xl overflow-hidden"
-          style={{ backgroundColor: classHexColor || "#E5E7EB" }}
-        />
-        <div className="absolute -bottom-4 left-12">
-          {instructorData?.avatarUrl ? (
-            <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-white dark:border-black">
-              <img
-                src={instructorData.avatarUrl ?? ""}
-                alt={`${instructorData.firstName} ${instructorData.lastName}`}
-                className="w-full h-full rounded-full object-cover"
-              />
-            </div>
-          ) : (
-            <div
-              className="rounded-full flex items-center justify-center text-white text-4xl font-bold size-24 border-4 border-white dark:border-black bg-white dark:bg-slate-900"
-              style={{ backgroundColor: classHexColor || "#50B498" }}
-            >
-              {instructorData?.firstName?.charAt(0).toUpperCase()}
-            </div>
-          )}
-        </div>
-        <X
-          className="absolute top-6 right-6 cursor-pointer text-slate-500 hover:text-slate-700 dark:text-slate-600 dark:hover:text-slate-200"
-          onClick={onClose}
-        />
-      </div>
+          className="h-96 w-full relative overflow-hidden"
+          style={{
+            backgroundColor: classHexColor || "#6366f1",
+            backgroundImage: classImageCover
+              ? `url(${classImageCover})`
+              : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
 
-      <div className="mt-16 px-6">
-        <div className="flex justify-between items-start px-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              {classTitle}
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">
-              {classCode}
-            </p>
-          </div>
+          <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="bg-white/40 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+                    {classCode}
+                  </span>
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+                  {classTitle}
+                </h1>
+                <div className="flex items-center gap-6 text-gray-200">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    <span>
+                      {studentCount}{" "}
+                      {studentCount === 1 ? "Student" : "Students"}
+                    </span>
+                  </div>
 
-          <span className="text-muted-foreground text-lg flex items-center gap-2 mt-1">
-            {totalStudents === 1 ? (
-              <>
-                <LucidUser className="size-5" /> 1 Student
-              </>
-            ) : (
-              <>
-                <Users className="size-5" /> {totalStudents} Students
-              </>
-            )}
-          </span>
-        </div>
-
-        <div className="my-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="col-span-1 card">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Instructor
-            </h2>
-            <div className="flex items-center gap-4">
-              <div>
-                <h3 className="font-medium text-gray-600 dark:text-gray-300">
-                  {instructorData?.firstName} {instructorData?.lastName}
-                </h3>
+                  {(() => {
+                    const tags = Object.values(ProgrammingTag)
+                      .sort(() => 0.5 - Math.random())
+                      .slice(0, 5);
+                    return (
+                      <div className="flex items-center gap-2">
+                        {tags.slice(0, 3).map((tag, idx) => (
+                          <TagBadge key={idx} tag={tag} size="sm" />
+                        ))}
+                        {tags.length > 3 && (
+                          <span className="text-white/70">
+                            +{tags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className="md:col-span-2 card">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Description
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 whitespace-pre-line">
-              {classDescription || "No description available."}
-            </p>
+      {/* Main content section - constrained width */}
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                About This Class
+              </h2>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                {classDescription ||
+                  "This comprehensive course is designed to provide you with in-depth knowledge and practical skills. You'll learn through hands-on exercises, real-world examples, and expert guidance from experienced instructors."}
+              </p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                What You'll Learn
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  "Master fundamental concepts and principles",
+                  "Apply knowledge through practical exercises",
+                  "Develop critical thinking and problem-solving skills",
+                  "Gain hands-on experience with real-world projects",
+                  "Build confidence in your abilities",
+                  "Connect with fellow learners and instructors",
+                ].map((item, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {item}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {students.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                  Enrolled Students ({students.length})
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {students.slice(0, 9).map((student, index) => (
+                    <UserInfoItem
+                      key={index}
+                      firstName={student.firstName}
+                      lastName={student.lastName}
+                      email={student.email}
+                      avatarUrl={student.avatarUrl}
+                      hexColor={classHexColor}
+                      className="flex items-center gap-3 px-3 py-2 bg-slate-100 dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    />
+                  ))}
+                  {students.length > 9 && (
+                    <div className="flex items-center justify-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600">
+                      <span className="text-gray-500 dark:text-gray-400 font-medium">
+                        +{students.length - 9} more
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              {/* Instructor info */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Instructor
+                </h3>
+                <UserInfoItem
+                  firstName={instructorName || "Instructor Name"}
+                  email="Main Instructor"
+                  hexColor={classHexColor}
+                  className="bg-transparent"
+                  size="lg"
+                />
+              </div>
+
+              {/* Course stats */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Course Details
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Users className="w-5 h-5 text-gray-500" />
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {studentCount} enrolled students
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="w-5 h-5 text-gray-500" />
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {classCode}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Star className="w-5 h-5 text-yellow-500" />
+                    <span className="text-gray-700 dark:text-gray-300">
+                      4.8 average rating
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+                <div className="space-y-3">
+                  {!isInstructor && (
+                    <>
+                      {isUserEnrolled ? (
+                        <>
+                          <Button
+                            onClick={handlePreviewClick}
+                            className="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors hover:bg-primary/80"
+                          >
+                            Go to Course
+                          </Button>
+                          <Button
+                            onClick={() => handleClassAction("leave")}
+                            variant="outline"
+                            className="w-full bg-red-50 hover:bg-red-500 text-red-600 font-semibold py-3 px-4 rounded-lg transition-colors"
+                          >
+                            Leave Class
+                          </Button>
+                        </>
+                      ) : isUserWaitlisted ? (
+                        <>
+                          <Button
+                            disabled
+                            className="w-full bg-yellow-500/50 text-white font-semibold py-3 px-4 rounded-lg cursor-not-allowed"
+                          >
+                            Pending
+                          </Button>
+                          <Button
+                            onClick={() => handleClassAction("cancel")}
+                            variant="outline"
+                            className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+                          >
+                            Cancel Application
+                          </Button>
+                        </>
+                      ) : isUserRejected ? (
+                        <>
+                          <Button
+                            onClick={() => handleClassAction("remove")}
+                            className="w-full bg-red-500 hover:bg-red-500/80 text-white font-semibold py-3 px-4 rounded-lg"
+                          >
+                            Remove
+                          </Button>
+                          <Button
+                            onClick={handleSaveClick}
+                            variant="outline"
+                            className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+                          >
+                            Save for Later
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            onClick={() => handleClassAction("join")}
+                            className="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                          >
+                            Enroll Now
+                          </Button>
+                          <Button
+                            onClick={handleSaveClick}
+                            variant="outline"
+                            className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+                          >
+                            Save for Later
+                          </Button>
+                        </>
+                      )}
+                    </>
+                  )}
+
+                  {isInstructor && (
+                    <>
+                      <Button
+                        onClick={() => console.log("Manage class...")}
+                        className="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors hover:bg-primary/80"
+                      >
+                        Manage Class
+                      </Button>
+                      <Button
+                        onClick={() => console.log("Edit class...")}
+                        variant="outline"
+                        className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+                      >
+                        Edit Class
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {enrolledStudents.length > 0 && (
-          <StudentListSection
-            title="Enrolled Students"
-            students={enrolledStudents}
-            variant={EnrollmentStatus.ENROLLED}
-            onRemove={(studentId) =>
-              handleStatusUpdate(studentId, EnrollmentStatus.REMOVED)
-            }
-            isInstructor={userData?.role === UserRole.INSTRUCTOR}
-          />
-        )}
-
-        {waitlistedStudents.length > 0 &&
-          userData?.role === UserRole.INSTRUCTOR && (
-            <StudentListSection
-              title="Waitlisted Students"
-              students={waitlistedStudents}
-              variant={EnrollmentStatus.WAITLISTED}
-              onAccept={(studentId) =>
-                handleStatusUpdate(studentId, EnrollmentStatus.ENROLLED)
-              }
-              onReject={(studentId) =>
-                handleStatusUpdate(studentId, EnrollmentStatus.REJECTED)
-              }
-            />
-          )}
-      </div> */}
+      </div>
     </div>
   );
 };

@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { EnrollmentStatus, StudentStatus } from "../api/types/user";
+import { EnrollmentStatus, UserStatus } from "../api/types/user";
 import { supabase } from "../supabaseClient";
 import { getClassesbyStudent } from "@/api/classes";
 import { useQuery } from "@tanstack/react-query";
 import QUERY_INTERVALS from "@/constants/queryIntervals";
 
-export const useUserClasses = (userId?: string | null) => {
+export const useUserClasses = (
+  userId?: string | null,
+  preselectedClassId?: string
+) => {
   const [selectedClassId, setSelectedClassId] = useState<string | null>("all");
 
   const {
@@ -74,6 +77,23 @@ export const useUserClasses = (userId?: string | null) => {
     return options;
   }, [allClasses]);
 
+  useEffect(() => {
+    if (preselectedClassId && allClassOptions.length > 0) {
+      // Check if the preselected class exists in user's enrolled classes
+      const classExists = allClassOptions.some(
+        (cls) => cls.id === preselectedClassId
+      );
+      if (classExists) {
+        setSelectedClassId(preselectedClassId);
+      } else {
+        // If class doesn't exist in user's enrolled classes, keep default "all"
+        console.warn(
+          `Preselected class ${preselectedClassId} not found in user's enrolled classes`
+        );
+      }
+    }
+  }, [preselectedClassId, allClassOptions]);
+
   const handleClassSelect = useCallback((classId: string | null) => {
     setSelectedClassId(classId);
   }, []);
@@ -105,9 +125,7 @@ export const useUserClassStatus = (
   studentId: string | null,
   classId: string | null
 ) => {
-  const [studentStatus, setStudentStatus] = useState<StudentStatus | null>(
-    null
-  );
+  const [studentStatus, setStudentStatus] = useState<UserStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

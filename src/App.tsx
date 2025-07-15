@@ -50,7 +50,6 @@ const App = (): JSX.Element => {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        x
         <main className="flex flex-col">
           <Routes>
             <Route element={<RootLayout />}>

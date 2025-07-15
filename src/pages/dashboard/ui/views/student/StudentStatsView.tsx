@@ -6,7 +6,7 @@ import AccuracyPieChart from "@/pages/dashboard/ui/components/AccuracyPieChart";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import NoData from "@/components/NoData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@/context/UserContext";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";
 import Loading from "@/components/Loading";
@@ -14,6 +14,7 @@ import { ClassData } from "@/api/types/user";
 import LearningProgressChart from "@/pages/dashboard/ui/components/LearningProgressChart";
 import AccuracyTimeLineChart from "@/pages/dashboard/ui/components/AccuracyTimeLineChart";
 import ResponseTimeBarChart from "@/pages/dashboard/ui/components/ResponseTimeBarChart";
+import { useLocation } from "react-router-dom";
 
 Chart.register(...registerables);
 
@@ -25,12 +26,15 @@ Chart.register(...registerables);
 const StudentStatsView = ({ description }: { description?: string }) => {
   const { userData } = useUser();
 
+  const location = useLocation();
+  const preselectedClassId = location.state?.preselectedClassId;
+
   const {
     allClassOptions,
     selectedClassId,
     handleClassSelect,
     loading: userClassLoading,
-  } = useUserClasses(userData?.id);
+  } = useUserClasses(userData?.id, preselectedClassId);
 
   const {
     userActivity,
@@ -42,6 +46,13 @@ const StudentStatsView = ({ description }: { description?: string }) => {
   const [dataMode, setDataMode] = useState<"total" | "accepted" | "rejected">(
     "total"
   );
+
+  useEffect(() => {
+    if (preselectedClassId && location.state) {
+      // Clear the state after component mounts
+      window.history.replaceState({}, document.title);
+    }
+  }, [preselectedClassId, location.state]);
 
   if (loading) {
     return (

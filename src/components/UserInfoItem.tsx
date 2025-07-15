@@ -2,11 +2,12 @@ import UserAvatar from "./UserAvatar";
 
 interface UserInfoItemProps {
   firstName: string;
-  lastName: string;
+  lastName?: string;
   email: string;
   avatarUrl?: string;
   size?: "xs" | "sm" | "md" | "lg";
   className?: string;
+  hexColor?: string;
 }
 
 const UserInfoItem = ({
@@ -16,6 +17,7 @@ const UserInfoItem = ({
   avatarUrl,
   size = "md",
   className,
+  hexColor,
 }: UserInfoItemProps) => {
   const getTextSizes = () => {
     switch (size) {
@@ -38,7 +40,12 @@ const UserInfoItem = ({
     <div
       className={`flex items-center gap-3 bg-muted rounded-lg ${className || ""}`}
     >
-      <UserAvatar firstName={firstName} avatarUrl={avatarUrl} size={size} />
+      <UserAvatar
+        firstName={firstName}
+        avatarUrl={avatarUrl}
+        size={size}
+        hexColor={hexColor}
+      />
       <div className="flex-1 min-w-0">
         <div className={`font-medium truncate ${textSizes.name}`}>
           {firstName} {lastName}

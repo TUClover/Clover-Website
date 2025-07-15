@@ -1,18 +1,18 @@
-import { useState } from "react";
 import { useUserClasses } from "@/hooks/useUserClasses";
-import {
-  ClassData,
-  EnrollmentStatus,
-  StudentStatus,
-  User,
-} from "@/api/types/user";
-import ClassDetails from "@/pages/ClassDetailsView";
+import { EnrollmentStatus } from "@/api/types/user";
 import NoClasses from "@/components/NoClasses";
 import ClassesCarousel from "../../components/ClassesCarousel";
 import Loading from "@/components/Loading";
 import { useUser } from "@/context/UserContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Grid, List } from "lucide-react";
+import {
+  BookOpen,
+  CheckCheck,
+  Clock,
+  Grid,
+  List,
+  UserRoundX,
+} from "lucide-react";
 import ClassesTable from "../../components/ClassesTable";
 
 const StudentClassesView = ({ description }: { description?: string }) => {
@@ -20,12 +20,6 @@ const StudentClassesView = ({ description }: { description?: string }) => {
   const { allClasses, loading: userClassLoading } = useUserClasses(
     userData?.id
   );
-  const [selectedClass, setSelectedClass] = useState<{
-    userClass: ClassData;
-    studentStatus?: StudentStatus;
-    instructorData?: User;
-    studentCount?: number;
-  } | null>(null);
 
   if (userClassLoading) {
     return (
@@ -35,24 +29,6 @@ const StudentClassesView = ({ description }: { description?: string }) => {
     );
   }
 
-  const handleClassSelect = (
-    userClass: ClassData,
-    studentStatus?: StudentStatus,
-    instructorData?: User,
-    studentCount?: number
-  ) => {
-    setSelectedClass({
-      userClass,
-      studentStatus,
-      instructorData,
-      studentCount,
-    });
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedClass(null);
-  };
-
   if (allClasses.length === 0) {
     return <NoClasses role="student" />;
   }
@@ -61,20 +37,32 @@ const StudentClassesView = ({ description }: { description?: string }) => {
     {
       status: EnrollmentStatus.ENROLLED,
       title: "Enrolled Classes",
+      icon: BookOpen,
+      iconColor: "text-blue-600",
     },
     {
       status: EnrollmentStatus.WAITLISTED,
       title: "Waitlisted Classes",
+      icon: Clock,
+      iconColor: "text-orange-600",
     },
     {
       status: EnrollmentStatus.COMPLETED,
       title: "Completed Classes",
+      icon: CheckCheck,
+      iconColor: "text-green-600",
+    },
+    {
+      status: EnrollmentStatus.REJECTED,
+      title: "Rejected Classes",
+      icon: UserRoundX,
+      iconColor: "text-red-600",
     },
   ];
 
   const renderCarouselView = () => (
-    <>
-      {classGroups.map(({ status, title }) => {
+    <div className="space-y-8">
+      {classGroups.map(({ status, title, icon: Icon, iconColor }) => {
         const filteredClasses = allClasses.filter(
           (c) => c.enrollmentStatus === status
         );
@@ -82,20 +70,21 @@ const StudentClassesView = ({ description }: { description?: string }) => {
         if (filteredClasses.length === 0) return null;
 
         return (
-          <ClassesCarousel
-            key={status}
-            classes={filteredClasses}
-            onClassSelect={handleClassSelect}
-            title={title}
-          />
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Icon className={`size-6 ${iconColor}`} />
+              <h2 className="text-xl font-semibold">{title}</h2>
+            </div>
+            <ClassesCarousel key={title} classes={filteredClasses} />
+          </div>
         );
       })}
-    </>
+    </div>
   );
 
   const renderTableView = () => (
-    <>
-      {classGroups.map(({ status, title }) => {
+    <div className="space-y-8">
+      {classGroups.map(({ status, title, icon: Icon, iconColor }) => {
         const filteredClasses = allClasses.filter(
           (c) => c.enrollmentStatus === status
         );
@@ -103,17 +92,21 @@ const StudentClassesView = ({ description }: { description?: string }) => {
         if (filteredClasses.length === 0) return null;
 
         return (
-          <ClassesTable
-            key={status}
-            classes={filteredClasses}
-            onClassSelect={handleClassSelect}
-            title={title}
-            showStatus
-            showActions
-          />
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Icon className={`size-6 ${iconColor}`} />
+              <h2 className="text-xl font-semibold">{title}</h2>
+            </div>
+            <ClassesTable
+              key={status}
+              classes={filteredClasses}
+              showStatus
+              showActions
+            />
+          </div>
         );
       })}
-    </>
+    </div>
   );
 
   return (
@@ -141,14 +134,6 @@ const StudentClassesView = ({ description }: { description?: string }) => {
           {renderTableView()}
         </TabsContent>
       </Tabs>
-
-      {selectedClass && (
-        <ClassDetails
-          userClass={selectedClass.userClass}
-          instructorData={selectedClass.instructorData as User}
-          onClose={handleCloseDetails}
-        />
-      )}
     </>
   );
 };

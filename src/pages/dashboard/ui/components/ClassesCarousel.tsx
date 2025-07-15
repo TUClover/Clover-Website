@@ -1,4 +1,4 @@
-import { ClassData, User, UserStatus } from "@/api/types/user";
+import { ClassData } from "@/api/types/user";
 import ClassInfoCard from "@/components/ClassInfoCard";
 import {
   Carousel,
@@ -10,43 +10,45 @@ import {
 
 interface ClassesCarouselProps {
   classes: ClassData[];
-  onClassSelect: (
-    userClass: ClassData,
-    studentStatus?: UserStatus,
-    instructorData?: User,
-    studentCount?: number
-  ) => void;
-  title: string;
 }
 
-const ClassesCarousel = ({
-  classes,
-  onClassSelect,
-  title,
-}: ClassesCarouselProps) => {
+const ClassesCarousel = ({ classes }: ClassesCarouselProps) => {
   return (
-    <div className="width-container grid grid-cols-1 md:grid-cols-5 lg:grid-cols-3 gap-6 mb-6">
-      <div className="col-span-1 md:col-span-3 lg:col-span-2 space-y-4">
-        <h2 className="text-xl font-semibold">{title}</h2>
-        <Carousel className="w-full">
-          <CarouselContent>
+    <div className="width-container mb-6">
+      <div className="space-y-4">
+        <Carousel
+          className="w-full"
+          opts={{
+            align: "start",
+            loop: false,
+            skipSnaps: false,
+            dragFree: false,
+          }}
+        >
+          <CarouselContent className="-ml-3">
             {classes.map((userClassInfo, index) => (
-              <CarouselItem key={index} className="lg:basis-1/2">
-                <div className="p-1">
-                  <ClassInfoCard
-                    classInfo={userClassInfo}
-                    onSelect={onClassSelect}
-                  />
-                </div>
+              <CarouselItem
+                key={index}
+                className="space-x-6 basis-full sm:basis-1/2 lg:basis-1/3"
+              >
+                <ClassInfoCard classInfo={userClassInfo} />
               </CarouselItem>
             ))}
           </CarouselContent>
           {classes.length > 1 && (
             <div
-              className={`flex justify-between w-full ${classes.length <= 2 && "lg:hidden"}`}
+              className={`flex justify-between w-full mt-4 ${
+                classes.length <= 1
+                  ? "hidden"
+                  : classes.length <= 2
+                    ? "sm:hidden"
+                    : classes.length <= 3
+                      ? "lg:hidden"
+                      : ""
+              }`}
             >
-              <CarouselPrevious className="ml-4" />
-              <CarouselNext className="mr-4" />
+              <CarouselPrevious className="ml-6" />
+              <CarouselNext className="mr-6" />
             </div>
           )}
         </Carousel>

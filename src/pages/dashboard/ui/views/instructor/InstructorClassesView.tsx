@@ -1,4 +1,3 @@
-import { UserRole } from "@/api/types/user";
 import ClassInfoCard from "@/components/ClassInfoCard";
 import CreateNewClassDialog from "@/components/CreateNewClassDialog";
 import Loading from "@/components/Loading";
@@ -12,21 +11,12 @@ import {
 } from "@/components/ui/carousel";
 import { useUser } from "@/context/UserContext";
 import { useInstructorClasses } from "@/hooks/useInstructorClasses";
-import { useNavigate } from "react-router-dom";
 
 export const InstructorClassesView = () => {
   const { userData } = useUser();
   const { allClasses, loading: userClassLoading } = useInstructorClasses(
     userData?.id
   );
-
-  const navigate = useNavigate();
-
-  const handleClassSelect = (classId: string) => {
-    if (classId) {
-      navigate(`/classes/${classId}`);
-    }
-  };
 
   if (userClassLoading) {
     return (
@@ -58,14 +48,7 @@ export const InstructorClassesView = () => {
               {allClasses.map((userClass, index) => (
                 <CarouselItem key={index} className="lg:basis-1/3">
                   <div className="p-1">
-                    <ClassInfoCard
-                      classInfo={userClass}
-                      onSelect={() => handleClassSelect(userClass.id)}
-                      isInstructor={
-                        userData?.role === UserRole.INSTRUCTOR ||
-                        userData?.role === UserRole.ADMIN
-                      }
-                    />
+                    <ClassInfoCard classInfo={userClass} />
                   </div>
                 </CarouselItem>
               ))}

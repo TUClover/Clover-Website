@@ -1,4 +1,4 @@
-import { UserStatus, ClassData, User } from "../api/types/user";
+import { ClassData, User, UserStatus } from "../api/types/user";
 import {
   Carousel,
   CarouselContent,
@@ -24,7 +24,7 @@ export const StudentProfile = ({ userData }: { userData: User }) => {
   const { originalClasses, loading: userClassLoading } = useUserClasses();
   const [selectedClass, setSelectedClass] = useState<{
     userClass: ClassData;
-    studentStatus?: StudentStatus;
+    studentStatus?: UserStatus;
     instructorData?: User;
     studentCount?: number;
   } | null>(null);
@@ -39,7 +39,7 @@ export const StudentProfile = ({ userData }: { userData: User }) => {
 
   const handleClassSelect = (
     userClass: ClassData,
-    studentStatus?: StudentStatus,
+    studentStatus?: UserStatus,
     instructorData?: User,
     studentCount?: number
   ) => {
