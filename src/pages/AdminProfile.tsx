@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import { User } from "../api/types/user";
+import { User } from "../types/user";
 import ProfileCard from "../components/ProfileCard";
 import { useInstructorClasses } from "../hooks/useInstructorClasses";
 import Loading from "@/components/Loading";

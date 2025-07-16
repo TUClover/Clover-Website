@@ -1,5 +1,5 @@
 import { updateClassStudentsSettings } from "@/api/classes";
-import { User, UserMode } from "@/api/types/user";
+import { User, UserMode } from "@/types/user";
 import {
   InfoCardItem,
   InfoCardTitle,

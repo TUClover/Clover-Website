@@ -1,15 +1,17 @@
-import { getUserActivity } from "../api/user";
-import { calculateProgress } from "../utils/calculateProgress";
-import { getEventsForMode } from "../api/types/event";
-import { ProgressData, UserActivityLogItem } from "../api/types/suggestion";
-import { ActiveUserMode } from "../api/types/user";
+import { getUserActivity } from "@/api/user";
+import {
+  calculateProgress,
+  getEmptyProgressData,
+} from "@/utils/calculateProgress";
+import { UserActivityLogItem } from "@/types/suggestion";
+import { UserMode } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import QUERY_INTERVALS from "@/constants/queryIntervals";
 import { useMemo } from "react";
 
 export const useUserActivity = (
   userId?: string | null,
-  mode?: ActiveUserMode | null,
+  mode?: UserMode | null,
   selectedClassId: string | null = null
 ) => {
   const { data, isLoading, error, refetch } = useQuery({
@@ -19,21 +21,12 @@ export const useUserActivity = (
         return [];
       }
 
-      const { logs, error } = await getUserActivity(
-        userId,
-        mode as ActiveUserMode
-      );
+      const { logs, error } = await getUserActivity(userId, mode as UserMode);
       if (error || !logs) throw new Error(error);
 
-      const events = getEventsForMode(mode as ActiveUserMode);
       const logArray = logs as UserActivityLogItem[];
 
-      const filteredActivities = logArray.filter(
-        (activity) =>
-          activity.event === events?.accept || activity.event === events?.reject
-      );
-
-      return filteredActivities;
+      return logArray;
     },
     enabled: !!userId && !!mode,
     staleTime: QUERY_INTERVALS.staleTime,
@@ -60,12 +53,12 @@ export const useUserActivity = (
   }, [data, selectedClassId]);
 
   const progressData = useMemo(() => {
-    if (!filteredUserActivity.length || !mode) {
+    if (!filteredUserActivity.length) {
       return getEmptyProgressData();
     }
 
-    return calculateProgress(filteredUserActivity, mode as ActiveUserMode);
-  }, [filteredUserActivity, mode]);
+    return calculateProgress(filteredUserActivity);
+  }, [filteredUserActivity]);
 
   return {
     userActivity: filteredUserActivity,
@@ -76,11 +69,3 @@ export const useUserActivity = (
     isEmpty: !isLoading && filteredUserActivity.length === 0,
   };
 };
-
-const getEmptyProgressData = (): ProgressData => ({
-  totalAccepted: 0,
-  totalRejected: 0,
-  totalInteractions: 0,
-  correctSuggestions: 0,
-  accuracyPercentage: 0,
-});

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useUser } from "@/context/UserContext";
 import { useClassData } from "@/hooks/useClassData";
-import { ClassInfo } from "@/api/types/user";
+import { ClassInfo } from "@/types/user";
 import { toast } from "sonner";
 import { createClass, updateClass } from "@/api/classes";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";

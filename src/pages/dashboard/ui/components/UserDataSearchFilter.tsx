@@ -1,5 +1,6 @@
 import CustomSelect from "@/components/CustomSelect";
 import FilterInput from "@/components/FilterInput";
+import { UserMode } from "@/types/user";
 
 interface UserFiltersProps {
   nameFilter?: string;
@@ -15,8 +16,8 @@ interface UserFiltersProps {
   setStatusFilter?: (value: string) => void;
 
   // Mode filter
-  modeFilter?: string;
-  setModeFilter?: (value: string) => void;
+  modeFilter?: UserMode | "all";
+  setModeFilter?: (value: UserMode | "all") => void;
 
   // Class filter
   classFilter?: string;
@@ -96,9 +97,9 @@ const UserDataSearchFilters = ({
             onValueChange={setModeFilter}
             options={[
               { value: "all", label: "All Modes" },
-              { value: "LINE_BY_LINE", label: "Line" },
-              { value: "CODE_BLOCK", label: "Block" },
-              { value: "CODE_SELECTION", label: "Selection" },
+              { value: UserMode.LINE_BY_LINE, label: "Line" },
+              { value: UserMode.CODE_BLOCK, label: "Block" },
+              { value: UserMode.CODE_SELECTION, label: "Selection" },
             ]}
             placeholder="Select mode"
           />

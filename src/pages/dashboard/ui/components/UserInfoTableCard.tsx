@@ -1,4 +1,4 @@
-import { UserMode, UserRole, UserStatus } from "@/api/types/user";
+import { UserMode, UserRole, UserStatus } from "@/types/user";
 import MiniPieChart from "@/components/MiniPieChart";
 import ModeBadge from "@/components/ModeBadge";
 import RoleBadge from "@/components/RoleBadge";

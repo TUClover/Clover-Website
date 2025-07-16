@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { User } from "../api/types/user";
+import { User } from "../types/user";
 import { useAuth } from "../hooks/useAuth";
 import { getUserData } from "../api/user";
 import { UserContext } from "./UserContext";

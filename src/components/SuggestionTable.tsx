@@ -4,11 +4,11 @@ import {
   LineByLineSuggestion,
   SuggestionData,
   UserActivityLogItem,
-} from "../api/types/suggestion";
-import { useCallback, useEffect, useMemo, useState } from "react";
+} from "../types/suggestion";
+import { useCallback, useEffect, useState } from "react";
 import { Card } from "./ui/card";
-import { ActiveUserMode } from "../api/types/user";
-import { getEventsForMode } from "../api/types/event";
+import { UserMode } from "../types/user";
+import { ACCEPT_EVENTS } from "../types/event";
 import { X } from "lucide-react";
 import {
   Table,
@@ -27,7 +27,7 @@ import ModalContainer from "./ModalContainer";
 interface SuggestionTableProps {
   logItems: UserActivityLogItem[];
   startIndex?: number;
-  mode: ActiveUserMode;
+  mode: UserMode;
 }
 
 /**
@@ -50,18 +50,9 @@ export const SuggestionTable = ({
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const events = useMemo(() => getEventsForMode(mode), [mode]);
-
-  const isAcceptEvent = useCallback(
-    (event: string) => {
-      return (
-        event === events?.accept ||
-        event.includes("ACCEPT") ||
-        event.includes("accept")
-      );
-    },
-    [events]
-  );
+  const isAcceptEvent = useCallback((event: string) => {
+    return ACCEPT_EVENTS.includes(event);
+  }, []);
 
   const getDecisionCorrectness = (logItem: UserActivityLogItem) => {
     const isAccept = isAcceptEvent(logItem.event);
@@ -229,7 +220,7 @@ export const SuggestionDetailCard = ({
 }: {
   log: UserActivityLogItem;
   suggestion: SuggestionData;
-  mode: ActiveUserMode;
+  mode: UserMode;
 }) => {
   const isAccepted =
     log.event.includes("ACCEPT") || log.event.includes("accept");

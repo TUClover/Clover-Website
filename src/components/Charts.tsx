@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Pie } from "react-chartjs-2";
 import { Card } from "./ui/card";
-import { SuggestionData } from "../api/types/suggestion";
+import { SuggestionData } from "../types/suggestion";
 import { CustomTooltip } from "./CustomTooltip";
 
 const COLORS = [

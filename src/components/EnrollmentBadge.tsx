@@ -1,4 +1,4 @@
-import { EnrollmentStatus } from "@/api/types/user";
+import { EnrollmentStatus } from "@/types/user";
 import { Badge } from "./ui/badge";
 
 interface EnrollmentBadgeProps {

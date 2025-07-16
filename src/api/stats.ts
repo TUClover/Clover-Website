@@ -1,5 +1,5 @@
 import { STAT_ENDPOINT } from "./endpoints";
-import { AIStats } from "./types/suggestion";
+import { AIStats } from "../types/suggestion";
 
 /**
  * Fetches AI usage statistics from the server.

@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../../../../supabaseClient";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +11,7 @@ import {
 import { SidebarMenuButton } from "../../../../components/ui/sidebar";
 import { useUser } from "../../../../context/UserContext";
 import UserAvatar from "@/components/UserAvatar";
+import { supabase } from "@/supabaseClient";
 
 interface NavUserProps {
   isMobile: boolean;

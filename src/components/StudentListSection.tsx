@@ -6,7 +6,7 @@ import {
 } from "./ui/collapsible";
 import { ChevronDownCircle, ChevronUpCircle } from "lucide-react";
 import { Button } from "./ui/button";
-import { EnrollmentStatus, User } from "../api/types/user";
+import { EnrollmentStatus, User } from "../types/user";
 
 type StudentListSectionProps = {
   title: string;

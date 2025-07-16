@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
-import { parseISODate } from "../../../../utils/timeConverter";
-import { CustomTooltip } from "../../../../components/CustomTooltip";
-import { Card } from "../../../../components/ui/card";
-import { LogEvent } from "../../../../api/types/event";
-import { UserActivityLogItem } from "../../../../api/types/suggestion";
-import { InstructorLogResponse } from "../../../../api/classes";
-import CustomSelect from "../../../../components/CustomSelect";
+import { parseISODate } from "@/utils/timeConverter";
+import { CustomTooltip } from "@/components/CustomTooltip";
+import { Card } from "@/components/ui/card";
+import { ACCEPT_EVENTS, REJECT_EVENTS } from "@/types/event";
+import { UserActivityLogItem } from "@/types/suggestion";
+import { InstructorLogResponse } from "@/api/classes";
+import CustomSelect from "@/components/CustomSelect";
 
 enum TimeInterval {
   DAY = "Day",
@@ -82,18 +82,14 @@ export const DecisionLineChart = ({
         : new Date(activity.createdAt);
 
     const key = groupBy(date, interval);
+
+    const isAcceptEvent = ACCEPT_EVENTS.includes(activity.event);
+    const isRejectEvent = REJECT_EVENTS.includes(activity.event);
+
     if (key) {
-      if (
-        activity.event === LogEvent.SUGGESTION_ACCEPT ||
-        activity.event === "SUGGESTION_ACCEPT" ||
-        activity.event.includes("ACCEPT")
-      ) {
+      if (isAcceptEvent) {
         acceptedMap[key] = (acceptedMap[key] || 0) + 1;
-      } else if (
-        activity.event === LogEvent.USER_REJECT ||
-        activity.event === "USER_REJECT" ||
-        activity.event.includes("REJECT")
-      ) {
+      } else if (isRejectEvent) {
         rejectedMap[key] = (rejectedMap[key] || 0) + 1;
       }
     }

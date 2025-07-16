@@ -1,4 +1,4 @@
-import { ClassData, User, UserStatus } from "../api/types/user";
+import { ClassData, User, UserStatus } from "../types/user";
 import {
   Carousel,
   CarouselContent,

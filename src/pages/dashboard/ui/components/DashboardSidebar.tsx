@@ -19,8 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { UserRole } from "@/api/types/user";
-import { SideBarItem } from "@/constants/sidebarConfigs";
+import { UserRole } from "@/types/user";
+import { ROLE_SELECT_CONFIG, SideBarItem } from "@/constants/sidebarConfigs";
 import { Label } from "@/components/ui/label";
 import { Download, FileQuestion } from "lucide-react";
 import NavUser from "./NavUser";
@@ -32,6 +32,7 @@ interface DashboardSidebarProps {
   currentTab: string;
   onTabClick: (tab: string) => void;
   onRoleChange: (role: UserRole) => void;
+  userRole?: UserRole;
 }
 
 const DashboardSidebar = ({
@@ -40,6 +41,7 @@ const DashboardSidebar = ({
   currentTab,
   onTabClick,
   onRoleChange,
+  userRole = UserRole.STUDENT,
 }: DashboardSidebarProps) => {
   const navigate = useNavigate();
   const { isMobile } = useSidebar();
@@ -47,6 +49,8 @@ const DashboardSidebar = ({
   const visibleItems = sidebarItems.filter((item) =>
     item.roles.includes(effectiveRole)
   );
+
+  const selectableRoles = ROLE_SELECT_CONFIG[userRole];
 
   const groupedItems = visibleItems.reduce<Record<string, typeof sidebarItems>>(
     (groups, item) => {
@@ -107,7 +111,7 @@ const DashboardSidebar = ({
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(UserRole).map((role) => (
+                {selectableRoles.map((role) => (
                   <SelectItem key={role} value={role}>
                     {role[0] + role.slice(1).toLowerCase()}
                   </SelectItem>

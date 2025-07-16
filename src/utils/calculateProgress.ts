@@ -1,6 +1,7 @@
-import { getEventsForMode } from "../api/types/event";
-import { ProgressData, UserActivityLogItem } from "../api/types/suggestion";
-import { ActiveUserMode } from "../api/types/user";
+import { ProgressData } from "@/types/user";
+import { ACCEPT_EVENTS, REJECT_EVENTS } from "../types/event";
+import { UserActivityLogItem } from "../types/suggestion";
+import { InstructorLogResponse } from "@/api/classes";
 
 /**
  * Calculate the progress of a user based on their activity logs.
@@ -8,12 +9,10 @@ import { ActiveUserMode } from "../api/types/user";
  * @returns {ProgressData} The progress data of the user.
  */
 export const calculateProgress = (
-  logs: UserActivityLogItem[],
-  mode: ActiveUserMode
+  logs: UserActivityLogItem[]
 ): ProgressData => {
-  const events = getEventsForMode(mode);
-  const acceptedLogs = logs.filter((log) => log.event === events?.accept);
-  const rejectedLogs = logs.filter((log) => log.event === events?.reject);
+  const acceptedLogs = logs.filter((log) => ACCEPT_EVENTS.includes(log.event));
+  const rejectedLogs = logs.filter((log) => REJECT_EVENTS.includes(log.event));
 
   const totalAccepted = acceptedLogs.length;
   const totalRejected = rejectedLogs.length;
@@ -38,23 +37,34 @@ export const calculateProgress = (
   };
 };
 
-// export const calculateProgress = (
-//   logs: UserActivityLogItem[]
-// ): ProgressData => {
-//   const acceptedLogs = logs.filter(
-//     (log) => log.event === LogEvent.SUGGESTION_ACCEPT
-//   );
-//   const totalAccepted = acceptedLogs.length;
-//   const correctSuggestions = acceptedLogs.filter(
-//     (log) => log.has_bug === false
-//   ).length;
+export const calculateProgressFromInstructorLogs = (
+  logs: InstructorLogResponse[]
+): ProgressData => {
+  const acceptedLogs = logs.filter((log) => ACCEPT_EVENTS.includes(log.event));
+  const rejectedLogs = logs.filter((log) => REJECT_EVENTS.includes(log.event));
 
-//   const percentageCorrect =
-//     totalAccepted > 0 ? (correctSuggestions / totalAccepted) * 100 : 0;
+  const totalAccepted = acceptedLogs.length;
+  const totalRejected = rejectedLogs.length;
+  const totalInteractions = totalAccepted + totalRejected;
 
-//   return {
-//     totalAccepted,
-//     correctSuggestions,
-//     percentageCorrect,
-//   };
-// };
+  const correctSuggestions = acceptedLogs.filter((log) => !log.hasBug).length;
+
+  const accuracyPercentage =
+    totalAccepted > 0 ? (correctSuggestions / totalAccepted) * 100 : 0;
+
+  return {
+    totalAccepted,
+    totalRejected,
+    totalInteractions,
+    correctSuggestions,
+    accuracyPercentage,
+  };
+};
+
+export const getEmptyProgressData = (): ProgressData => ({
+  totalAccepted: 0,
+  totalRejected: 0,
+  totalInteractions: 0,
+  correctSuggestions: 0,
+  accuracyPercentage: 0,
+});

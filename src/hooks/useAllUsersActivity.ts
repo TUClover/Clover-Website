@@ -1,21 +1,13 @@
 import { useState, useCallback, useMemo } from "react";
 import { useQuery, useQueries } from "@tanstack/react-query";
-import { getEventsForMode } from "@/api/types/event";
-import { ActiveUserMode, User } from "@/api/types/user";
+import { UserMode, UserWithActivity } from "@/types/user";
 import { getAllUsers, getUserActivity } from "@/api/user";
-import { ProgressData, UserActivityLogItem } from "@/api/types/suggestion";
-import { calculateProgress } from "@/utils/calculateProgress";
+import { UserActivityLogItem } from "@/types/suggestion";
+import {
+  calculateProgress,
+  getEmptyProgressData,
+} from "@/utils/calculateProgress";
 import QUERY_INTERVALS from "@/constants/queryIntervals";
-
-interface UserWithActivity extends User {
-  totalAccepted: number;
-  totalRejected: number;
-  totalInteractions: number;
-  correctSuggestions: number;
-  accuracyPercentage: number;
-  lastActivity: string | null;
-  activityMode: ActiveUserMode | null;
-}
 
 interface UseUsersWithActivityOptions {
   page?: number;
@@ -23,14 +15,6 @@ interface UseUsersWithActivityOptions {
   search?: string;
   enabled?: boolean;
 }
-
-const getEmptyProgressData = (): ProgressData => ({
-  totalAccepted: 0,
-  totalRejected: 0,
-  totalInteractions: 0,
-  correctSuggestions: 0,
-  accuracyPercentage: 0,
-});
 
 export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
   const { page = 1, limit = 50, search = "", enabled = true } = options || {};
@@ -70,7 +54,7 @@ export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
         try {
           const { logs, error } = await getUserActivity(
             user.id,
-            user.settings.mode as ActiveUserMode
+            user.settings.mode as UserMode
           );
 
           if (error || !logs) {
@@ -81,26 +65,16 @@ export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
             };
           }
 
-          const events = getEventsForMode(user.settings.mode as ActiveUserMode);
           const logArray = logs as UserActivityLogItem[];
 
-          const filteredActivities = logArray.filter(
-            (activity) =>
-              activity.event === events?.accept ||
-              activity.event === events?.reject
-          );
-
           const progressData =
-            filteredActivities.length > 0
-              ? calculateProgress(
-                  filteredActivities,
-                  user.settings.mode as ActiveUserMode
-                )
+            logArray.length > 0
+              ? calculateProgress(logArray)
               : getEmptyProgressData();
 
           return {
             userId: user.id,
-            activities: filteredActivities,
+            activities: logArray,
             progressData,
           };
         } catch (err) {
@@ -133,7 +107,7 @@ export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
           correctSuggestions: 0,
           accuracyPercentage: 0,
           lastActivity: null,
-          activityMode: (user.settings?.mode as ActiveUserMode) || null,
+          activityMode: (user.settings?.mode as UserMode) || null,
         };
       }
 
@@ -157,7 +131,7 @@ export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
         correctSuggestions: activityData.progressData.correctSuggestions,
         accuracyPercentage: activityData.progressData.accuracyPercentage,
         lastActivity,
-        activityMode: (user.settings?.mode as ActiveUserMode) || null,
+        activityMode: (user.settings?.mode as UserMode) || null,
       };
     });
   }, [users, activityQueries]);

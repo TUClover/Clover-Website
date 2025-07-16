@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ClassData, EnrollmentStatus } from "@/api/types/user";
+import { ClassData, EnrollmentStatus } from "@/types/user";
 import { Button } from "@/components/ui/button";
 import {
   Edit,

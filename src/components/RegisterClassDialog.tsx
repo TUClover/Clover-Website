@@ -11,7 +11,7 @@ import { Input } from "../components/ui/input";
 import { Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
-import { ClassData, EnrollmentStatus } from "../api/types/user";
+import { ClassData, EnrollmentStatus } from "../types/user";
 import Loading from "./Loading";
 import { useUser } from "@/context/UserContext";
 import { useClassActionDialog } from "@/hooks/useClassActionDialog";

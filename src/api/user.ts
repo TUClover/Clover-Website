@@ -1,6 +1,7 @@
-import { User, ActiveUserMode, UserSettings } from "./types/user";
+import { User, UserMode, UserSettings } from "../types/user";
 import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
-import { LogResponse } from "./types/suggestion";
+import { UserActivityLogResponse } from "../types/suggestion";
+import { MODE_CONFIG } from "@/types/mode";
 
 /**
  * Function to save user settings to the database.
@@ -49,6 +50,7 @@ export async function saveUserSettings(
 export async function getUserData(
   userId: string
 ): Promise<{ data?: User; error?: string }> {
+  console.log("Fetching user data for userId:", userId);
   try {
     const response = await fetch(`${USER_ENDPOINT}/${userId}`, {
       method: "GET",
@@ -86,26 +88,12 @@ export async function getUserData(
  */
 export async function getUserActivity(
   userId: string,
-  mode: ActiveUserMode
-): Promise<{ logs?: LogResponse<typeof mode>; error?: string }> {
-  let routeMode: string;
-  switch (mode) {
-    case "CODE_BLOCK":
-      routeMode = "code-block";
-      break;
-    case "LINE_BY_LINE":
-      routeMode = "line-by-line";
-      break;
-    case "CODE_SELECTION":
-      routeMode = "code-selection";
-      break;
-    default:
-      console.error("Invalid mode provided:", mode);
-      return { error: "Invalid mode provided" };
-  }
+  mode: UserMode
+): Promise<{ logs?: UserActivityLogResponse; error?: string }> {
+  const config = MODE_CONFIG[mode];
 
   try {
-    const url = `${LOG_ENDPOINT}/suggestion/${userId}/${routeMode}`;
+    const url = `${LOG_ENDPOINT}/suggestion/${userId}/${config.route}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -123,7 +111,7 @@ export async function getUserActivity(
 
     const data = await response.json();
 
-    return { logs: data.logs as LogResponse<typeof mode> };
+    return { logs: data.logs as UserActivityLogResponse };
   } catch (err) {
     console.error("Error fetching user activity:", err);
     return {

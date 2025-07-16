@@ -1,3 +1,5 @@
+import { ClassInfo } from "./class";
+
 export enum UserRole {
   STUDENT = "STUDENT",
   INSTRUCTOR = "INSTRUCTOR",
@@ -19,13 +21,10 @@ export enum EnrollmentStatus {
 }
 
 export enum UserMode {
-  OFF = "OFF",
-  BLOCK = "CODE_BLOCK",
-  LINE = "LINE_BY_LINE",
-  SELECTION = "CODE_SELECTION",
+  CODE_BLOCK = "CODE_BLOCK",
+  LINE_BY_LINE = "LINE_BY_LINE",
+  CODE_SELECTION = "CODE_SELECTION",
 }
-
-export type ActiveUserMode = Omit<UserMode, UserMode.OFF>;
 
 export const AUTH_CONTEXT = "authContext";
 
@@ -39,10 +38,10 @@ export interface User {
   status: UserStatus;
   avatarUrl?: string;
   settings: UserSettings;
-  last_updated_at?: string;
-  auth_created_at?: string;
-  last_sign_in?: string;
-  source?: string;
+  // last_updated_at?: string;
+  // auth_created_at?: string;
+  // last_sign_in?: string;
+  // source?: string;
 }
 
 export type UserSettings = {
@@ -52,14 +51,17 @@ export type UserSettings = {
   mode: UserMode;
 };
 
-export interface ClassInfo {
-  id?: string;
-  classTitle: string;
-  classCode?: string;
-  instructorId?: string;
-  classHexColor: string;
-  classImageCover?: string | null;
-  classDescription?: string;
+export interface ProgressData {
+  totalAccepted: number;
+  totalRejected: number;
+  totalInteractions: number;
+  correctSuggestions: number;
+  accuracyPercentage: number;
+}
+
+export interface UserWithActivity extends User, ProgressData {
+  lastActivity: string | null;
+  activityMode: UserMode | null;
 }
 
 export interface ClassData extends ClassInfo {
@@ -69,14 +71,4 @@ export interface ClassData extends ClassInfo {
   enrollmentStatus?: EnrollmentStatus;
   studentCount?: number;
   students?: User[];
-}
-
-export interface PaginatedClassResponse {
-  classes: ClassData[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
 }

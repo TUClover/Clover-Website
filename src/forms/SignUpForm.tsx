@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { registerUser } from "../api/auth";
-import { supabase } from "../supabaseClient";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "../components/ui/input";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/supabaseClient";
+import { registerUser } from "@/api/auth";
 
 /**
  * SignUpForm component for user registration.
@@ -13,18 +13,20 @@ import { Button } from "../components/ui/button";
  * TODO: Add GitHub OAuth signup option.
  * @returns SignUpForm component for user registration.
  */
-export const SignUpForm: React.FC = () => {
+const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const { error } = await registerUser(
@@ -50,6 +52,8 @@ export const SignUpForm: React.FC = () => {
     } catch (err) {
       console.error("Sign-up error:", err);
       setError("Failed to sign up. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,7 +62,7 @@ export const SignUpForm: React.FC = () => {
       <h2 className="text-2xl font-bold text-center mb-6">
         Create Your Clover Account
       </h2>
-      {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
       <form onSubmit={handleSignUp} className="flex flex-col gap-6">
         <Input
           type="text"
@@ -106,7 +110,7 @@ export const SignUpForm: React.FC = () => {
           </button>
         </div>
         <Button type="submit" className="w-full y-2 text-md p-6 mt-6">
-          Sign Up
+          {loading ? "Creating Account..." : "Sign Up"}
         </Button>
       </form>
     </Card>

@@ -1,4 +1,4 @@
-import { getEventsForMode } from "@/api/types/event";
+import { ACCEPT_EVENTS, REJECT_EVENTS } from "@/types/event";
 import { CustomTooltip } from "@/components/CustomTooltip";
 import Loading from "@/components/Loading";
 import NoData from "@/components/NoData";
@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
+import { UserMode } from "@/types/user";
 
 const StudentLogsView = () => {
   const { userData } = useUser();
@@ -20,11 +21,10 @@ const StudentLogsView = () => {
     progressData,
   } = useUserActivity(userData?.id, userData?.settings.mode, selectedClassId);
 
-  const events = getEventsForMode(userData?.settings.mode || "CODE_BLOCK");
-
   const filteredLogItems = userActivity.filter(
     (logItem) =>
-      logItem.event === events?.accept || logItem.event === events?.reject
+      ACCEPT_EVENTS.includes(logItem.event) ||
+      REJECT_EVENTS.includes(logItem.event)
   );
 
   const sortedLogItems = filteredLogItems.sort(
@@ -74,7 +74,7 @@ const StudentLogsView = () => {
           <SuggestionTable
             logItems={items}
             startIndex={startIndex}
-            mode={userData?.settings.mode || "CODE_BLOCK"}
+            mode={userData?.settings.mode as UserMode}
           />
         )}
       />

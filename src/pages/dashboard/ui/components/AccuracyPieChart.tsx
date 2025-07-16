@@ -1,10 +1,10 @@
 import { Pie } from "react-chartjs-2";
 import { useEffect, useState } from "react";
 import { Card } from "../../../../components/ui/card";
-import { ProgressData } from "../../../../api/types/suggestion";
+import { ProgressData } from "../../../../types/suggestion";
 import { InstructorLogResponse } from "../../../../api/classes";
-import { ActiveUserMode } from "../../../../api/types/user";
-import { getEventsForMode } from "../../../../api/types/event";
+import { UserMode } from "../../../../types/user";
+import { getEventsForMode } from "../../../../types/event";
 import CustomSelect from "../../../../components/CustomSelect";
 import { CustomTooltip } from "@/components/CustomTooltip";
 
@@ -16,7 +16,7 @@ interface AccuracyPieChartProps {
   activities?: InstructorLogResponse[];
   dataMode: DataMode;
   onDataModeChange: (mode: DataMode) => void;
-  mode?: ActiveUserMode;
+  mode?: UserMode;
 }
 
 /**

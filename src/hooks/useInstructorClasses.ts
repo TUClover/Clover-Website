@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ClassData, User } from "../api/types/user";
+import { ClassData, User } from "../types/user";
 import { getClassesByInstructor } from "../api/classes";
 import { supabase } from "../supabaseClient";
 import { useQuery } from "@tanstack/react-query";

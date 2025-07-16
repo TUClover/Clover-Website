@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import cloverLogo from "../assets/CLOVER.svg";
 import { useAuth } from "../hooks/useAuth";
-import { supabase } from "../supabaseClient";
 import ThemeToggle from "./ThemeToggle";
 import { useState } from "react";
 import {
@@ -13,9 +12,10 @@ import {
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { DoorOpen, Menu, Settings2, User2 } from "lucide-react";
-import { UserRole } from "../api/types/user";
+import { UserRole } from "../types/user";
 import { useUser } from "@/context/UserContext";
 import UserAvatar from "./UserAvatar";
+import { supabase } from "@/supabaseClient";
 
 /**
  * NavBar component that appears at the top of the page.
@@ -26,8 +26,8 @@ import UserAvatar from "./UserAvatar";
 export const NavBar = () => {
   const { isAuthenticated } = useAuth();
   const { userData } = useUser();
-  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     supabase.auth.signOut();

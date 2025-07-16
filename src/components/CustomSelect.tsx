@@ -12,7 +12,7 @@ interface SelectOption<T = string> {
   label: string;
 }
 
-interface CustomSelectProps<T = string> {
+interface CustomSelectProps<T extends string> {
   value: T;
   onValueChange: (value: T) => void;
   options: SelectOption<T>[];

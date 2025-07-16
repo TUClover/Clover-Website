@@ -7,7 +7,7 @@ import ClassesDropdownMenu from "./dashboard/ui/components/ClassesDropdownMenu";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../components/ui/card";
-import { UserClassInfo } from "../api/types/user";
+import { UserClassInfo } from "../types/user";
 import { Button } from "../components/ui/button";
 import { Paragraph, Title } from "../components/ui/text";
 import Loading from "@/components/Loading";

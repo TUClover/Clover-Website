@@ -1,5 +1,4 @@
-import { AUTH_ENDPOINT } from "./endpoints";
-import { User } from "./types/user";
+import { AUTH_ENDPOINT } from "@/api/endpoints";
 
 /**
  * Function to log in a user
@@ -16,7 +15,7 @@ export async function registerUser(
   lastName: string,
   email: string,
   password: string
-): Promise<{ userData?: User; error?: string }> {
+): Promise<{ success?: boolean; error?: string }> {
   try {
     const response = await fetch(`${AUTH_ENDPOINT}/signup`, {
       method: "POST",
@@ -26,8 +25,8 @@ export async function registerUser(
       body: JSON.stringify({
         email,
         password,
-        first_name: firstName,
-        last_name: lastName,
+        firstName,
+        lastName,
       }),
     });
 
@@ -38,7 +37,37 @@ export async function registerUser(
       return { error: data.message };
     }
 
-    return { userData: data as User };
+    return { success: !!data };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}
+
+export async function loginUser(
+  email: string,
+  password: string
+): Promise<{ userId?: string; error?: string }> {
+  try {
+    const response = await fetch(`${AUTH_ENDPOINT}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { error: data.error || "Login failed" };
+    }
+
+    return { userId: data.userId };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",

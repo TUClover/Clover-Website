@@ -1,4 +1,4 @@
-import { UserRole } from "../api/types/user";
+import { UserRole } from "../types/user";
 import { DeleteUserButton } from "../components/DeleteUserButton";
 import { EditUserButton } from "../components/EditUserButton";
 import NavBar from "../components/NavBar";

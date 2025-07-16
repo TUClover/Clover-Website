@@ -1,4 +1,4 @@
-import { User, UserRole } from "../api/types/user";
+import { User, UserRole } from "../types/user";
 import { useState } from "react";
 import { updateUser } from "../api/user";
 import { useForm } from "react-hook-form";

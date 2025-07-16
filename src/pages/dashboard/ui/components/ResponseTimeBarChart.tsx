@@ -1,5 +1,5 @@
 import { InstructorLogResponse } from "@/api/classes";
-import { UserActivityLogItem } from "@/api/types/suggestion";
+import { UserActivityLogItem } from "@/types/suggestion";
 import { CustomTooltip } from "@/components/CustomTooltip";
 import { Card } from "@/components/ui/card";
 import { useEffect, useMemo, useState } from "react";

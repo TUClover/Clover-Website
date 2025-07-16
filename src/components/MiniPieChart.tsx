@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { CustomTooltip } from "./CustomTooltip";
-
-interface ProgressData {
-  totalAccepted: number;
-  totalRejected: number;
-  totalInteractions: number;
-  correctSuggestions: number;
-  accuracyPercentage: number;
-}
+import { ProgressData } from "@/types/user";
 
 interface MiniPieChartProps {
   progressData?: ProgressData;

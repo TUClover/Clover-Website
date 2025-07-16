@@ -9,7 +9,7 @@ import {
   Settings,
   BarChart3,
 } from "lucide-react";
-import { UserRole } from "../api/types/user";
+import { UserRole } from "../types/user";
 import { ComponentType } from "react";
 import StudentStatsView from "../pages/dashboard/ui/views/student/StudentStatsView";
 import StudentClassesView from "@/pages/dashboard/ui/views/student/StudentClassesView";
@@ -35,15 +35,37 @@ export type SideBarItem = {
   }>;
 };
 
-const ALL_ROLES = [
-  UserRole.DEV,
-  UserRole.ADMIN,
-  UserRole.INSTRUCTOR,
+// const ALL_ROLES = [
+//   UserRole.DEV,
+//   UserRole.ADMIN,
+//   UserRole.INSTRUCTOR,
+//   UserRole.STUDENT,
+// ];
+// const ADMIN_ROLES = [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR];
+// const SUPER_ADMIN_ROLES = [UserRole.DEV, UserRole.ADMIN];
+// const DEV_ONLY = [UserRole.DEV];
+
+export const ROLE_SELECT_CONFIG = {
+  [UserRole.STUDENT]: [UserRole.STUDENT],
+  [UserRole.INSTRUCTOR]: [UserRole.STUDENT, UserRole.INSTRUCTOR],
+  [UserRole.ADMIN]: [UserRole.STUDENT, UserRole.INSTRUCTOR, UserRole.ADMIN],
+  [UserRole.DEV]: [
+    UserRole.STUDENT,
+    UserRole.INSTRUCTOR,
+    UserRole.ADMIN,
+    UserRole.DEV,
+  ],
+};
+
+const STUDENT = [
   UserRole.STUDENT,
+  UserRole.INSTRUCTOR,
+  UserRole.ADMIN,
+  UserRole.DEV,
 ];
-const ADMIN_ROLES = [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR];
-const SUPER_ADMIN_ROLES = [UserRole.DEV, UserRole.ADMIN];
-const DEV_ONLY = [UserRole.DEV];
+const INSTRUCTOR = [UserRole.INSTRUCTOR, UserRole.ADMIN, UserRole.DEV];
+const ADMIN = [UserRole.ADMIN, UserRole.DEV];
+const DEV = [UserRole.DEV];
 
 export const sidebarItems: SideBarItem[] = [
   {
@@ -54,7 +76,7 @@ export const sidebarItems: SideBarItem[] = [
     description:
       "View your learning progress, accuracy rates, and performance metrics.",
     subheading: "My Dashboard",
-    roles: ALL_ROLES,
+    roles: STUDENT,
     dashboardView: StudentStatsView,
   },
   {
@@ -65,7 +87,7 @@ export const sidebarItems: SideBarItem[] = [
     description:
       "Explore your class portfolio and access detailed course information.",
     subheading: "My Dashboard",
-    roles: ALL_ROLES,
+    roles: STUDENT,
     dashboardView: StudentClassesView,
   },
   {
@@ -76,7 +98,7 @@ export const sidebarItems: SideBarItem[] = [
     description:
       "Explore available learning opportunities and advance your academic goals.",
     subheading: "My Dashboard",
-    roles: ALL_ROLES,
+    roles: STUDENT,
     dashboardView: StudentRegisterClassView,
   },
   {
@@ -85,7 +107,7 @@ export const sidebarItems: SideBarItem[] = [
     name: "Logs",
     title: "Activity Details",
     subheading: "My Dashboard",
-    roles: ALL_ROLES,
+    roles: STUDENT,
     dashboardView: StudentLogsView,
   },
 
@@ -96,7 +118,7 @@ export const sidebarItems: SideBarItem[] = [
     name: "Class Statistics",
     title: "Student Performance Analytics",
     subheading: "Teaching",
-    roles: ADMIN_ROLES,
+    roles: INSTRUCTOR,
     dashboardView: InstructorStatsView,
   },
   {
@@ -105,7 +127,7 @@ export const sidebarItems: SideBarItem[] = [
     name: "Students",
     title: "Student Management",
     subheading: "Teaching",
-    roles: ADMIN_ROLES,
+    roles: INSTRUCTOR,
     dashboardView: InstructorStudentListView,
   },
   {
@@ -116,7 +138,7 @@ export const sidebarItems: SideBarItem[] = [
     description:
       "Create new courses, monitor class progress, and manage your teaching portfolio.",
     subheading: "Teaching",
-    roles: ADMIN_ROLES,
+    roles: INSTRUCTOR,
     dashboardView: InstructorClassesView,
   },
 
@@ -127,7 +149,7 @@ export const sidebarItems: SideBarItem[] = [
     name: "Manage Users",
     title: "User Administration",
     subheading: "Administration",
-    roles: SUPER_ADMIN_ROLES,
+    roles: ADMIN,
     dashboardView: UsersAdministrationView,
   },
   {
@@ -136,7 +158,7 @@ export const sidebarItems: SideBarItem[] = [
     name: "Manage Classes",
     title: "Class Administration",
     subheading: "Administration",
-    roles: SUPER_ADMIN_ROLES,
+    roles: ADMIN,
     dashboardView: ClassesAdministrationView,
   },
 
@@ -147,7 +169,7 @@ export const sidebarItems: SideBarItem[] = [
     name: "App Stats",
     title: "Application Analytics",
     subheading: "Development",
-    roles: DEV_ONLY,
+    roles: DEV,
     dashboardView: AppAnalyticsView,
   },
 ];

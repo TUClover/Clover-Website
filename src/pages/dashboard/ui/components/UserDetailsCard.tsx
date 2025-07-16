@@ -1,4 +1,4 @@
-import { UserMode, UserSettings } from "@/api/types/user";
+import { UserMode, UserSettings } from "@/types/user";
 import { saveUserSettings } from "@/api/user";
 import {
   InfoCardItem,

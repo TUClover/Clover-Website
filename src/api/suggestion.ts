@@ -1,13 +1,11 @@
 import {
-  CodeBlockSuggestion,
-  CodeSelectionSuggestion,
-  getSuggestionIdByMode,
-  LineByLineSuggestion,
+  BaseSuggestion,
   SuggestionData,
   UserActivityLogItem,
-} from "./types/suggestion";
+} from "../types/suggestion";
 import { AI_SUGGESTION_ENDPOINT } from "./endpoints";
-import { ActiveUserMode } from "./types/user";
+import { UserMode } from "../types/user";
+import { MODE_CONFIG } from "@/types/mode";
 
 /**
  * Fetches a suggestion by its ID.
@@ -16,32 +14,17 @@ import { ActiveUserMode } from "./types/user";
  */
 export async function getSuggestionByModeAndId(
   logItem: UserActivityLogItem,
-  mode: ActiveUserMode
+  mode: UserMode
 ): Promise<{ data?: SuggestionData; error?: string }> {
-  const id = getSuggestionIdByMode(logItem, mode);
+  const config = MODE_CONFIG[mode];
 
-  let modeRoute: string;
-  switch (mode) {
-    case "CODE_BLOCK":
-      modeRoute = "code-block";
-      break;
-    case "LINE_BY_LINE":
-      modeRoute = "line-by-line";
-      break;
-    case "CODE_SELECTION":
-      modeRoute = "code-selection";
-      break;
-    default:
-      return { error: "Invalid mode" };
-  }
-
-  if (!id) {
-    return { error: "No suggestion ID found for this mode" };
+  if (!config) {
+    return { error: "Invalid mode" };
   }
 
   try {
     const response = await fetch(
-      `${AI_SUGGESTION_ENDPOINT}/${modeRoute}/${id}`,
+      `${AI_SUGGESTION_ENDPOINT}/${config.route}/${config.getId(logItem)}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -49,7 +32,6 @@ export async function getSuggestionByModeAndId(
     );
 
     const backendData = await response.json();
-    console.log("Backend response:", backendData);
 
     if (!response.ok) {
       return {
@@ -59,51 +41,19 @@ export async function getSuggestionByModeAndId(
       };
     }
 
-    const baseTransformed = {
+    const base: BaseSuggestion = {
       id: backendData.id,
       createdAt: backendData.created_at,
       prompt: backendData.prompt,
       hasBug: backendData.has_bug,
-      duration: logItem.duration,
+      duration: backendData.duration,
       model: backendData.model || "",
       vendor: backendData.vendor || "",
       language: backendData.language || "",
       refinedPrompt: backendData.refined_prompt,
     };
 
-    let suggestionData: SuggestionData;
-
-    switch (mode) {
-      case "CODE_BLOCK":
-        suggestionData = {
-          ...baseTransformed,
-          suggestionArray: backendData.suggestion_array || [],
-          explanation: backendData.explanation,
-        } as CodeBlockSuggestion;
-        break;
-
-      case "LINE_BY_LINE":
-        suggestionData = {
-          ...baseTransformed,
-          mainLine: backendData.main_line || "",
-          fixedLine: backendData.fixed_line,
-          lineIndex: backendData.line_index,
-        } as LineByLineSuggestion;
-        break;
-
-      case "CODE_SELECTION":
-        suggestionData = {
-          ...baseTransformed,
-          suggestionText: backendData.suggestion_text || "",
-          explanation: backendData.explanation,
-        } as CodeSelectionSuggestion;
-        break;
-
-      default:
-        return { error: "Invalid mode" };
-    }
-
-    return { data: suggestionData };
+    return { data: config.transform(backendData, base) };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",

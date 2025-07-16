@@ -12,7 +12,7 @@ import {
 import PaginatedTable from "@/components/PaginatedTable";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Users } from "lucide-react";
-import { User } from "@/api/types/user";
+import { User } from "@/types/user";
 import { formatActivityTimestamp } from "@/lib/utils";
 import UserDataSearchFilters from "./UserDataSearchFilter";
 import { ClassDetailsCard } from "./ClassDetailsCard";

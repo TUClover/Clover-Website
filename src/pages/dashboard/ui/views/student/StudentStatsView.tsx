@@ -1,4 +1,3 @@
-import { Chart, registerables } from "chart.js";
 import DecisionLineChart from "@/pages/dashboard/ui/components/DecisionLineChart";
 import StatCard from "@/components/StatCard";
 import AccuracyDistributionBarChart from "@/pages/dashboard/ui/components/AccuracyDistributionBarChart";
@@ -10,13 +9,11 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/context/UserContext";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";
 import Loading from "@/components/Loading";
-import { ClassData } from "@/api/types/user";
+import { ClassData } from "@/types/user";
 import LearningProgressChart from "@/pages/dashboard/ui/components/LearningProgressChart";
 import AccuracyTimeLineChart from "@/pages/dashboard/ui/components/AccuracyTimeLineChart";
 import ResponseTimeBarChart from "@/pages/dashboard/ui/components/ResponseTimeBarChart";
 import { useLocation, useNavigate } from "react-router-dom";
-
-Chart.register(...registerables);
 
 /**
  * StudentStatsView component that displays user activity and progress.

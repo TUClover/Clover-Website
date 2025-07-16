@@ -1,4 +1,4 @@
-import { ActiveUserMode, UserMode } from "@/api/types/user";
+import { UserMode } from "@/types/user";
 import {
   Select,
   SelectContent,
@@ -34,8 +34,8 @@ const InstructorStatsView = () => {
     }
   }, [preselectedClassId, location.pathname, navigate]);
 
-  const [selectedMode, setSelectedMode] = useState<ActiveUserMode>(
-    userData?.settings.mode as ActiveUserMode
+  const [selectedMode, setSelectedMode] = useState<UserMode>(
+    userData?.settings.mode as UserMode
   );
 
   const { allClassOptions, selectedClassId, handleClassSelect } =
@@ -100,25 +100,25 @@ const InstructorStatsView = () => {
         <div className="flex items-center gap-2 justify-end w-full">
           <Select
             value={selectedMode as string}
-            onValueChange={(value: ActiveUserMode) => setSelectedMode(value)}
+            onValueChange={(value: UserMode) => setSelectedMode(value)}
           >
             <SelectTrigger className="w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={UserMode.BLOCK}>
+              <SelectItem value={UserMode.CODE_BLOCK}>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded bg-blue-500"></div>
                   Code Block
                 </div>
               </SelectItem>
-              <SelectItem value={UserMode.LINE}>
+              <SelectItem value={UserMode.LINE_BY_LINE}>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded bg-green-500"></div>
                   Line by Line
                 </div>
               </SelectItem>
-              <SelectItem value={UserMode.SELECTION}>
+              <SelectItem value={UserMode.CODE_SELECTION}>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded bg-purple-500"></div>
                   Code Selection

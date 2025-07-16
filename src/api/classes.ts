@@ -1,11 +1,6 @@
 import { CLASS_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
-import {
-  ClassData,
-  ClassInfo,
-  EnrollmentStatus,
-  PaginatedClassResponse,
-  UserSettings,
-} from "./types/user";
+import { ClassData, EnrollmentStatus, UserSettings } from "../types/user";
+import { ClassInfo } from "@/types/class";
 
 /**
  * * Creates a new class in the database.
@@ -37,7 +32,7 @@ export const createClass = async (
       return { error: "Invalid response: expected class ID" };
     }
 
-    return { id: data.id }; // Return ID directly
+    return { id: data.id };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
@@ -350,6 +345,16 @@ export const updateStudentEnrollmentStatus = async (
     };
   }
 };
+
+interface PaginatedClassResponse {
+  classes: ClassData[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
 
 export async function getAllClasses(params?: {
   page?: number;

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { AUTH_ENDPOINT } from "../api/endpoints";
+import { supabase } from "@/supabaseClient";
 
 /**
  * LoginForm component for user authentication.
@@ -18,6 +18,7 @@ export const LoginForm: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Handle GitHub Login
   const handleGitHubLogin = async () => {
@@ -32,6 +33,7 @@ export const LoginForm: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -52,6 +54,8 @@ export const LoginForm: React.FC = () => {
     } catch (err) {
       console.error("Login error:", err);
       setError("Failed to log in. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -92,7 +96,7 @@ export const LoginForm: React.FC = () => {
           </button>
         </div>
         <Button type="submit" className="w-full text-text py-6 mt-6 text-md">
-          Log In
+          {loading ? "Signing In..." : "Sign In"}
         </Button>
       </form>
 

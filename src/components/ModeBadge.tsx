@@ -1,4 +1,4 @@
-import { UserMode } from "@/api/types/user";
+import { UserMode } from "@/types/user";
 import { Badge } from "@/components/ui/badge";
 
 interface ModeBadgeProps {

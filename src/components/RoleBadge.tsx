@@ -1,4 +1,4 @@
-import { UserRole } from "@/api/types/user";
+import { UserRole } from "@/types/user";
 import { Badge } from "@/components/ui/badge";
 
 interface RoleBadgeProps {

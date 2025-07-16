@@ -1,4 +1,4 @@
-import { ClassData } from "@/api/types/user";
+import { ClassData } from "@/types/user";
 import ClassInfoCard from "@/components/ClassInfoCard";
 import {
   Carousel,

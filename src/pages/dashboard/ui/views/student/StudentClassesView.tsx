@@ -1,5 +1,5 @@
 import { useUserClasses } from "@/hooks/useUserClasses";
-import { EnrollmentStatus } from "@/api/types/user";
+import { EnrollmentStatus } from "@/types/user";
 import NoClasses from "@/components/NoClasses";
 import ClassesCarousel from "../../components/ClassesCarousel";
 import Loading from "@/components/Loading";

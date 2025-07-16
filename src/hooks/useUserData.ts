@@ -1,9 +1,9 @@
-import { ActiveUserMode } from "@/api/types/user";
+import { UserMode } from "@/types/user";
 import { useClassActivity } from "./useClassActivity";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getClassesByInstructor, InstructorLogResponse } from "@/api/classes";
-import { getEventsForMode } from "@/api/types/event";
+import { getEventsForMode } from "@/types/event";
 
 interface StudentClassData {
   userId: string;
@@ -16,14 +16,14 @@ interface StudentClassData {
   correctSuggestions: number;
   accuracyPercentage: number;
   lastActivity: string;
-  mode: ActiveUserMode;
+  mode: UserMode;
   logs?: InstructorLogResponse[];
 }
 
 interface UseStudentDataOptions {
   instructorId: string;
   classFilter?: string;
-  modeFilter?: ActiveUserMode | "all";
+  modeFilter?: UserMode | "all";
 }
 
 export const useStudentData = ({
@@ -140,7 +140,7 @@ export const useStudentData = ({
       // Calculate progress using the same logic as useClassActivity
       const progressData = calculateProgressFromInstructorLogs(
         userLogs,
-        mode as ActiveUserMode
+        mode as UserMode
       );
 
       // Get last activity
@@ -170,7 +170,7 @@ export const useStudentData = ({
         correctSuggestions: progressData.correctSuggestions,
         accuracyPercentage: Math.round(progressData.accuracyPercentage),
         lastActivity,
-        mode: mode as ActiveUserMode,
+        mode: mode as UserMode,
         logs: userLogs,
       };
     });
@@ -201,7 +201,7 @@ export const useStudentData = ({
 };
 
 // Helper function to determine mode from log
-function determineLogMode(log: InstructorLogResponse): ActiveUserMode | null {
+function determineLogMode(log: InstructorLogResponse): UserMode | null {
   // Check event names first
   if (log.event.includes("LINE")) return "LINE_BY_LINE";
   if (log.event.includes("BLOCK")) return "CODE_BLOCK";
@@ -218,7 +218,7 @@ function determineLogMode(log: InstructorLogResponse): ActiveUserMode | null {
 // Use the exact same progress calculation as useClassActivity
 function calculateProgressFromInstructorLogs(
   logs: InstructorLogResponse[],
-  mode: ActiveUserMode
+  mode: UserMode
 ): ProgressData {
   const events = getEventsForMode(mode);
 

@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { parseISODate } from "@/utils/timeConverter";
 import { Card } from "@/components/ui/card";
-import { LogEvent } from "@/api/types/event";
-import { UserActivityLogItem } from "@/api/types/suggestion";
+import { UserActivityLogItem } from "@/types/suggestion";
 import { InstructorLogResponse } from "@/api/classes";
 import CustomSelect from "@/components/CustomSelect";
 import { CustomTooltip } from "@/components/CustomTooltip";
+import { ACCEPT_EVENTS, REJECT_EVENTS } from "@/types/event";
 
 enum TimeInterval {
   DAY = "Day",
@@ -92,16 +92,8 @@ export const AccuracyDistributionBarChart = ({
       dateMap[key] = { correct: 0, incorrect: 0 };
     }
 
-    // Enhanced event detection for both accept and reject events
-    const isAcceptEvent =
-      activity.event === LogEvent.SUGGESTION_ACCEPT ||
-      activity.event === "SUGGESTION_ACCEPT" ||
-      activity.event.includes("ACCEPT");
-
-    const isRejectEvent =
-      activity.event === LogEvent.USER_REJECT ||
-      activity.event === "USER_REJECT" ||
-      activity.event.includes("REJECT");
+    const isAcceptEvent = ACCEPT_EVENTS.includes(activity.event);
+    const isRejectEvent = REJECT_EVENTS.includes(activity.event);
 
     if (isAcceptEvent || isRejectEvent) {
       const isCorrectDecision =

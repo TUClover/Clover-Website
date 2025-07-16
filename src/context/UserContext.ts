@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { User } from "../api/types/user";
+import { User } from "../types/user";
 
 interface UserContextType {
   userData: User | null;

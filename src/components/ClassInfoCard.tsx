@@ -1,6 +1,6 @@
 import { useClassStudentsInfo } from "../hooks/useInstructorClasses";
 import PingDot from "./PingDot";
-import { ClassData } from "../api/types/user";
+import { ClassData } from "../types/user";
 import { Card } from "./ui/card";
 import { useNavigate } from "react-router-dom";
 

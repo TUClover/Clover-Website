@@ -4,7 +4,7 @@ import {
   User,
   UserMode,
   UserSettings as UserSettingsType,
-} from "../api/types/user";
+} from "../types/user";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";

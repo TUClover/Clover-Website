@@ -1,6 +1,4 @@
-import { ActiveUserMode } from "./user";
-
-interface BaseSuggestion {
+export interface BaseSuggestion {
   id: string;
   createdAt: string;
   prompt: string;
@@ -33,25 +31,6 @@ export type SuggestionData =
   | LineByLineSuggestion
   | CodeSelectionSuggestion;
 
-export interface AIStats {
-  id: string;
-  created_at: string;
-  input_tokens: number;
-  output_tokens: number;
-  total_tokens: number;
-  model: string;
-  latency_seconds: number;
-  provider: string;
-}
-
-export interface ProgressData {
-  totalAccepted: number;
-  totalRejected: number;
-  totalInteractions: number;
-  correctSuggestions: number;
-  accuracyPercentage: number;
-}
-
 interface BaseLogResponse {
   id: string;
   event: string;
@@ -79,25 +58,15 @@ export type UserActivityLogItem =
   | LineSuggestionLogResponse
   | SelectionSuggestionLogResponse;
 
-export type LogResponse<T extends ActiveUserMode> = T extends "CODE_BLOCK"
-  ? BlockSuggestionLogResponse[]
-  : T extends "LINE_BY_LINE"
-    ? LineSuggestionLogResponse[]
-    : T extends "CODE_SELECTION"
-      ? SelectionSuggestionLogResponse[]
-      : never;
+export type UserActivityLogResponse = UserActivityLogItem[];
 
-export function getSuggestionIdByMode(
-  logItem: UserActivityLogItem,
-  mode: ActiveUserMode
-) {
-  switch (mode) {
-    case "CODE_BLOCK":
-      return (logItem as BlockSuggestionLogResponse).suggestionId;
-    case "LINE_BY_LINE":
-      return (logItem as LineSuggestionLogResponse).lineSuggestionId;
-    case "CODE_SELECTION":
-      return (logItem as SelectionSuggestionLogResponse)
-        .selectionSuggestionItemId;
-  }
+export interface AIStats {
+  id: string;
+  created_at: string;
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  model: string;
+  latency_seconds: number;
+  provider: string;
 }

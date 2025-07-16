@@ -1,5 +1,5 @@
 import { MailIcon } from "lucide-react";
-import { User } from "../api/types/user";
+import { User } from "../types/user";
 import { Card } from "./ui/card";
 import UserAvatar from "./UserAvatar";
 
@@ -18,11 +18,7 @@ const ProfileCard = ({ userData, detailsContent }: ProfileCardProps) => {
   return (
     <Card className="p-6 m-6">
       <div className="flex items-center mb-4 justify-center">
-        <UserAvatar
-          firstName={firstName}
-          avatarUrl={avatarUrl}
-          size="xl"
-        />
+        <UserAvatar firstName={firstName} avatarUrl={avatarUrl} size="xl" />
       </div>
 
       <div className="text-center">

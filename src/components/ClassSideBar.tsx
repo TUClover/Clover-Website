@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from "react";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import { ClassData } from "../api/types/user";
+import { ClassData } from "../types/user";
 
 type ClassSideBarProps = {
   classes: ClassData[];

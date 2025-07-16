@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, UserRole } from "../api/types/user";
+import { User, UserRole } from "../types/user";
 import AdminProfile from "./AdminProfile";
 import InstructorProfile from "./InstructorProfile";
 import StudentProfile from "./StudentProfile";

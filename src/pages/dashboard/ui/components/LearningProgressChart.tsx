@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import { CustomTooltip } from "@/components/CustomTooltip";
 import { Card } from "@/components/ui/card";
-import { UserActivityLogItem } from "@/api/types/suggestion";
+import { UserActivityLogItem } from "@/types/suggestion";
 
 interface LearningProgressProps {
   userActivity: UserActivityLogItem[];

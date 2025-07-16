@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAIUsageStats } from "../api/stats";
-import { AIStats } from "../api/types/suggestion";
+import { AIStats } from "../types/suggestion";
 
 /**
  * Custom hook to fetch AI usage statistics.

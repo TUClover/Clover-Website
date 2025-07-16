@@ -1,6 +1,4 @@
-import { ActiveUserMode } from "../api/types/user";
-import { ProgressData } from "../api/types/suggestion";
-import { getEventsForMode } from "../api/types/event";
+import { UserMode } from "../types/user";
 import {
   getClassActivityByInstructorId,
   InstructorLogResponse,
@@ -8,6 +6,10 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import QUERY_INTERVALS from "@/constants/queryIntervals";
 import { useMemo } from "react";
+import {
+  calculateProgressFromInstructorLogs,
+  getEmptyProgressData,
+} from "@/utils/calculateProgress";
 
 /**
  * Custom hook to fetch and manage class activity logs.
@@ -20,7 +22,7 @@ import { useMemo } from "react";
 export const useClassActivity = (
   instructorId?: string | null,
   selectedClassId: string | null = null,
-  mode?: ActiveUserMode | null
+  mode?: UserMode | null
 ) => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["classActivity", instructorId],
@@ -32,6 +34,8 @@ export const useClassActivity = (
       const { data, error } =
         await getClassActivityByInstructorId(instructorId);
       if (error || !data) throw new Error(error);
+
+      console.log("Fetched class activity logs:", data);
 
       return data as InstructorLogResponse[];
     },
@@ -49,12 +53,25 @@ export const useClassActivity = (
     let filtered = [...data];
 
     if (mode) {
-      const events = getEventsForMode(mode as ActiveUserMode);
-      filtered = filtered.filter(
-        (log) => log.event === events?.accept || log.event === events?.reject
-      );
-    }
+      const acceptPrefix = {
+        [UserMode.CODE_BLOCK]: "SUGGESTION_ACCEPT",
+        [UserMode.LINE_BY_LINE]: "SUGGESTION_LINE_ACCEPT",
+        [UserMode.CODE_SELECTION]: "SUGGESTION_SELECTION_ACCEPT",
+      }[mode as UserMode];
 
+      const rejectPrefix = {
+        [UserMode.CODE_BLOCK]: "SUGGESTION_REJECT",
+        [UserMode.LINE_BY_LINE]: "SUGGESTION_LINE_REJECT",
+        [UserMode.CODE_SELECTION]: null,
+      }[mode as UserMode];
+
+      filtered = filtered.filter((log) => {
+        return (
+          log.event === acceptPrefix ||
+          (rejectPrefix && log.event === rejectPrefix)
+        );
+      });
+    }
     if (selectedClassId === "non-class") {
       filtered = filtered.filter((activity) => !activity.classId);
     } else if (selectedClassId && selectedClassId !== "all") {
@@ -67,15 +84,12 @@ export const useClassActivity = (
   }, [data, selectedClassId, mode]);
 
   const progressData = useMemo(() => {
-    if (!filteredClassActivity.length || !mode) {
+    if (!filteredClassActivity.length) {
       return getEmptyProgressData();
     }
 
-    return calculateProgressFromInstructorLogs(
-      filteredClassActivity,
-      mode as ActiveUserMode
-    );
-  }, [filteredClassActivity, mode]);
+    return calculateProgressFromInstructorLogs(filteredClassActivity);
+  }, [filteredClassActivity]);
 
   return {
     allActivity: data || [],
@@ -87,38 +101,3 @@ export const useClassActivity = (
     isEmpty: !isLoading && filteredClassActivity.length === 0,
   };
 };
-
-function calculateProgressFromInstructorLogs(
-  logs: InstructorLogResponse[],
-  mode: ActiveUserMode
-): ProgressData {
-  const events = getEventsForMode(mode);
-
-  const acceptedLogs = logs.filter((log) => log.event === events?.accept);
-  const rejectedLogs = logs.filter((log) => log.event === events?.reject);
-
-  const totalAccepted = acceptedLogs.length;
-  const totalRejected = rejectedLogs.length;
-  const totalInteractions = totalAccepted + totalRejected;
-
-  const correctSuggestions = acceptedLogs.filter((log) => !log.hasBug).length;
-
-  const accuracyPercentage =
-    totalAccepted > 0 ? (correctSuggestions / totalAccepted) * 100 : 0;
-
-  return {
-    totalAccepted,
-    totalRejected,
-    totalInteractions,
-    correctSuggestions,
-    accuracyPercentage,
-  };
-}
-
-const getEmptyProgressData = (): ProgressData => ({
-  totalAccepted: 0,
-  totalRejected: 0,
-  totalInteractions: 0,
-  correctSuggestions: 0,
-  accuracyPercentage: 0,
-});

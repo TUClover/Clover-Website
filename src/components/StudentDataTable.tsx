@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import MiniPieChart from "./MiniPieChart";
-import { ActiveUserMode, UserMode } from "../api/types/user";
+import { UserMode, ProgressData } from "@/types/user";
 import PaginatedTable from "./PaginatedTable";
 import StudentDashboardCard from "./StudentDashboardCard";
 import { useStudentData } from "@/hooks/useUserData";
@@ -13,7 +13,6 @@ import {
   TableRow,
 } from "./ui/table";
 import { InstructorLogResponse } from "@/api/classes";
-import { ProgressData } from "@/api/types/suggestion";
 import { Card, CardContent } from "./ui/card";
 import UserDataSearchFilters from "@/pages/dashboard/ui/components/UserDataSearchFilter";
 import UserInfoTableCard from "@/pages/dashboard/ui/components/UserInfoTableCard";
@@ -31,7 +30,7 @@ export interface StudentClassData {
   correctSuggestions: number;
   accuracyPercentage: number;
   lastActivity: string;
-  mode: ActiveUserMode;
+  mode: UserMode;
   logs?: InstructorLogResponse[];
 }
 
@@ -44,7 +43,7 @@ export const StudentDataTable = ({ instructorId }: StudentDataTableProps) => {
     useState<StudentClassData | null>(null);
   const [nameFilter, setNameFilter] = useState("");
   const [classFilter, setClassFilter] = useState<string>("all");
-  const [modeFilter, setModeFilter] = useState<ActiveUserMode | "all">("all");
+  const [modeFilter, setModeFilter] = useState<UserMode | "all">("all");
 
   // Use the custom hook to fetch student data
   const { students, classOptions, isLoading, error } = useStudentData({
@@ -90,7 +89,7 @@ export const StudentDataTable = ({ instructorId }: StudentDataTableProps) => {
         <UserDataSearchFilters
           nameFilter={nameFilter}
           setNameFilter={setNameFilter}
-          modeFilter={modeFilter as string}
+          modeFilter={modeFilter}
           setModeFilter={setModeFilter}
           classFilter={classFilter}
           setClassFilter={setClassFilter}
@@ -139,7 +138,7 @@ export const StudentDataTable = ({ instructorId }: StudentDataTableProps) => {
                     correctSuggestions: 0,
                     accuracyPercentage: 0,
                     lastActivity: new Date().toISOString(),
-                    mode: "LINE_BY_LINE",
+                    mode: UserMode.LINE_BY_LINE,
                   }}
                   index={index}
                   isLoading={true}
@@ -159,7 +158,7 @@ export const StudentDataTable = ({ instructorId }: StudentDataTableProps) => {
         <UserDataSearchFilters
           nameFilter={nameFilter}
           setNameFilter={setNameFilter}
-          modeFilter={modeFilter as string}
+          modeFilter={modeFilter}
           setModeFilter={setModeFilter}
           classFilter={classFilter}
           setClassFilter={setClassFilter}

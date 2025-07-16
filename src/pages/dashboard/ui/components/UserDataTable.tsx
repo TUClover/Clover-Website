@@ -1,4 +1,4 @@
-import { UserStatus, UserMode, UserRole } from "@/api/types/user";
+import { UserStatus, UserMode, UserRole } from "@/types/user";
 import MiniPieChart from "@/components/MiniPieChart";
 import PaginatedTable from "@/components/PaginatedTable";
 import { Card, CardContent } from "@/components/ui/card";
