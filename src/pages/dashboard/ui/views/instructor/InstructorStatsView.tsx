@@ -9,7 +9,7 @@ import {
 import { useUser } from "@/context/UserContext";
 import { useClassActivity } from "@/hooks/useClassActivity";
 import { useInstructorClasses } from "@/hooks/useInstructorClasses";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";
 import StatCard from "@/components/StatCard";
 import AccuracyPieChart from "@/pages/dashboard/ui/components/AccuracyPieChart";
@@ -19,16 +19,27 @@ import Loading from "@/components/Loading";
 import DecisionLineChart from "@/pages/dashboard/ui/components/DecisionLineChart";
 import ResponseTimeBarChart from "@/pages/dashboard/ui/components/ResponseTimeBarChart";
 import AccuracyTimeLineChart from "@/pages/dashboard/ui/components/AccuracyTimeLineChart";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const InstructorStatsView = () => {
   const { userData } = useUser();
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const preselectedClassId = location.state?.preselectedClassId;
+
+  useEffect(() => {
+    if (preselectedClassId) {
+      navigate(location.pathname, { replace: true });
+    }
+  }, [preselectedClassId, location.pathname, navigate]);
 
   const [selectedMode, setSelectedMode] = useState<ActiveUserMode>(
     userData?.settings.mode as ActiveUserMode
   );
 
   const { allClassOptions, selectedClassId, handleClassSelect } =
-    useInstructorClasses(userData?.id);
+    useInstructorClasses(userData?.id, preselectedClassId);
 
   const { allActivity, classActivity, progressData, loading } =
     useClassActivity(userData?.id as string, selectedClassId, selectedMode);

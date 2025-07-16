@@ -52,16 +52,19 @@ export type UserSettings = {
   mode: UserMode;
 };
 
-export interface ClassData {
-  id: string;
-  createdAt?: string;
+export interface ClassInfo {
+  id?: string;
   classTitle: string;
   classCode?: string;
   instructorId?: string;
-  instructorName?: string;
   classHexColor: string;
   classImageCover?: string | null;
   classDescription?: string;
+}
+
+export interface ClassData extends ClassInfo {
+  createdAt?: string;
+  instructorName?: string;
   joinedAt?: string;
   enrollmentStatus?: EnrollmentStatus;
   studentCount?: number;

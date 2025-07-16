@@ -70,7 +70,7 @@ const StudentClassesView = ({ description }: { description?: string }) => {
         if (filteredClasses.length === 0) return null;
 
         return (
-          <div className="space-y-4">
+          <div className="space-y-4" key={title}>
             <div className="flex items-center gap-2">
               <Icon className={`size-6 ${iconColor}`} />
               <h2 className="text-xl font-semibold">{title}</h2>

@@ -9,7 +9,7 @@ import {
 import { useUserClasses } from "../hooks/useUserClasses";
 import ClassInfoCard from "../components/ClassInfoCard";
 import { useState } from "react";
-import ClassDetails from "./ClassDetailsView";
+import ClassDetails from "./classes/ui/views/ClassDetailsView";
 import RegisterClassDialog from "../components/RegisterClassDialog";
 import ProfileCard from "../components/ProfileCard";
 import Loading from "@/components/Loading";

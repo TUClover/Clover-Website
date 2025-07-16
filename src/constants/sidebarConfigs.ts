@@ -113,6 +113,8 @@ export const sidebarItems: SideBarItem[] = [
     icon: BookOpenText,
     name: "Classes",
     title: "Class Management",
+    description:
+      "Create new courses, monitor class progress, and manage your teaching portfolio.",
     subheading: "Teaching",
     roles: ADMIN_ROLES,
     dashboardView: InstructorClassesView,

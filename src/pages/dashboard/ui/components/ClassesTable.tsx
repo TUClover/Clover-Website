@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ClassData, EnrollmentStatus } from "@/api/types/user";
 import { Button } from "@/components/ui/button";
 import {
+  Edit,
   FileChartColumn,
   FileSymlink,
   LogOut,
@@ -27,12 +28,13 @@ import {
 import { useNavigate } from "react-router-dom";
 import EnrollmentBadge from "@/components/EnrollmentBadge";
 import { useUser } from "@/context/UserContext";
-import { ClassActionDialog } from "@/components/ClassActionDialog";
+import { actionType, ClassActionDialog } from "@/components/ClassActionDialog";
 import { useClassActionDialog } from "@/hooks/useClassActionDialog";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ClassesTableProps {
   classes: ClassData[];
+  showInstructor?: boolean;
   showStatus?: boolean;
   showActions?: boolean;
   onRefresh?: () => void;
@@ -40,6 +42,7 @@ interface ClassesTableProps {
 
 const ClassesTable = ({
   classes,
+  showInstructor = true,
   showStatus = false,
   showActions = false,
   onRefresh,
@@ -60,6 +63,10 @@ const ClassesTable = ({
 
         queryClient.invalidateQueries({
           queryKey: ["allClasses", { userId: userData.id }],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["instructorClasses", userData.id],
         });
       }
     },
@@ -86,6 +93,13 @@ const ClassesTable = ({
     }
   };
 
+  const handleEditClass = (classData: ClassData, event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (classData.id) {
+      navigate(`/classes/${classData.id}/edit`);
+    }
+  };
+
   const handleGoToCourse = (classData: ClassData, event: React.MouseEvent) => {
     event.stopPropagation();
     navigate("/dashboard", {
@@ -99,7 +113,7 @@ const ClassesTable = ({
 
   const handleClassAction = (
     classData: ClassData,
-    action: "join" | "leave" | "cancel" | "remove",
+    action: actionType,
     event: React.MouseEvent
   ) => {
     event.stopPropagation();
@@ -114,7 +128,46 @@ const ClassesTable = ({
     });
   };
 
+  const isInstructor = (classData: ClassData) => {
+    return userData?.id === classData.instructorId;
+  };
+
   const getActionButton = (classData: ClassData) => {
+    if (isInstructor(classData)) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={(e) => handleViewDetails(classData, e)}>
+              <FileSymlink className="mr-1 h-4 w-4" />
+              View Class
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => handleEditClass(classData, e)}>
+              <Edit className="mr-1 h-4 w-4" />
+              Edit Class
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => handleClassAction(classData, "delete", e)}
+              className="text-red-600 focus:text-red-600"
+            >
+              <X className="mr-1 h-4 w-4" />
+              Delete Class
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
     const enrollmentStatus = classData.enrollmentStatus;
 
     if (!enrollmentStatus) {
@@ -228,7 +281,9 @@ const ClassesTable = ({
               <TableRow className="font-semibold">
                 <TableHead className="w-[25%]">Title</TableHead>
                 <TableHead className="w-[12%]">Code</TableHead>
-                <TableHead className="w-[20%]">Instructor</TableHead>
+                {showInstructor && (
+                  <TableHead className="w-[20%]">Instructor</TableHead>
+                )}
                 <TableHead className="w-[10%] text-center">Students</TableHead>
                 {showStatus && (
                   <TableHead className="w-[15%] text-center">Status</TableHead>
@@ -266,10 +321,9 @@ const ClassesTable = ({
 
                     <TableCell>{classData.classCode}</TableCell>
 
-                    <TableCell>
-                      {classData.instructorName ||
-                        classData.instructorId?.substring(0, 8) + "..."}
-                    </TableCell>
+                    {showInstructor && (
+                      <TableCell>{classData.instructorName || "N/A"}</TableCell>
+                    )}
 
                     <TableCell className="text-center">
                       <div className="flex items-center justify-center">

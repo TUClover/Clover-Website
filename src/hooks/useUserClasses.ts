@@ -9,7 +9,9 @@ export const useUserClasses = (
   userId?: string | null,
   preselectedClassId?: string
 ) => {
-  const [selectedClassId, setSelectedClassId] = useState<string | null>("all");
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(() => {
+    return preselectedClassId || "all";
+  });
 
   const {
     data: allClasses = [],
@@ -76,23 +78,6 @@ export const useUserClasses = (
     ];
     return options;
   }, [allClasses]);
-
-  useEffect(() => {
-    if (preselectedClassId && allClassOptions.length > 0) {
-      // Check if the preselected class exists in user's enrolled classes
-      const classExists = allClassOptions.some(
-        (cls) => cls.id === preselectedClassId
-      );
-      if (classExists) {
-        setSelectedClassId(preselectedClassId);
-      } else {
-        // If class doesn't exist in user's enrolled classes, keep default "all"
-        console.warn(
-          `Preselected class ${preselectedClassId} not found in user's enrolled classes`
-        );
-      }
-    }
-  }, [preselectedClassId, allClassOptions]);
 
   const handleClassSelect = useCallback((classId: string | null) => {
     setSelectedClassId(classId);

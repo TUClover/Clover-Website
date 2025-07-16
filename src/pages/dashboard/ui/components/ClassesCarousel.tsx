@@ -21,7 +21,7 @@ const ClassesCarousel = ({ classes }: ClassesCarouselProps) => {
           opts={{
             align: "start",
             loop: false,
-            skipSnaps: false,
+            skipSnaps: true,
             dragFree: false,
           }}
         >

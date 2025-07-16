@@ -55,8 +55,12 @@ const UserAvatar = ({
         />
       ) : (
         <AvatarFallback
-          className={` text-white ${sizeClasses.text} font-semibold ${fallbackClassName || ""}`}
-          style={{ backgroundColor }}
+          className={` text-white ${sizeClasses.text} font-bold ${fallbackClassName || ""}`}
+          style={{
+            backgroundColor,
+            backgroundImage:
+              "linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.01))",
+          }}
         >
           {getInitials()}
         </AvatarFallback>

@@ -37,7 +37,10 @@ export const ClassInfoCard = ({
   };
 
   return (
-    <div className="group hover:no-underline flex" onClick={handleCardClick}>
+    <div
+      className="group hover:no-underline flex flex-1"
+      onClick={handleCardClick}
+    >
       <Card className="pt-0 rounded-xl overflow-hidden shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-95 border border-border flex flex-col flex-1">
         <div className="relative h-36 w-full overflow-hidden">
           {isInstructor &&

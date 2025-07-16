@@ -1,6 +1,7 @@
 import { CLASS_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
 import {
   ClassData,
+  ClassInfo,
   EnrollmentStatus,
   PaginatedClassResponse,
   UserSettings,
@@ -12,8 +13,8 @@ import {
  * @returns {Promise<{ data?: { id: string }; error?: string }>} - The response from the server
  */
 export const createClass = async (
-  newClass: ClassData
-): Promise<{ data?: ClassData; error?: string }> => {
+  newClass: ClassInfo
+): Promise<{ id?: string; error?: string }> => {
   try {
     const response = await fetch(`${CLASS_ENDPOINT}/`, {
       method: "POST",
@@ -26,16 +27,83 @@ export const createClass = async (
     if (!response.ok) {
       return {
         error:
+          data.error ||
           data.message ||
           `Failed to create class: ${response.status} ${response.statusText}`,
       };
     }
 
-    if (!data) {
+    if (!data?.id) {
       return { error: "Invalid response: expected class ID" };
     }
 
-    return { data: data };
+    return { id: data.id }; // Return ID directly
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+};
+
+export const updateClass = async (
+  classId: string,
+  updates: Partial<ClassInfo>
+): Promise<{ id?: string; error?: string }> => {
+  try {
+    const response = await fetch(`${CLASS_ENDPOINT}/${classId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error:
+          data.error ||
+          data.message ||
+          `Failed to update class: ${response.status} ${response.statusText}`,
+      };
+    }
+
+    if (!data?.id) {
+      return { error: "Invalid response: expected class ID" };
+    }
+
+    return { id: data.id };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+};
+
+export const deleteClass = async (
+  classId: string
+): Promise<{ success?: boolean; error?: string }> => {
+  try {
+    const response = await fetch(`${CLASS_ENDPOINT}/${classId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error:
+          data.error ||
+          data.message ||
+          `Failed to delete class: ${response.status} ${response.statusText}`,
+      };
+    }
+
+    if (!data?.success) {
+      return { error: "Invalid response: expected success confirmation" };
+    }
+
+    return { success: data.success };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",

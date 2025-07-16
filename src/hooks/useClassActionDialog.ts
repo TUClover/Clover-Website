@@ -1,4 +1,9 @@
-import { registerUserClass, unregisterUserClass } from "@/api/classes";
+import {
+  deleteClass,
+  registerUserClass,
+  unregisterUserClass,
+} from "@/api/classes";
+import { actionType } from "@/components/ClassActionDialog";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -15,14 +20,14 @@ export const useClassActionDialog = ({
     classId: string;
     userId: string;
     classTitle?: string;
-    action: "join" | "leave" | "cancel" | "remove";
+    action: actionType;
   } | null>(null);
 
   const openDialog = (params: {
     classId: string;
     userId: string;
     classTitle?: string;
-    action: "join" | "leave" | "cancel" | "remove";
+    action: actionType;
   }) => {
     setClassInfo(params);
     setIsOpen(true);
@@ -44,6 +49,9 @@ export const useClassActionDialog = ({
       if (classInfo.action === "join") {
         result = await registerUserClass(classInfo.userId, classInfo.classId);
         successMessage = "Successfully joined class!";
+      } else if (classInfo.action === "delete") {
+        result = await deleteClass(classInfo.classId);
+        successMessage = "Class deleted successfully!";
       } else {
         result = await unregisterUserClass(classInfo.userId, classInfo.classId);
 

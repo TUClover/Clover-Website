@@ -20,7 +20,8 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Loading from "./components/Loading";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ClassDetailsView from "./pages/ClassDetailsView";
+import ClassDetailsView from "./pages/classes/ui/views/ClassDetailsView";
+import ClassCreateEditView from "./pages/classes/ui/views/ClassCreateEditView";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,14 @@ const App = (): JSX.Element => {
                 <Route
                   path="/classes/:classId"
                   element={<ClassDetailsView />}
+                />
+                <Route
+                  path="/classes/:classId/edit"
+                  element={<ClassCreateEditView />}
+                />
+                <Route
+                  path="/classes/create"
+                  element={<ClassCreateEditView />}
                 />
               </Route>
               {/* Public Routes */}

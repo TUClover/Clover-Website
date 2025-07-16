@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
 
+export type actionType = "join" | "leave" | "cancel" | "remove" | "delete";
+
 interface ClassActionDialogProps {
   isOpen: boolean;
   isLoading: boolean;
@@ -17,7 +19,7 @@ interface ClassActionDialogProps {
     classId: string;
     userId: string;
     classTitle?: string;
-    action: "join" | "leave" | "cancel" | "remove";
+    action: actionType;
   } | null;
   onClose: () => void;
   onConfirm: () => void;
@@ -69,6 +71,15 @@ export const ClassActionDialog = ({
           description: `Are you sure you want to remove "${className}" from your list? This will permanently delete this rejected application from your records.`,
           actionText: "remove from list",
           loadingText: "Removing...",
+          buttonColor: "bg-red-600 hover:bg-red-700 focus:ring-red-600",
+        };
+
+      case "delete":
+        return {
+          title: "Delete Class",
+          description: `Are you sure you want to permanently delete "${className}"? This action cannot be undone and will remove all class data, including enrolled students.`,
+          actionText: "delete permanently",
+          loadingText: "Deleting...",
           buttonColor: "bg-red-600 hover:bg-red-700 focus:ring-red-600",
         };
 

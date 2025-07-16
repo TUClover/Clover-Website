@@ -14,7 +14,7 @@ import { ClassData } from "@/api/types/user";
 import LearningProgressChart from "@/pages/dashboard/ui/components/LearningProgressChart";
 import AccuracyTimeLineChart from "@/pages/dashboard/ui/components/AccuracyTimeLineChart";
 import ResponseTimeBarChart from "@/pages/dashboard/ui/components/ResponseTimeBarChart";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 Chart.register(...registerables);
 
@@ -27,7 +27,14 @@ const StudentStatsView = ({ description }: { description?: string }) => {
   const { userData } = useUser();
 
   const location = useLocation();
+  const navigate = useNavigate();
   const preselectedClassId = location.state?.preselectedClassId;
+
+  useEffect(() => {
+    if (preselectedClassId) {
+      navigate(location.pathname, { replace: true });
+    }
+  }, [preselectedClassId, location.pathname, navigate]);
 
   const {
     allClassOptions,

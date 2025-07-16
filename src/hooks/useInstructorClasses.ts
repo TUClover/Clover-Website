@@ -5,8 +5,13 @@ import { supabase } from "../supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 import QUERY_INTERVALS from "@/constants/queryIntervals";
 
-export const useInstructorClasses = (userId?: string | null) => {
-  const [selectedClassId, setSelectedClassId] = useState<string | null>("all");
+export const useInstructorClasses = (
+  userId?: string | null,
+  initialClassId?: string | null
+) => {
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(() => {
+    return initialClassId || "all";
+  });
 
   const {
     data: allClasses = [],

@@ -1,4 +1,5 @@
 import { ClassActionDialog } from "@/components/ClassActionDialog";
+import { FloatingLogo } from "@/components/CloverLogo";
 import TagBadge from "@/components/TagBadge";
 import { Button } from "@/components/ui/button";
 import UserInfoItem from "@/components/UserInfoItem";
@@ -119,6 +120,22 @@ const ClassDetailsView = () => {
     });
   };
 
+  const handleManageClass = () => {
+    navigate("/dashboard/instructor-stats", {
+      state: {
+        preselectedClassId: classId,
+        classTitle: classData.classTitle,
+        classCode: classData.classCode,
+      },
+    });
+  };
+
+  const handleEditClass = () => {
+    if (classData.id) {
+      navigate(`/classes/${classId}/edit`);
+    }
+  };
+
   const handleClassAction = (
     action: "join" | "leave" | "cancel" | "remove"
   ) => {
@@ -134,6 +151,8 @@ const ClassDetailsView = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <FloatingLogo onClick={() => navigate("/dashboard")} />
+
       <ClassActionDialog
         isOpen={classActionDialog.isOpen}
         isLoading={classActionDialog.isLoading}
@@ -202,7 +221,7 @@ const ClassDetailsView = () => {
 
       {/* Main content section - constrained width */}
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
@@ -269,137 +288,139 @@ const ClassDetailsView = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              {/* Instructor info */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Instructor
-                </h3>
-                <UserInfoItem
-                  firstName={instructorName || "Instructor Name"}
-                  email="Main Instructor"
-                  hexColor={classHexColor}
-                  className="bg-transparent"
-                  size="lg"
-                />
-              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-8">
+                {/* Instructor info */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm flex-1 col-span-1">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Instructor
+                  </h3>
+                  <UserInfoItem
+                    firstName={instructorName || "Instructor Name"}
+                    email="Main Instructor"
+                    hexColor={classHexColor}
+                    className="bg-transparent"
+                    size="lg"
+                  />
+                </div>
 
-              {/* Course stats */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Course Details
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Users className="w-5 h-5 text-gray-500" />
-                    <span className="text-gray-700 dark:text-gray-300">
-                      {studentCount} enrolled students
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <BookOpen className="w-5 h-5 text-gray-500" />
-                    <span className="text-gray-700 dark:text-gray-300">
-                      {classCode}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Star className="w-5 h-5 text-yellow-500" />
-                    <span className="text-gray-700 dark:text-gray-300">
-                      4.8 average rating
-                    </span>
+                {/* Course stats */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Course Details
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Users className="w-5 h-5 text-gray-500" />
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {studentCount} enrolled students
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <BookOpen className="w-5 h-5 text-gray-500" />
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {classCode}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Star className="w-5 h-5 text-yellow-500" />
+                      <span className="text-gray-700 dark:text-gray-300">
+                        4.8 average rating
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Action buttons */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-                <div className="space-y-3">
-                  {!isInstructor && (
-                    <>
-                      {isUserEnrolled ? (
-                        <>
-                          <Button
-                            onClick={handlePreviewClick}
-                            className="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors hover:bg-primary/80"
-                          >
-                            Go to Course
-                          </Button>
-                          <Button
-                            onClick={() => handleClassAction("leave")}
-                            variant="outline"
-                            className="w-full bg-red-50 hover:bg-red-500 text-red-600 font-semibold py-3 px-4 rounded-lg transition-colors"
-                          >
-                            Leave Class
-                          </Button>
-                        </>
-                      ) : isUserWaitlisted ? (
-                        <>
-                          <Button
-                            disabled
-                            className="w-full bg-yellow-500/50 text-white font-semibold py-3 px-4 rounded-lg cursor-not-allowed"
-                          >
-                            Pending
-                          </Button>
-                          <Button
-                            onClick={() => handleClassAction("cancel")}
-                            variant="outline"
-                            className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
-                          >
-                            Cancel Application
-                          </Button>
-                        </>
-                      ) : isUserRejected ? (
-                        <>
-                          <Button
-                            onClick={() => handleClassAction("remove")}
-                            className="w-full bg-red-500 hover:bg-red-500/80 text-white font-semibold py-3 px-4 rounded-lg"
-                          >
-                            Remove
-                          </Button>
-                          <Button
-                            onClick={handleSaveClick}
-                            variant="outline"
-                            className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
-                          >
-                            Save for Later
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            onClick={() => handleClassAction("join")}
-                            className="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors"
-                          >
-                            Enroll Now
-                          </Button>
-                          <Button
-                            onClick={handleSaveClick}
-                            variant="outline"
-                            className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
-                          >
-                            Save for Later
-                          </Button>
-                        </>
-                      )}
-                    </>
-                  )}
+                {/* Action buttons */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm col-span-2 lg:col-span-1">
+                  <div className="space-y-3">
+                    {!isInstructor && (
+                      <>
+                        {isUserEnrolled ? (
+                          <>
+                            <Button
+                              onClick={handlePreviewClick}
+                              className="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors hover:bg-primary/80"
+                            >
+                              Go to Course
+                            </Button>
+                            <Button
+                              onClick={() => handleClassAction("leave")}
+                              variant="outline"
+                              className="w-full bg-red-50 hover:bg-red-500 text-red-600 font-semibold py-3 px-4 rounded-lg transition-colors"
+                            >
+                              Leave Class
+                            </Button>
+                          </>
+                        ) : isUserWaitlisted ? (
+                          <>
+                            <Button
+                              disabled
+                              className="w-full bg-yellow-500/50 text-white font-semibold py-3 px-4 rounded-lg cursor-not-allowed"
+                            >
+                              Pending
+                            </Button>
+                            <Button
+                              onClick={() => handleClassAction("cancel")}
+                              variant="outline"
+                              className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+                            >
+                              Cancel Application
+                            </Button>
+                          </>
+                        ) : isUserRejected ? (
+                          <>
+                            <Button
+                              onClick={() => handleClassAction("remove")}
+                              className="w-full bg-red-500 hover:bg-red-500/80 text-white font-semibold py-3 px-4 rounded-lg"
+                            >
+                              Remove
+                            </Button>
+                            <Button
+                              onClick={handleSaveClick}
+                              variant="outline"
+                              className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+                            >
+                              Save for Later
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button
+                              onClick={() => handleClassAction("join")}
+                              className="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                            >
+                              Enroll Now
+                            </Button>
+                            <Button
+                              onClick={handleSaveClick}
+                              variant="outline"
+                              className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+                            >
+                              Save for Later
+                            </Button>
+                          </>
+                        )}
+                      </>
+                    )}
 
-                  {isInstructor && (
-                    <>
-                      <Button
-                        onClick={() => console.log("Manage class...")}
-                        className="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors hover:bg-primary/80"
-                      >
-                        Manage Class
-                      </Button>
-                      <Button
-                        onClick={() => console.log("Edit class...")}
-                        variant="outline"
-                        className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
-                      >
-                        Edit Class
-                      </Button>
-                    </>
-                  )}
+                    {isInstructor && (
+                      <>
+                        <Button
+                          onClick={handleManageClass}
+                          className="w-full text-white font-semibold py-3 px-4 rounded-lg transition-colors hover:bg-primary/80"
+                        >
+                          Go to Class
+                        </Button>
+                        <Button
+                          onClick={handleEditClass}
+                          variant="outline"
+                          className="w-full bg-sidebar dark:bg-gray-100 text-sidebar-foreground border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+                        >
+                          Edit Class
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

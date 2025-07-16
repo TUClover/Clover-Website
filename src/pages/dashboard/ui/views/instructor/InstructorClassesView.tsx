@@ -2,17 +2,17 @@ import ClassInfoCard from "@/components/ClassInfoCard";
 import CreateNewClassDialog from "@/components/CreateNewClassDialog";
 import Loading from "@/components/Loading";
 import NoClasses from "@/components/NoClasses";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { useUser } from "@/context/UserContext";
 import { useInstructorClasses } from "@/hooks/useInstructorClasses";
+import ClassesTable from "../../components/ClassesTable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Grid, List } from "lucide-react";
 
-export const InstructorClassesView = () => {
+export const InstructorClassesView = ({
+  description,
+}: {
+  description?: string;
+}) => {
   const { userData } = useUser();
   const { allClasses, loading: userClassLoading } = useInstructorClasses(
     userData?.id
@@ -30,43 +30,58 @@ export const InstructorClassesView = () => {
     return <NoClasses role="instructor" />;
   }
 
-  return (
-    <div className="w-full grid grid-cols-1 md:grid-cols-5 lg:grid-cols-3 gap-6">
-      <div className="col-span-11 space-y-4">
-        <div className="flex justify-start items-center py-6">
-          <CreateNewClassDialog />
-        </div>
+  const renderGridView = () => (
+    <div className="space-y-6">
+      <div className="flex justify-start items-center">
+        <CreateNewClassDialog />
+      </div>
 
-        <div className="w-full">
-          <Carousel
-            opts={{
-              align: "center",
-            }}
-            className="w-full"
-          >
-            <CarouselContent>
-              {allClasses.map((userClass, index) => (
-                <CarouselItem key={index} className="lg:basis-1/3">
-                  <div className="p-1">
-                    <ClassInfoCard classInfo={userClass} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            {allClasses.length > 1 && (
-              <div
-                className={`flex justify-between w-full pt-4 ${
-                  allClasses.length <= 2 && "lg:hidden"
-                }`}
-              >
-                <CarouselPrevious className="static translate-x-0 translate-y-0 ml-4" />
-                <CarouselNext className="static translate-x-0 translate-y-0 mr-4" />
-              </div>
-            )}
-          </Carousel>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {allClasses.map((userClass, index) => (
+          <div key={index} className="flex">
+            <ClassInfoCard classInfo={userClass} />
+          </div>
+        ))}
       </div>
     </div>
+  );
+
+  const renderTableView = () => (
+    <div className="space-y-6">
+      <div className="flex justify-start items-center">
+        <CreateNewClassDialog />
+      </div>
+
+      <ClassesTable classes={allClasses} showInstructor={false} showActions />
+    </div>
+  );
+
+  return (
+    <>
+      <Tabs defaultValue="grid" className="w-full">
+        <div className="flex justify-between gap-6 items-center mb-6">
+          <p className="text-sm text-muted-foreground hidden md:block">
+            {description}
+          </p>
+          <TabsList className="grid w-full md:w-[200px] grid-cols-2">
+            <TabsTrigger value="grid" className="flex items-center gap-2">
+              <Grid className="h-4 w-4" />
+            </TabsTrigger>
+            <TabsTrigger value="table" className="flex items-center gap-2">
+              <List className="h-4 w-4" />
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="grid" className="w-full">
+          {renderGridView()}
+        </TabsContent>
+
+        <TabsContent value="table" className="w-full">
+          {renderTableView()}
+        </TabsContent>
+      </Tabs>
+    </>
   );
 };
 
