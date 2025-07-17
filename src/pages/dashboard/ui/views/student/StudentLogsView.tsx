@@ -3,10 +3,10 @@ import { CustomTooltip } from "@/components/CustomTooltip";
 import Loading from "@/components/Loading";
 import NoData from "@/components/NoData";
 import PaginatedTable from "@/components/PaginatedTable";
-import SuggestionTable from "@/components/SuggestionTable";
+import SuggestionTable from "@/pages/dashboard/ui/components/SuggestionTable";
 import { Card } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
-import { useUserActivity } from "@/hooks/useUserActivity";
+import { useUserActivity } from "@/pages/dashboard/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import { UserMode } from "@/types/user";
 

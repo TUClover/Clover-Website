@@ -39,6 +39,9 @@ interface BaseLogResponse {
   classId?: string;
   createdAt: string;
   hasBug?: boolean;
+  type?: string;
+  classTitle?: string;
+  classCode?: string;
 }
 
 export interface BlockSuggestionLogResponse extends BaseLogResponse {
@@ -58,7 +61,7 @@ export type UserActivityLogItem =
   | LineSuggestionLogResponse
   | SelectionSuggestionLogResponse;
 
-export type UserActivityLogResponse = UserActivityLogItem[];
+export type ActivityLogResponse = UserActivityLogItem[];
 
 export interface AIStats {
   id: string;

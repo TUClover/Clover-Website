@@ -1,5 +1,5 @@
-import { cn } from "../lib/utils";
-import { CLOVER } from "./ui/text";
+import { cn } from "@/lib/utils";
+import { CLOVER } from "@/components/ui/text";
 import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/useMobile";
 

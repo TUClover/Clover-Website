@@ -17,16 +17,15 @@ const COLORS = [
   "#dda0dd",
 ];
 
-// 1. Language Performance Donut Chart
-interface LanguagePerformanceProps {
+interface LanguagesPieChartProps {
   suggestions: SuggestionData[];
   title?: string;
 }
 
-const LanguagePerformance: React.FC<LanguagePerformanceProps> = ({
+const LanguagesPieChart = ({
   suggestions,
   title = "Performance by Language",
-}) => {
+}: LanguagesPieChartProps) => {
   const [textColor, setTextColor] = useState("#000000");
 
   useEffect(() => {
@@ -196,4 +195,4 @@ const LanguagePerformance: React.FC<LanguagePerformanceProps> = ({
   );
 };
 
-export { LanguagePerformance };
+export default LanguagesPieChart;

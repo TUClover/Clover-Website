@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUser } from "@/context/UserContext";
-import { useClassActivity } from "@/hooks/useClassActivity";
+import { useClassActivity } from "@/pages/dashboard/hooks/useClassActivity";
 import { useInstructorClasses } from "@/hooks/useInstructorClasses";
 import { useEffect, useState } from "react";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";

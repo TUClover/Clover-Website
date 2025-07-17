@@ -1,4 +1,4 @@
-import StudentDataTable from "@/components/StudentDataTable";
+import StudentDataTable from "@/pages/dashboard/ui/components/StudentDataTable";
 import { Card } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
 

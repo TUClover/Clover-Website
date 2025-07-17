@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import cloverLogo from "../assets/CLOVER.svg";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import ThemeToggle from "./ThemeToggle";
 import { useState } from "react";
 import {
@@ -12,10 +11,11 @@ import {
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { DoorOpen, Menu, Settings2, User2 } from "lucide-react";
-import { UserRole } from "../types/user";
+import { UserRole } from "@/types/user";
 import { useUser } from "@/context/UserContext";
 import UserAvatar from "./UserAvatar";
 import { supabase } from "@/supabaseClient";
+import CloverLogo from "./CloverLogo";
 
 /**
  * NavBar component that appears at the top of the page.
@@ -53,10 +53,7 @@ export const NavBar = () => {
     <nav className="dark:bg-[#0a0a0a] flex justify-between items-center py-3 pl-8 pr-4 md:pl-12 md:pr-6 fixed w-full top-0 z-50 ">
       <div className="flex items-center space-x-4">
         <Link to="/" className="flex items-center space-x-2 md:space-x-3">
-          <img src={cloverLogo} alt="Clover Logo" className="h-10" />
-          <span className="text-2xl font-bold tracking-wide text-primary">
-            CLOVER
-          </span>
+          <CloverLogo size="md" />
         </Link>
       </div>
 

@@ -1,12 +1,12 @@
-import ClassInfoCard from "@/components/ClassInfoCard";
-import CreateNewClassDialog from "@/components/CreateNewClassDialog";
+import ClassInfoCard from "@/pages/classes/ui/components/ClassInfoCard";
 import Loading from "@/components/Loading";
-import NoClasses from "@/components/NoClasses";
+import NoClasses from "@/pages/classes/ui/components/NoClasses";
 import { useUser } from "@/context/UserContext";
 import { useInstructorClasses } from "@/hooks/useInstructorClasses";
-import ClassesTable from "../../components/ClassesTable";
+import ClassesTable from "@/pages/dashboard/ui/components/ClassesTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Grid, List } from "lucide-react";
+import CreateNewClassButton from "@/pages/classes/ui/components/CreateNewClassButton";
 
 export const InstructorClassesView = ({
   description,
@@ -33,7 +33,7 @@ export const InstructorClassesView = ({
   const renderGridView = () => (
     <div className="space-y-6">
       <div className="flex justify-start items-center">
-        <CreateNewClassDialog />
+        <CreateNewClassButton />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -49,7 +49,7 @@ export const InstructorClassesView = ({
   const renderTableView = () => (
     <div className="space-y-6">
       <div className="flex justify-start items-center">
-        <CreateNewClassDialog />
+        <CreateNewClassButton />
       </div>
 
       <ClassesTable classes={allClasses} showInstructor={false} showActions />

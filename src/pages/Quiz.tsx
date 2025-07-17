@@ -7,10 +7,10 @@ import ClassesDropdownMenu from "./dashboard/ui/components/ClassesDropdownMenu";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../components/ui/card";
-import { UserClassInfo } from "../types/user";
 import { Button } from "../components/ui/button";
 import { Paragraph, Title } from "../components/ui/text";
 import Loading from "@/components/Loading";
+import { ClassInfo } from "@/types/class";
 
 type QuizQuestion = {
   id: string;
@@ -31,7 +31,7 @@ type QuizResult = {
  * Props for the QuizControls component.
  */
 type QuizControlsProps = {
-  classes: UserClassInfo[];
+  classes: ClassInfo[];
   selectedClassId: string | null;
   onClassSelect: (selection: {
     id: string | null;
@@ -63,8 +63,10 @@ const QuizControls: React.FC<QuizControlsProps> = ({
         Select a class:
       </label>
       <ClassesDropdownMenu
-        classes={classes.map((c) => c.userClass)}
-        onClassSelect={onClassSelect}
+        classes={classes}
+        onClassSelect={(classId) =>
+          onClassSelect({ id: classId, type: "class" })
+        }
         selectedId={selectedClassId}
       />
     </div>
@@ -240,7 +242,7 @@ export const QuizPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { classes, handleClassSelect, selectedClassId } = useUserClasses(
+  const { allClasses, handleClassSelect, selectedClassId } = useUserClasses(
     user?.id || ""
   );
 
@@ -299,11 +301,11 @@ export const QuizPage: React.FC = () => {
           response.status === 404 &&
           data.message?.includes("no sections that need review")
         ) {
-          const selectedClass = classes.find(
-            (cls) => cls.userClass.id === selectedClassId
+          const selectedClass = allClasses.find(
+            (cls) => cls.id === selectedClassId
           );
           toast.success(
-            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.userClass.classTitle}` : ""}.`
+            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.classTitle}` : ""}.`
           );
         } else {
           throw new Error(data?.message || "Failed to generate quiz");

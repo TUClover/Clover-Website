@@ -1,12 +1,11 @@
-import { InstructorLogResponse } from "@/api/classes";
-import { UserActivityLogItem } from "@/types/suggestion";
+import { ActivityLogResponse } from "@/types/suggestion";
 import { CustomTooltip } from "@/components/CustomTooltip";
 import { Card } from "@/components/ui/card";
 import { useEffect, useMemo, useState } from "react";
 import { Bar } from "react-chartjs-2";
 
 interface ResponseTimeAnalysisProps {
-  userActivity: UserActivityLogItem[] | InstructorLogResponse[];
+  userActivity: ActivityLogResponse;
   title?: string;
 }
 const ResponseTimeBarChart = ({
@@ -38,7 +37,6 @@ const ResponseTimeBarChart = ({
     if (!userActivity.length)
       return { labels: [], data: [], backgroundColors: [], counts: [] };
 
-    // Normalize the data - handle both UserActivityLogItem and InstructorLogResponse
     const normalizedActivity = userActivity.map((log) => ({
       ...log,
       hasBug: log.hasBug ?? false, // Handle potential undefined

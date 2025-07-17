@@ -2,23 +2,10 @@ import { UserMode } from "@/types/user";
 import { useClassActivity } from "./useClassActivity";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getClassesByInstructor, InstructorLogResponse } from "@/api/classes";
-import { getEventsForMode } from "@/types/event";
-
-interface StudentClassData {
-  userId: string;
-  fullName?: string;
-  classId?: string;
-  classTitle: string;
-  totalAccepted: number;
-  totalRejected: number;
-  totalInteractions: number;
-  correctSuggestions: number;
-  accuracyPercentage: number;
-  lastActivity: string;
-  mode: UserMode;
-  logs?: InstructorLogResponse[];
-}
+import { getClassesByInstructor } from "@/api/classes";
+import { ActivityLogResponse, UserActivityLogItem } from "@/types/suggestion";
+import { calculateProgress } from "@/utils/calculateProgress";
+import { StudentClassData } from "@/types/class";
 
 interface UseStudentDataOptions {
   instructorId: string;
@@ -31,14 +18,12 @@ export const useStudentData = ({
   classFilter = "all",
   modeFilter = "all",
 }: UseStudentDataOptions) => {
-  // Get all activity data
   const { allActivity, loading: activityLoading } = useClassActivity(
     instructorId,
     null,
     null
   );
 
-  // Get instructor classes WITH students data
   const {
     data: instructorClasses = [],
     isLoading: classesLoading,
@@ -47,7 +32,6 @@ export const useStudentData = ({
     queryKey: ["instructorClassesWithStudents", instructorId],
     queryFn: async () => {
       if (!instructorId) return [];
-      // Fetch classes with students included
       const { data, error } = await getClassesByInstructor(instructorId, true);
       if (error) throw new Error(error);
       return data || [];
@@ -58,7 +42,6 @@ export const useStudentData = ({
     retry: 2,
   });
 
-  // Create user data map from students in classes
   const userDataMap = useMemo(() => {
     const map = new Map();
 
@@ -79,11 +62,9 @@ export const useStudentData = ({
     return map;
   }, [instructorClasses]);
 
-  // Get class options
   const classOptions = useMemo(() => {
     const classMap = new Map();
 
-    // Add instructor classes
     instructorClasses.forEach((cls) => {
       classMap.set(cls.id, {
         id: cls.id,
@@ -91,7 +72,6 @@ export const useStudentData = ({
       });
     });
 
-    // Add classes from activity if not already present
     allActivity
       .filter((log) => log.classId && log.classTitle)
       .forEach((log) => {
@@ -103,14 +83,12 @@ export const useStudentData = ({
     return Array.from(classMap.values());
   }, [instructorClasses, allActivity]);
 
-  // Process student data
   const studentData = useMemo(() => {
     if (!allActivity.length || classesLoading) {
       return [];
     }
 
-    // Group logs by user + class + mode
-    const userClassModeMap = new Map<string, InstructorLogResponse[]>();
+    const userClassModeMap = new Map<string, ActivityLogResponse>();
 
     for (const log of allActivity) {
       if (!log.userId) continue;
@@ -138,10 +116,7 @@ export const useStudentData = ({
       const [userId, classId, mode] = key.split("|");
 
       // Calculate progress using the same logic as useClassActivity
-      const progressData = calculateProgressFromInstructorLogs(
-        userLogs,
-        mode as UserMode
-      );
+      const progressData = calculateProgress(userLogs);
 
       // Get last activity
       const lastActivity = userLogs.reduce(
@@ -200,54 +175,16 @@ export const useStudentData = ({
   };
 };
 
-// Helper function to determine mode from log
-function determineLogMode(log: InstructorLogResponse): UserMode | null {
+function determineLogMode(log: UserActivityLogItem): UserMode | null {
   // Check event names first
-  if (log.event.includes("LINE")) return "LINE_BY_LINE";
-  if (log.event.includes("BLOCK")) return "CODE_BLOCK";
-  if (log.event.includes("SELECTION")) return "CODE_SELECTION";
+  if (log.event.includes("LINE")) return UserMode.LINE_BY_LINE;
+  if (log.event.includes("BLOCK")) return UserMode.CODE_BLOCK;
+  if (log.event.includes("SELECTION")) return UserMode.CODE_SELECTION;
 
-  // Check suggestion IDs
-  if (log.lineSuggestionId) return "LINE_BY_LINE";
-  if (log.suggestionId) return "CODE_BLOCK";
-  if (log.selectionSuggestionItemId) return "CODE_SELECTION";
+  // Check suggestion IDs using 'in' operator for union types
+  if ("lineSuggestionId" in log) return UserMode.LINE_BY_LINE;
+  if ("suggestionId" in log) return UserMode.CODE_BLOCK;
+  if ("selectionSuggestionItemId" in log) return UserMode.CODE_SELECTION;
 
   return null;
-}
-
-// Use the exact same progress calculation as useClassActivity
-function calculateProgressFromInstructorLogs(
-  logs: InstructorLogResponse[],
-  mode: UserMode
-): ProgressData {
-  const events = getEventsForMode(mode);
-
-  const acceptedLogs = logs.filter((log) => log.event === events?.accept);
-  const rejectedLogs = logs.filter((log) => log.event === events?.reject);
-
-  const totalAccepted = acceptedLogs.length;
-  const totalRejected = rejectedLogs.length;
-  const totalInteractions = totalAccepted + totalRejected;
-
-  const correctSuggestions = acceptedLogs.filter((log) => !log.hasBug).length;
-
-  const accuracyPercentage =
-    totalAccepted > 0 ? (correctSuggestions / totalAccepted) * 100 : 0;
-
-  return {
-    totalAccepted,
-    totalRejected,
-    totalInteractions,
-    correctSuggestions,
-    accuracyPercentage,
-  };
-}
-
-// Use the same ProgressData interface as useClassActivity
-interface ProgressData {
-  totalAccepted: number;
-  totalRejected: number;
-  totalInteractions: number;
-  correctSuggestions: number;
-  accuracyPercentage: number;
 }

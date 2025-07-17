@@ -14,8 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import UserAvatar from "@/components/UserAvatar";
-import { UserWithActivity } from "@/hooks/useAllUsersActivity";
-import { formatActivityTimestamp } from "@/lib/utils";
+import { UserWithActivity } from "@/dashboard/hooks/useAllUsersActivity";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
@@ -29,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { formatActivityTimestamp } from "@/utils/timeConverter";
 
 interface UserDetailsCardProps {
   user: UserWithActivity;
@@ -201,12 +201,12 @@ const UserDetailsCard = ({ user, onClose }: UserDetailsCardProps) => {
                 <div className="flex items-center justify-between gap-8">
                   <p className="text-sm font-medium">Mode</p>
                   <CustomSelect
-                    value={settings?.mode || UserMode.BLOCK}
+                    value={settings?.mode || UserMode.CODE_BLOCK}
                     onValueChange={(value) => updateSetting("mode", value)}
                     options={[
-                      { label: "Block", value: UserMode.BLOCK },
-                      { label: "Line", value: UserMode.LINE },
-                      { label: "Selection", value: UserMode.SELECTION },
+                      { label: "Block", value: UserMode.CODE_BLOCK },
+                      { label: "Line", value: UserMode.LINE_BY_LINE },
+                      { label: "Selection", value: UserMode.CODE_SELECTION },
                     ]}
                     disabled={!editMode}
                     className="w-28"

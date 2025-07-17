@@ -1,5 +1,5 @@
 import { ClassData } from "@/types/user";
-import ClassInfoCard from "@/components/ClassInfoCard";
+import ClassInfoCard from "@/pages/classes/ui/components/ClassInfoCard";
 import {
   Carousel,
   CarouselContent,

@@ -1,13 +1,10 @@
 import { useCallback, useState } from "react";
 import { getAllUsers } from "../api/user";
 import { useQuery } from "@tanstack/react-query";
+import QUERY_INTERVALS from "@/constants/queryIntervals";
+import { UseAllUsersOptions } from "@/types/data";
 
-export const useAllUsers = (options?: {
-  page?: number;
-  limit?: number;
-  search?: string;
-  enabled?: boolean;
-}) => {
+export const useAllUsers = (options?: UseAllUsersOptions) => {
   const { page = 1, limit = 50, search = "", enabled = true } = options || {};
 
   const { data, isLoading, error, refetch, isFetching, isRefetching } =
@@ -25,8 +22,8 @@ export const useAllUsers = (options?: {
         return data!;
       },
       enabled,
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 15, // 15 minutes
+      staleTime: QUERY_INTERVALS.staleTime,
+      gcTime: QUERY_INTERVALS.gcTime,
       retry: 2,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       placeholderData: (previousData) => previousData,
@@ -48,7 +45,6 @@ export const useAllUsers = (options?: {
   };
 };
 
-// Enhanced hook with search and pagination state management
 export const useAllUsersWithSearch = (initialSearch = "") => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(initialSearch);

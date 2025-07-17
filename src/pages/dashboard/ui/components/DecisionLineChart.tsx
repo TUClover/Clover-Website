@@ -4,8 +4,7 @@ import { parseISODate } from "@/utils/timeConverter";
 import { CustomTooltip } from "@/components/CustomTooltip";
 import { Card } from "@/components/ui/card";
 import { ACCEPT_EVENTS, REJECT_EVENTS } from "@/types/event";
-import { UserActivityLogItem } from "@/types/suggestion";
-import { InstructorLogResponse } from "@/api/classes";
+import { ActivityLogResponse } from "@/types/suggestion";
 import CustomSelect from "@/components/CustomSelect";
 
 enum TimeInterval {
@@ -25,7 +24,7 @@ export const DecisionLineChart = ({
   activities,
 }: {
   title?: string;
-  activities: UserActivityLogItem[] | InstructorLogResponse[];
+  activities: ActivityLogResponse;
 }) => {
   const [interval, setInterval] = useState<TimeInterval>(TimeInterval.DAY);
   const [textColor, setTextColor] = useState("#000000");
@@ -137,20 +136,19 @@ export const DecisionLineChart = ({
           trigger={
             <h2 className="text-lg font-semibold text-alpha">{title}</h2>
           }
-          children={
-            <div className="space-y-2">
-              <p className="text-sm">
-                This line chart shows how many code suggestions users{" "}
-                <span className="font-semibold text-alpha">accepted</span> or{" "}
-                <span className="font-semibold text-beta">rejected</span> over
-                time.
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Time range can be adjusted (daily/weekly/monthly)
-              </p>
-            </div>
-          }
-        />
+        >
+          <div className="space-y-2">
+            <p className="text-sm">
+              This line chart shows how many code suggestions users{" "}
+              <span className="font-semibold text-alpha">accepted</span> or{" "}
+              <span className="font-semibold text-beta">rejected</span> over
+              time.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Time range can be adjusted (daily/weekly/monthly)
+            </p>
+          </div>
+        </CustomTooltip>
 
         <CustomSelect
           value={interval}

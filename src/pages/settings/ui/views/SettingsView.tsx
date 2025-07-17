@@ -1,12 +1,12 @@
-import { UserRole } from "../types/user";
-import { DeleteUserButton } from "../components/DeleteUserButton";
-import { EditUserButton } from "../components/EditUserButton";
-import NavBar from "../components/NavBar";
-import { ResetPasswordButton } from "../components/ResetPasswordButton";
-import { Card, CardTitle } from "../components/ui/card";
-import { Title } from "../components/ui/text";
+import { EditUserButton } from "@/components/EditUserButton";
+import NavBar from "@/components/NavBar";
+import { Card, CardTitle } from "@/components/ui/card";
+import { Title } from "@/components/ui/text";
+import { useUser } from "@/context/UserContext";
+import { UserRole } from "@/types/user";
 import UserSettings from "../components/UserSettings";
-import { useUser } from "../context/UserContext";
+import { DeleteUserButton } from "@/components/DeleteUserButton";
+import { ResetPasswordButton } from "@/components/ResetPasswordButton";
 
 /**
  * Settings component that displays user settings and activity.
@@ -14,9 +14,8 @@ import { useUser } from "../context/UserContext";
  *
  * @param userData - The user data to display in the settings page.
  */
-export const Settings = () => {
+export const SettingsView = () => {
   const { userData } = useUser();
-
   if (!userData) return null;
 
   const isPrivileged =
@@ -47,4 +46,4 @@ export const Settings = () => {
   );
 };
 
-export default Settings;
+export default SettingsView;

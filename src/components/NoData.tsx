@@ -1,4 +1,4 @@
-import CreateNewClassDialog from "./CreateNewClassDialog";
+import CreateNewClassButton from "../pages/classes/ui/components/CreateNewClassButton";
 
 interface NoDataProps {
   role?: "student" | "instructor";
@@ -37,7 +37,7 @@ const NoData = ({ role }: NoDataProps) => {
               or check back later.
             </p>
             <div className="flex flex-col items-center gap-4">
-              <CreateNewClassDialog />
+              <CreateNewClassButton />
             </div>
           </>
         )}

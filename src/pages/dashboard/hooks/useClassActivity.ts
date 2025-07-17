@@ -1,15 +1,13 @@
-import { UserMode } from "../types/user";
-import {
-  getClassActivityByInstructorId,
-  InstructorLogResponse,
-} from "../api/classes";
+import { UserMode } from "../../../types/user";
+import { getClassActivityByInstructorId } from "../../../api/classes";
 import { useQuery } from "@tanstack/react-query";
 import QUERY_INTERVALS from "@/constants/queryIntervals";
 import { useMemo } from "react";
 import {
-  calculateProgressFromInstructorLogs,
+  calculateProgress,
   getEmptyProgressData,
 } from "@/utils/calculateProgress";
+import { ActivityLogResponse } from "@/types/suggestion";
 
 /**
  * Custom hook to fetch and manage class activity logs.
@@ -37,7 +35,7 @@ export const useClassActivity = (
 
       console.log("Fetched class activity logs:", data);
 
-      return data as InstructorLogResponse[];
+      return data as ActivityLogResponse;
     },
     enabled: !!instructorId,
     staleTime: QUERY_INTERVALS.staleTime,
@@ -88,7 +86,7 @@ export const useClassActivity = (
       return getEmptyProgressData();
     }
 
-    return calculateProgressFromInstructorLogs(filteredClassActivity);
+    return calculateProgress(filteredClassActivity);
   }, [filteredClassActivity]);
 
   return {

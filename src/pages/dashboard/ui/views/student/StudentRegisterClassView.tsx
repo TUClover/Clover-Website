@@ -1,4 +1,4 @@
-import RegisterClassDialog from "@/components/RegisterClassDialog";
+import RegisterClassDialog from "@/pages/classes/ui/components/RegisterClassDialog";
 import { useUser } from "@/context/UserContext";
 import { useAllClasses } from "@/hooks/useAllClasses";
 import ClassesTable from "../../components/ClassesTable";

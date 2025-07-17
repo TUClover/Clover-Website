@@ -12,17 +12,17 @@ import {
 } from "@/components/ui/table";
 import {
   UserWithActivity,
-  useUsersWithActivityAndSearch,
-} from "@/hooks/useAllUsersActivity";
+  useAllUsersWithActivityAndSearch,
+} from "@/pages/dashboard/hooks/useAllUsersActivity";
 import { useMemo, useState } from "react";
 import UserInfoTableCard from "./UserInfoTableCard";
 import UserDataSearchFilters from "./UserDataSearchFilter";
-import { formatActivityTimestamp, isOnline } from "@/lib/utils";
 import ModeBadge from "@/components/ModeBadge";
 import RoleBadge from "@/components/RoleBadge";
 import StatusBadge from "@/components/StatusBadge";
 import UserDetailsCard from "./UserDetailsCard";
 import UserAvatar from "@/components/UserAvatar";
+import { formatActivityTimestamp, isOnline } from "@/utils/timeConverter";
 
 const UsersDataTable = () => {
   const [selectedUser, setSelectedUser] = useState<UserWithActivity | null>(
@@ -34,7 +34,7 @@ const UsersDataTable = () => {
   const [modeFilter, setModeFilter] = useState<string>("all");
 
   // Use the combined hook to get users with activity data
-  const { users, isLoading, error } = useUsersWithActivityAndSearch();
+  const { users, isLoading, error } = useAllUsersWithActivityAndSearch();
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -83,7 +83,7 @@ const UsersDataTable = () => {
           setRoleFilter={setRoleFilter}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-          modeFilter={modeFilter}
+          modeFilter={modeFilter as UserMode}
           setModeFilter={setModeFilter}
         />
         {/* Loading skeleton for mobile cards */}
@@ -130,7 +130,7 @@ const UsersDataTable = () => {
                     status: UserStatus.ACTIVE,
                     createdAt: "",
                     settings: {
-                      mode: UserMode.BLOCK,
+                      mode: UserMode.CODE_BLOCK,
                       showNotifications: true,
                       bugPercentage: 0,
                       enableQuiz: true,
@@ -165,7 +165,7 @@ const UsersDataTable = () => {
           setRoleFilter={setRoleFilter}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-          modeFilter={modeFilter}
+          modeFilter={modeFilter as UserMode}
           setModeFilter={setModeFilter}
         />
       </div>

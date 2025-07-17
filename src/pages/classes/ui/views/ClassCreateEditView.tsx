@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useUser } from "@/context/UserContext";
-import { useClassData } from "@/hooks/useClassData";
-import { ClassInfo } from "@/types/user";
+import { useClassData } from "@/pages/classes/hooks/useClassData";
 import { toast } from "sonner";
 import { createClass, updateClass } from "@/api/classes";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { COLOR_PALETTE } from "@/constants/colors";
 import { useQueryClient } from "@tanstack/react-query";
 import { useImageUpload } from "@/hooks/useImageUpload";
+import { ClassInfo } from "@/types/class";
 
 interface FormErrors {
   classTitle?: string;

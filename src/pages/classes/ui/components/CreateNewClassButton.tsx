@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
-export const CreateNewClassDialog = () => {
+export const CreateNewClassButton = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -17,4 +17,4 @@ export const CreateNewClassDialog = () => {
   );
 };
 
-export default CreateNewClassDialog;
+export default CreateNewClassButton;

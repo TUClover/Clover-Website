@@ -1,12 +1,12 @@
-import { ClassActionDialog } from "@/components/ClassActionDialog";
+import { ClassActionDialog } from "@/pages/classes/ui/components/ClassActionDialog";
 import { FloatingLogo } from "@/components/CloverLogo";
 import TagBadge from "@/components/TagBadge";
 import { Button } from "@/components/ui/button";
 import UserInfoItem from "@/components/UserInfoItem";
 import { ProgrammingTag } from "@/constants/tags";
 import { useUser } from "@/context/UserContext";
-import { useClassActionDialog } from "@/hooks/useClassActionDialog";
-import { useClassData } from "@/hooks/useClassData";
+import { useClassActionDialog } from "@/pages/classes/hooks/useClassActionDialog";
+import { useClassData } from "@/pages/classes/hooks/useClassData";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Star, Users } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";

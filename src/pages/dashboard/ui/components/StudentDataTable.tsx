@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import MiniPieChart from "./MiniPieChart";
+import MiniPieChart from "@/components/MiniPieChart";
 import { UserMode, ProgressData } from "@/types/user";
-import PaginatedTable from "./PaginatedTable";
+import PaginatedTable from "@/components/PaginatedTable";
 import StudentDashboardCard from "./StudentDashboardCard";
-import { useStudentData } from "@/hooks/useUserData";
+import { useStudentData } from "@/pages/dashboard/hooks/useUserData";
 import {
   Table,
   TableBody,
@@ -11,28 +11,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { InstructorLogResponse } from "@/api/classes";
-import { Card, CardContent } from "./ui/card";
+} from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
 import UserDataSearchFilters from "@/pages/dashboard/ui/components/UserDataSearchFilter";
 import UserInfoTableCard from "@/pages/dashboard/ui/components/UserInfoTableCard";
-import { formatActivityTimestamp, isOnline } from "@/lib/utils";
-import ModeBadge from "./ModeBadge";
-
-export interface StudentClassData {
-  userId: string;
-  fullName?: string;
-  classId?: string;
-  classTitle: string;
-  totalAccepted: number;
-  totalRejected: number;
-  totalInteractions: number;
-  correctSuggestions: number;
-  accuracyPercentage: number;
-  lastActivity: string;
-  mode: UserMode;
-  logs?: InstructorLogResponse[];
-}
+import ModeBadge from "@/components/ModeBadge";
+import { formatActivityTimestamp, isOnline } from "@/utils/timeConverter";
+import { StudentClassData } from "@/types/class";
 
 interface StudentDataTableProps {
   instructorId: string;
@@ -256,7 +241,6 @@ export const StudentRow = ({
   const isUserOnline = isOnline(student.lastActivity);
   const activityTimestamp = formatActivityTimestamp(student.lastActivity);
 
-  // Create progress data from student data
   const progressData: ProgressData = {
     totalAccepted: student.totalAccepted,
     totalRejected: student.totalRejected,
@@ -345,26 +329,3 @@ export const StudentRow = ({
 };
 
 export default StudentDataTable;
-
-interface GreenDotProps {
-  isOnline?: boolean;
-  className?: string;
-}
-
-export const GreenDot = ({ className = "", isOnline }: GreenDotProps) => {
-  return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      <div className="relative">
-        {isOnline ? (
-          <>
-            <div className="w-2 h-2 bg-green-500 rounded-full" />
-            <div className="absolute inset-0 w-2 h-2 bg-gray-700 dark:bg-white rounded-full animate-ping opacity-75" />
-            <span className="text-xs text-green-600 font-medium">Online</span>
-          </>
-        ) : (
-          <div className="w-2 h-2 bg-gray-400 rounded-full" />
-        )}
-      </div>
-    </div>
-  );
-};

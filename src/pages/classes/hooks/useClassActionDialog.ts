@@ -3,7 +3,7 @@ import {
   registerUserClass,
   unregisterUserClass,
 } from "@/api/classes";
-import { actionType } from "@/components/ClassActionDialog";
+import { actionType } from "@/pages/classes/ui/components/ClassActionDialog";
 import { useState } from "react";
 import { toast } from "sonner";
 

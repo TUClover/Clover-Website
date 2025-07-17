@@ -1,5 +1,5 @@
-import RegisterClassDialog from "@/components/RegisterClassDialog";
-import CreateNewClassDialog from "@/components/CreateNewClassDialog";
+import RegisterClassDialog from "@/pages/classes/ui/components/RegisterClassDialog";
+import CreateNewClassButton from "@/pages/classes/ui/components/CreateNewClassButton";
 
 interface NoClassesProps {
   role: "student" | "instructor";
@@ -14,7 +14,7 @@ const NoClasses = ({ role }: NoClassesProps) => {
           <p className="text-muted-foreground mb-4">
             Click "+ Add New Class" to get started.
           </p>
-          <CreateNewClassDialog />
+          <CreateNewClassButton />
         </>
       ) : (
         <>

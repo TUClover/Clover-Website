@@ -8,18 +8,11 @@ import {
   getEmptyProgressData,
 } from "@/utils/calculateProgress";
 import QUERY_INTERVALS from "@/constants/queryIntervals";
+import { UseAllUsersOptions } from "@/types/data";
 
-interface UseUsersWithActivityOptions {
-  page?: number;
-  limit?: number;
-  search?: string;
-  enabled?: boolean;
-}
-
-export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
+export const useAllUsersWithActivity = (options?: UseAllUsersOptions) => {
   const { page = 1, limit = 50, search = "", enabled = true } = options || {};
 
-  // First, fetch the users
   const {
     data: usersData,
     isLoading: usersLoading,
@@ -92,7 +85,6 @@ export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
     })),
   });
 
-  // Combine users with their activity data
   const usersWithActivity = useMemo(() => {
     return users.map((user, index): UserWithActivity => {
       const activityQuery = activityQueries[index];
@@ -136,12 +128,10 @@ export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
     });
   }, [users, activityQueries]);
 
-  // Loading states
   const isLoading =
     usersLoading || activityQueries.some((query) => query.isLoading);
   const isFetching = activityQueries.some((query) => query.isFetching);
 
-  // Error handling
   const error =
     usersError?.message ||
     activityQueries.find((query) => query.error)?.error?.message ||
@@ -163,8 +153,7 @@ export const useUsersWithActivity = (options?: UseUsersWithActivityOptions) => {
   };
 };
 
-// Enhanced hook with search and pagination state management
-export const useUsersWithActivityAndSearch = (initialSearch = "") => {
+export const useAllUsersWithActivityAndSearch = (initialSearch = "") => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(initialSearch);
   const [limit] = useState(20);
@@ -178,7 +167,7 @@ export const useUsersWithActivityAndSearch = (initialSearch = "") => {
     hasNextPage,
     hasPreviousPage,
     totalUsers,
-  } = useUsersWithActivity({
+  } = useAllUsersWithActivity({
     page,
     limit,
     search,

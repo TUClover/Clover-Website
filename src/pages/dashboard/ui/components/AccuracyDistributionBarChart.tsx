@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { parseISODate } from "@/utils/timeConverter";
 import { Card } from "@/components/ui/card";
-import { UserActivityLogItem } from "@/types/suggestion";
-import { InstructorLogResponse } from "@/api/classes";
+import { ActivityLogResponse } from "@/types/suggestion";
 import CustomSelect from "@/components/CustomSelect";
 import { CustomTooltip } from "@/components/CustomTooltip";
 import { ACCEPT_EVENTS, REJECT_EVENTS } from "@/types/event";
@@ -27,7 +26,7 @@ export const AccuracyDistributionBarChart = ({
   activities,
 }: {
   title?: string;
-  activities: UserActivityLogItem[] | InstructorLogResponse[];
+  activities: ActivityLogResponse;
 }) => {
   const [interval, setInterval] = useState<TimeInterval>(TimeInterval.DAY);
   const [textColor, setTextColor] = useState("#000000");

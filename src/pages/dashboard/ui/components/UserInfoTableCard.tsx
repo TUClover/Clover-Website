@@ -4,7 +4,7 @@ import ModeBadge from "@/components/ModeBadge";
 import RoleBadge from "@/components/RoleBadge";
 import StatusBadge from "@/components/StatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatActivityTimestamp, isOnline } from "@/lib/utils";
+import { formatActivityTimestamp, isOnline } from "@/utils/timeConverter";
 
 interface UserInfoTableCardProps {
   // Required props

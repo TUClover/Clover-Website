@@ -4,11 +4,11 @@ import {
   LineByLineSuggestion,
   SuggestionData,
   UserActivityLogItem,
-} from "../types/suggestion";
+} from "@/types/suggestion";
 import { useCallback, useEffect, useState } from "react";
-import { Card } from "./ui/card";
-import { UserMode } from "../types/user";
-import { ACCEPT_EVENTS } from "../types/event";
+import { Card } from "@/components/ui/card";
+import { UserMode } from "@/types/user";
+import { ACCEPT_EVENTS } from "@/types/event";
 import { X } from "lucide-react";
 import {
   Table,
@@ -17,12 +17,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { getSuggestionByModeAndId } from "../api/suggestion";
-import Loading from "./Loading";
-import ModalContainer from "./ModalContainer";
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { getSuggestionByModeAndId } from "@/api/suggestion";
+import Loading from "@/components/Loading";
+import ModalContainer from "@/components/ModalContainer";
 
 interface SuggestionTableProps {
   logItems: UserActivityLogItem[];
@@ -116,7 +116,7 @@ export const SuggestionTable = ({
               return (
                 <TableRow
                   key={logItem.id}
-                  className="cursor-pointer hover:bg-muted/50 text-center"
+                  className="cursor-pointer bg-white/40 dark:bg-black/40 hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors border-b border-muted text-center"
                   onClick={() => setSelectedLogItem(logItem)}
                 >
                   <TableCell className="py-3">
@@ -192,6 +192,9 @@ export const SuggestionTable = ({
                 log={selectedLogItem}
                 suggestion={suggestionDetail}
                 mode={mode}
+                isCorrect={
+                  getDecisionCorrectness(selectedLogItem) === "Correct"
+                }
               />
             ) : (
               <p className="text-muted-foreground">
@@ -217,10 +220,12 @@ export const SuggestionDetailCard = ({
   log,
   suggestion,
   mode,
+  isCorrect = true,
 }: {
   log: UserActivityLogItem;
   suggestion: SuggestionData;
   mode: UserMode;
+  isCorrect?: boolean;
 }) => {
   const isAccepted =
     log.event.includes("ACCEPT") || log.event.includes("accept");
@@ -247,7 +252,7 @@ export const SuggestionDetailCard = ({
 
           return (
             <div className="flex-1 flex flex-col min-h-0">
-              {suggestion.hasBug ? (
+              {!isCorrect ? (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                     <h4 className="font-semibold text-gray-700 dark:text-gray-300">

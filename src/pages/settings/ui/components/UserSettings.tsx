@@ -1,28 +1,24 @@
 import { useState, useEffect, useMemo } from "react";
-import { saveUserSettings } from "../api/user";
-import {
-  User,
-  UserMode,
-  UserSettings as UserSettingsType,
-} from "../types/user";
-import { Button } from "./ui/button";
-import { Checkbox } from "./ui/checkbox";
-import { Label } from "./ui/label";
+import { saveUserSettings } from "@/api/user";
+import { User, UserMode, UserSettings as UserSettingsType } from "@/types/user";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Slider } from "./ui/slider";
-import { Input } from "./ui/input";
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 
 const defaultSettings: UserSettingsType = {
   bugPercentage: 50,
   showNotifications: true,
   enableQuiz: true,
-  mode: UserMode.BLOCK,
+  mode: UserMode.CODE_BLOCK,
 };
 
 type UserSettingsProps = {
@@ -76,7 +72,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
         users.map((u) => saveUserSettings(u.id, settings))
       );
 
-      const allSuccessful = results.every((r) => r.data === true);
+      const allSuccessful = results.every((r) => r.success === true);
       setStatus(allSuccessful ? "saved" : "error");
     } catch (err) {
       console.error(err);

@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import ClassesDataTable from "../../components/ClassesDataTable";
+import ClassesDataTable from "../../../../classes/ui/components/ClassesDataTable";
 
 const ClassesAdministrationView = () => {
   return (

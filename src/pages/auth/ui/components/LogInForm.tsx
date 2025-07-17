@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { Card } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { AUTH_ENDPOINT } from "../api/endpoints";
 import { supabase } from "@/supabaseClient";
+import { AUTH_ENDPOINT } from "@/api/endpoints";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 /**
  * LoginForm component for user authentication.

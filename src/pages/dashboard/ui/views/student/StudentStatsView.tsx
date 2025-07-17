@@ -2,7 +2,7 @@ import DecisionLineChart from "@/pages/dashboard/ui/components/DecisionLineChart
 import StatCard from "@/components/StatCard";
 import AccuracyDistributionBarChart from "@/pages/dashboard/ui/components/AccuracyDistributionBarChart";
 import AccuracyPieChart from "@/pages/dashboard/ui/components/AccuracyPieChart";
-import { useUserActivity } from "@/hooks/useUserActivity";
+import { useUserActivity } from "@/pages/dashboard/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import NoData from "@/components/NoData";
 import { useEffect, useState } from "react";

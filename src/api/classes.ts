@@ -1,6 +1,8 @@
 import { CLASS_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
 import { ClassData, EnrollmentStatus, UserSettings } from "../types/user";
 import { ClassInfo } from "@/types/class";
+import { ActivityLogResponse } from "@/types/suggestion";
+import { ClassPaginationParams } from "@/types/data";
 
 /**
  * * Creates a new class in the database.
@@ -147,6 +149,38 @@ export const getClassesByInstructor = async (
 };
 
 /**
+ * Function to get the classes of a user from the database.
+ * @param {string} userId - The ID of the user whose classes are to be fetched
+ * @returns {Promise<{ data?: UserClassInfo[]; error?: string }>} - The response from the server or an error message
+ */
+export async function getClassesbyStudent(studentId: string): Promise<{
+  data?: ClassData[];
+  error?: string;
+}> {
+  try {
+    const response = await fetch(`${CLASS_ENDPOINT}/students/${studentId}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error:
+          data.error ||
+          `Failed to get user classes: ${response.status} ${response.statusText}`,
+      };
+    }
+
+    return { data: data };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
  * Registers a user to a class in the database.
  * @param {string} classId - The ID of the class
  * @param {string} studentId - The ID of the student
@@ -213,62 +247,13 @@ export const unregisterUserClass = async (
 };
 
 /**
- * Function to get the classes of a user from the database.
- * @param {string} userId - The ID of the user whose classes are to be fetched
- * @returns {Promise<{ data?: UserClassInfo[]; error?: string }>} - The response from the server or an error message
- */
-export async function getClassesbyStudent(studentId: string): Promise<{
-  data?: ClassData[];
-  error?: string;
-}> {
-  try {
-    const response = await fetch(`${CLASS_ENDPOINT}/students/${studentId}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    const data = await response.json();
-
-    if (!response.ok) {
-      return {
-        error:
-          data.error ||
-          `Failed to get user classes: ${response.status} ${response.statusText}`,
-      };
-    }
-
-    return { data: data };
-  } catch (err) {
-    return {
-      error: err instanceof Error ? err.message : "Unknown error occurred",
-    };
-  }
-}
-
-/**
  * Fetches all activity logs for a specific class from the database.
  * @param {string} classId - The ID of the class
  * @returns {Promise<{ data?: UserActivityLogItem[]; error?: string }>} - The response from the server or an error message.
  */
-
-export interface InstructorLogResponse {
-  id: string;
-  event: string;
-  duration: number;
-  userId: string;
-  classId?: string;
-  createdAt: string;
-  hasBug?: boolean;
-  suggestionId?: string;
-  lineSuggestionId?: string;
-  selectionSuggestionItemId?: string;
-  type: string;
-  classTitle?: string;
-  classCode?: string;
-}
-
 export async function getClassActivityByInstructorId(
   instructorId: string
-): Promise<{ data: InstructorLogResponse[]; error?: string }> {
+): Promise<{ data: ActivityLogResponse; error?: string }> {
   console.log("Fetching class activity for instructor:", instructorId);
 
   try {
@@ -356,20 +341,13 @@ interface PaginatedClassResponse {
   };
 }
 
-export async function getAllClasses(params?: {
-  page?: number;
-  limit?: number;
-  search?: string;
-  userId?: string;
-  includeStudents?: boolean;
-}): Promise<{
+export async function getAllClasses(
+  params: ClassPaginationParams = {}
+): Promise<{
   data?: PaginatedClassResponse;
   error?: string;
 }> {
-  console.log("Fetching all classes from API...");
-
   try {
-    // Build query parameters
     const queryParams = new URLSearchParams();
 
     if (params?.page) queryParams.set("page", params.page.toString());
@@ -402,9 +380,7 @@ export async function getAllClasses(params?: {
       };
     }
 
-    console.log("Fetched classes from API", JSON.stringify(data, null, 2));
-
-    return { data };
+    return { data: data as PaginatedClassResponse };
   } catch (err) {
     console.error(`Failed to get all classes:`, err);
     return {

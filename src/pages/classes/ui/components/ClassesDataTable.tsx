@@ -13,9 +13,9 @@ import PaginatedTable from "@/components/PaginatedTable";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Users } from "lucide-react";
 import { User } from "@/types/user";
-import { formatActivityTimestamp } from "@/lib/utils";
-import UserDataSearchFilters from "./UserDataSearchFilter";
-import { ClassDetailsCard } from "./ClassDetailsCard";
+import UserDataSearchFilters from "../../../dashboard/ui/components/UserDataSearchFilter";
+import { ClassDetailsCard } from "../../../dashboard/ui/components/ClassDetailsCard";
+import { formatActivityTimestamp } from "@/utils/timeConverter";
 
 interface ClassData {
   id: string;
@@ -156,7 +156,7 @@ const ClassesDataTable = () => {
                   key={classItem.id}
                   classData={classItem as ClassData}
                   index={startIndex + index}
-                  onClick={() => handleRowClick(classItem.id)}
+                  onClick={() => handleRowClick(classItem.id as string)}
                 />
               ))}
             </div>
@@ -188,7 +188,7 @@ const ClassesDataTable = () => {
                       key={`${classItem.id}-${index}`}
                       classData={classItem as ClassData}
                       index={startIndex + index}
-                      onClick={() => handleRowClick(classItem.id)}
+                      onClick={() => handleRowClick(classItem.id as string)}
                     />
                   ))}
                 </TableBody>

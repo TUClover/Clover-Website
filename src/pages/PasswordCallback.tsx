@@ -1,4 +1,4 @@
-import { PasswordResetCallback } from "../forms/PasswordResetForm";
+import { PasswordResetCallback } from "./auth/ui/components/PasswordResetForm";
 
 /**
  * PasswordReset component that renders the password reset form.

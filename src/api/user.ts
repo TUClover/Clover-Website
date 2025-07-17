@@ -1,7 +1,8 @@
 import { User, UserMode, UserSettings } from "../types/user";
 import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
-import { UserActivityLogResponse } from "../types/suggestion";
+import { ActivityLogResponse } from "../types/suggestion";
 import { MODE_CONFIG } from "@/types/mode";
+import { UsersPaginationParams, UsersResponse } from "@/types/data";
 
 /**
  * Function to save user settings to the database.
@@ -12,7 +13,7 @@ import { MODE_CONFIG } from "@/types/mode";
 export async function saveUserSettings(
   userId: string,
   settings: UserSettings
-): Promise<{ data?: boolean; error?: string }> {
+): Promise<{ success?: boolean; error?: string }> {
   console.log("Saving user settings:", userId, settings);
   try {
     const response = await fetch(`${USER_ENDPOINT}/${userId}/settings`, {
@@ -33,9 +34,8 @@ export async function saveUserSettings(
       };
     }
 
-    return { data: true };
+    return { success: true };
   } catch (err) {
-    // console.error("Error saving settings:", err);
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
     };
@@ -50,7 +50,6 @@ export async function saveUserSettings(
 export async function getUserData(
   userId: string
 ): Promise<{ data?: User; error?: string }> {
-  console.log("Fetching user data for userId:", userId);
   try {
     const response = await fetch(`${USER_ENDPOINT}/${userId}`, {
       method: "GET",
@@ -89,7 +88,7 @@ export async function getUserData(
 export async function getUserActivity(
   userId: string,
   mode: UserMode
-): Promise<{ logs?: UserActivityLogResponse; error?: string }> {
+): Promise<{ logs?: ActivityLogResponse; error?: string }> {
   const config = MODE_CONFIG[mode];
 
   try {
@@ -111,29 +110,13 @@ export async function getUserActivity(
 
     const data = await response.json();
 
-    return { logs: data.logs as UserActivityLogResponse };
+    return { logs: data.logs as ActivityLogResponse };
   } catch (err) {
     console.error("Error fetching user activity:", err);
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
     };
   }
-}
-
-interface UsersResponse {
-  users: User[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
-interface UsersPaginationParams {
-  page?: number;
-  limit?: number;
-  search?: string;
 }
 
 export async function getAllUsers(params: UsersPaginationParams = {}): Promise<{
@@ -179,43 +162,6 @@ export async function getAllUsers(params: UsersPaginationParams = {}): Promise<{
     };
   }
 }
-
-// /**
-//  * Function to get all users from the database.
-//  * @returns {Promise<{ data?: User[]; error?: string } | null>} - The response from the server or an error message
-//  */
-// export async function getAllUsers(): Promise<{
-//   data?: User[];
-//   error?: string;
-// } | null> {
-//   try {
-//     const response = await fetch(`${USER_ENDPOINT}/`, {
-//       method: "GET",
-//       headers: { "Content-Type": "application/json" },
-//     });
-
-//     const data = await response.json();
-
-//     if (!response.ok) {
-//       return {
-//         error:
-//           data.message ||
-//           `Failed to get all users: ${response.status} ${response.statusText}`,
-//       };
-//     }
-
-//     if (!Array.isArray(data)) {
-//       return { error: "Invalid response: expected an array of users" };
-//     }
-
-//     return { data: data };
-//   } catch (err) {
-//     console.error(err);
-//     return {
-//       error: err instanceof Error ? err.message : "Unknown error occurred",
-//     };
-//   }
-// }
 
 /**
  * Function to delete a user from the database.

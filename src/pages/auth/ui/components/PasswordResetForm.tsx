@@ -1,5 +1,5 @@
+import { supabase } from "@/supabaseClient";
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
 
 /**
  * PasswordReset component.
@@ -102,7 +102,7 @@ export const PasswordResetCallback: React.FC = () => {
         window.location.href = "/login";
       }
     } catch (err) {
-      setError("Unexpected error occurred");
+      setError(err instanceof Error ? err.message : "Unknown error");
     }
   };
 

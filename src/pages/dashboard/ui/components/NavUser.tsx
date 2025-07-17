@@ -7,9 +7,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../../../components/ui/dropdown-menu";
-import { SidebarMenuButton } from "../../../../components/ui/sidebar";
-import { useUser } from "../../../../context/UserContext";
+} from "@/components/ui/dropdown-menu";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
+import { useUser } from "@/context/UserContext";
 import UserAvatar from "@/components/UserAvatar";
 import { supabase } from "@/supabaseClient";
 

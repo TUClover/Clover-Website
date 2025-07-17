@@ -1,5 +1,4 @@
-import { InstructorLogResponse } from "@/api/classes";
-import { UserActivityLogItem } from "@/types/suggestion";
+import { ActivityLogResponse } from "@/types/suggestion";
 import CustomSelect from "@/components/CustomSelect";
 import { CustomTooltip } from "@/components/CustomTooltip";
 import { Card } from "@/components/ui/card";
@@ -15,7 +14,7 @@ enum TimeInterval {
 
 interface AccuracyOverTimeProps {
   title?: string;
-  userActivity: UserActivityLogItem[] | InstructorLogResponse[];
+  userActivity: ActivityLogResponse;
 }
 
 const AccuracyTimeLineChart = ({

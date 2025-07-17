@@ -1,5 +1,5 @@
-import { deleteUser } from "../api/user";
-import { Button } from "./ui/button";
+import { deleteUser } from "@/api/user";
+import { Button } from "@/components/ui/button";
 
 export const DeleteUserButton: React.FC<{
   userId: string;

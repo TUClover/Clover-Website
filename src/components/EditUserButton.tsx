@@ -1,6 +1,6 @@
-import { User, UserRole } from "../types/user";
+import { User, UserRole } from "@/types/user";
 import { useState } from "react";
-import { updateUser } from "../api/user";
+import { updateUser } from "@/api/user";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -16,15 +16,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 export const EditUserButton: React.FC<{
   user: User;

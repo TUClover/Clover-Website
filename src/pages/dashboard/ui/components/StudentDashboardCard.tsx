@@ -1,14 +1,14 @@
-import StatCard from "./StatCard";
-import { DecisionLineChart } from "../pages/dashboard/ui/components/DecisionLineChart";
-import { AccuracyDistributionBarChart } from "../pages/dashboard/ui/components/AccuracyDistributionBarChart";
+import StatCard from "@/components/StatCard";
+import { DecisionLineChart } from "./DecisionLineChart";
+import { AccuracyDistributionBarChart } from "./AccuracyDistributionBarChart";
 import { X } from "lucide-react";
-import { Card } from "./ui/card";
-import ModalContainer from "./ModalContainer";
+import { Card } from "@/components/ui/card";
+import ModalContainer from "@/components/ModalContainer";
 import AccuracyPieChart from "@/pages/dashboard/ui/components/AccuracyPieChart";
-import { useUserActivity } from "@/hooks/useUserActivity";
+import { useUserActivity } from "@/pages/dashboard/hooks/useUserActivity";
 import { useState } from "react";
-import Loading from "./Loading";
-import { StudentClassData } from "./StudentDataTable";
+import Loading from "@/components/Loading";
+import { StudentClassData } from "@/types/class";
 
 interface StudentDashboardCardProps {
   student: StudentClassData;

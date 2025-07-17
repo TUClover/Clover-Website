@@ -5,20 +5,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../components/ui/dialog";
-import { Input } from "../components/ui/input";
+} from "../../../../components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 import { Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "./ui/button";
-import { ClassData, EnrollmentStatus } from "../types/user";
-import Loading from "./Loading";
+import { Button } from "../../../../components/ui/button";
+import { ClassData, EnrollmentStatus } from "@/types/user";
+import Loading from "../../../../components/Loading";
 import { useUser } from "@/context/UserContext";
-import { useClassActionDialog } from "@/hooks/useClassActionDialog";
+import { useClassActionDialog } from "@/pages/classes/hooks/useClassActionDialog";
 import { getAllClasses } from "@/api/classes";
-import ClassActionDialog from "./ClassActionDialog";
+import ClassActionDialog from "@/pages/classes/ui/components/ClassActionDialog";
 import { useNavigate } from "react-router-dom";
-import EnrollmentBadge from "./EnrollmentBadge";
+import EnrollmentBadge from "../../../../components/EnrollmentBadge";
 
 export const RegisterClassDialog = () => {
   const { userData } = useUser();

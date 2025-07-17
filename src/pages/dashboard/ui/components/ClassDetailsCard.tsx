@@ -358,9 +358,9 @@ export const ClassDetailsCard = ({
                     value={classSettings.mode}
                     onValueChange={(value) => updateClassSetting("mode", value)}
                     options={[
-                      { label: "Block", value: UserMode.BLOCK },
-                      { label: "Line", value: UserMode.LINE },
-                      { label: "Selection", value: UserMode.SELECTION },
+                      { label: "Block", value: UserMode.CODE_BLOCK },
+                      { label: "Line", value: UserMode.LINE_BY_LINE },
+                      { label: "Selection", value: UserMode.CODE_SELECTION },
                     ]}
                     disabled={!editMode}
                     className="w-28"

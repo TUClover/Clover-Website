@@ -7,10 +7,10 @@ import {
   CarouselPrevious,
 } from "../components/ui/carousel";
 import { useUserClasses } from "../hooks/useUserClasses";
-import ClassInfoCard from "../components/ClassInfoCard";
+import ClassInfoCard from "./classes/ui/components/ClassInfoCard";
 import { useState } from "react";
 import ClassDetails from "./classes/ui/views/ClassDetailsView";
-import RegisterClassDialog from "../components/RegisterClassDialog";
+import RegisterClassDialog from "./classes/ui/components/RegisterClassDialog";
 import ProfileCard from "../components/ProfileCard";
 import Loading from "@/components/Loading";
 

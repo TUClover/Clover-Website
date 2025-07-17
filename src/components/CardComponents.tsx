@@ -38,13 +38,13 @@ const InfoField = ({ label, value, icon: Icon, className }: InfoFieldProps) => {
   );
 };
 
-interface StatCardProps {
+interface InfoCardProps {
   value: React.ReactNode;
   label: string;
   className?: string;
 }
 
-const InfoCardItem = ({ value, label, className }: StatCardProps) => {
+const InfoCardItem = ({ value, label, className }: InfoCardProps) => {
   return (
     <div
       className={`flex flex-col justify-center items-center p-3 bg-muted rounded-lg ${className || ""}`}

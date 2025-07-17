@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Input } from "../components/ui/input";
-import { Card } from "../components/ui/card";
-import { Button } from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/supabaseClient";
 import { registerUser } from "@/api/auth";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 /**
  * SignUpForm component for user registration.

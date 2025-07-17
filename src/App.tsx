@@ -4,8 +4,6 @@ import RootLayout from "./RootLayout";
 import Dashboard from "./pages/dashboard/ui/layout/Dashboard";
 import { QuizPage } from "./pages/Quiz";
 import Landing from "./pages/Landing";
-import LogIn from "./pages/LogIn";
-import SignUp from "./pages/SignUp";
 import About from "./pages/About";
 import { useAuth } from "./hooks/useAuth";
 import Download from "./pages/Download";
@@ -16,12 +14,14 @@ import PasswordCallback from "./pages/PasswordCallback";
 import VSCodeAuthCallback from "./components/VscodeAuth";
 import { JSX } from "react";
 import { UserProvider } from "./context/UserProvider";
-import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Loading from "./components/Loading";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ClassDetailsView from "./pages/classes/ui/views/ClassDetailsView";
 import ClassCreateEditView from "./pages/classes/ui/views/ClassCreateEditView";
+import SettingsView from "./pages/settings/ui/views/SettingsView";
+import SignUpView from "./pages/auth/ui/views/SignUpView";
+import LogInView from "./pages/auth/ui/views/LogInView";
 
 const queryClient = new QueryClient();
 
@@ -58,7 +58,7 @@ const App = (): JSX.Element => {
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard/*" element={<Dashboard />} />
                 <Route path="/quiz" element={<QuizPage />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/settings" element={<SettingsView />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route
                   path="/classes/:classId"
@@ -75,8 +75,8 @@ const App = (): JSX.Element => {
               </Route>
               {/* Public Routes */}
               <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<LogIn />} />
-              <Route path="/signup" element={<SignUp />} />
+              <Route path="/login" element={<LogInView />} />
+              <Route path="/signup" element={<SignUpView />} />
               <Route path="/about" element={<About />} />
               <Route path="/download" element={<Download />} />
               <Route path="/getting-started" element={<Help />} />

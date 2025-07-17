@@ -3,15 +3,9 @@ import { getAllClasses } from "../api/classes";
 import QUERY_INTERVALS from "@/constants/queryIntervals";
 import { useCallback, useState } from "react";
 import { useUser } from "@/context/UserContext";
+import { UseAllClassesOptions } from "@/types/data";
 
-export const useAllClasses = (options?: {
-  page?: number;
-  limit?: number;
-  search?: string;
-  userId?: string;
-  enabled?: boolean;
-  includeStudents?: boolean;
-}) => {
+export const useAllClasses = (options?: UseAllClassesOptions) => {
   const {
     page = 1,
     limit = 50,
@@ -91,7 +85,6 @@ export const useAllClassesWithSearch = (
     includeStudents,
   });
 
-  // Reset page when search changes
   const handleSearch = useCallback((newSearch: string) => {
     setSearch(newSearch);
     setPage(1);

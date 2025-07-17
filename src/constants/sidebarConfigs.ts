@@ -35,16 +35,6 @@ export type SideBarItem = {
   }>;
 };
 
-// const ALL_ROLES = [
-//   UserRole.DEV,
-//   UserRole.ADMIN,
-//   UserRole.INSTRUCTOR,
-//   UserRole.STUDENT,
-// ];
-// const ADMIN_ROLES = [UserRole.DEV, UserRole.ADMIN, UserRole.INSTRUCTOR];
-// const SUPER_ADMIN_ROLES = [UserRole.DEV, UserRole.ADMIN];
-// const DEV_ONLY = [UserRole.DEV];
-
 export const ROLE_SELECT_CONFIG = {
   [UserRole.STUDENT]: [UserRole.STUDENT],
   [UserRole.INSTRUCTOR]: [UserRole.STUDENT, UserRole.INSTRUCTOR],

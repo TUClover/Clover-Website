@@ -28,8 +28,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import EnrollmentBadge from "@/components/EnrollmentBadge";
 import { useUser } from "@/context/UserContext";
-import { actionType, ClassActionDialog } from "@/components/ClassActionDialog";
-import { useClassActionDialog } from "@/hooks/useClassActionDialog";
+import {
+  actionType,
+  ClassActionDialog,
+} from "@/pages/classes/ui/components/ClassActionDialog";
+import { useClassActionDialog } from "@/pages/classes/hooks/useClassActionDialog";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ClassesTableProps {

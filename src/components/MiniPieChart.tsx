@@ -26,11 +26,6 @@ export const MiniPieChart = ({
     total: progressData.totalInteractions,
   };
 
-  const percentage =
-    chartData.total > 0
-      ? Math.round((chartData.correct / chartData.total) * 100)
-      : 0;
-
   const getSizeClasses = () => {
     switch (size) {
       case "sm":
@@ -70,7 +65,10 @@ export const MiniPieChart = ({
         data:
           chartData.total === 0
             ? [1]
-            : [chartData.correct, chartData.incorrect],
+            : [
+                progressData.accuracyPercentage,
+                100 - progressData.accuracyPercentage,
+              ],
         backgroundColor:
           chartData.total === 0 ? ["#9CA3AF"] : ["#50B498", "#F59E0B"],
         borderWidth: 0,
@@ -103,7 +101,7 @@ export const MiniPieChart = ({
             className={`absolute inset-0 flex items-center justify-center ${sizeClasses.fontSize} font-bold`}
             style={{ color: textColor }}
           >
-            <span>{percentage}%</span>
+            <span>{progressData.accuracyPercentage.toFixed(0)}%</span>
           </div>
         }
         side="top"

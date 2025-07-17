@@ -1,19 +1,18 @@
 import { Pie } from "react-chartjs-2";
 import { useEffect, useState } from "react";
-import { Card } from "../../../../components/ui/card";
-import { ProgressData } from "../../../../types/suggestion";
-import { InstructorLogResponse } from "../../../../api/classes";
-import { UserMode } from "../../../../types/user";
-import { getEventsForMode } from "../../../../types/event";
-import CustomSelect from "../../../../components/CustomSelect";
+import { Card } from "@/components/ui/card";
+import { ProgressData, UserMode } from "@/types/user";
+import { ACCEPT_EVENTS, REJECT_EVENTS } from "@/types/event";
+import CustomSelect from "@/components/CustomSelect";
 import { CustomTooltip } from "@/components/CustomTooltip";
+import { ActivityLogResponse } from "@/types/suggestion";
 
 type DataMode = "total" | "accepted" | "rejected";
 
 interface AccuracyPieChartProps {
   title?: string;
   progressData?: ProgressData;
-  activities?: InstructorLogResponse[];
+  activities?: ActivityLogResponse;
   dataMode: DataMode;
   onDataModeChange: (mode: DataMode) => void;
   mode?: UserMode;
@@ -64,12 +63,11 @@ export const AccuracyPieChart = ({
     }
 
     if (activities && mode) {
-      const events = getEventsForMode(mode);
-      const acceptedLogs = activities.filter(
-        (log) => log.event === events?.accept
+      const acceptedLogs = activities.filter((log) =>
+        ACCEPT_EVENTS.includes(log.event)
       );
-      const rejectedLogs = activities.filter(
-        (log) => log.event === events?.reject
+      const rejectedLogs = activities.filter((log) =>
+        REJECT_EVENTS.includes(log.event)
       );
 
       const totalAccepted = acceptedLogs.length;
