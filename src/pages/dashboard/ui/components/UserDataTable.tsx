@@ -33,7 +33,6 @@ const UsersDataTable = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [modeFilter, setModeFilter] = useState<string>("all");
 
-  // Use the combined hook to get users with activity data
   const { users, isLoading, error } = useAllUsersWithActivityAndSearch();
 
   const filteredUsers = useMemo(() => {
@@ -138,6 +137,8 @@ const UsersDataTable = () => {
                     totalAccepted: 0,
                     totalRejected: 0,
                     totalInteractions: 0,
+                    correctAccepts: 0,
+                    correctRejects: 0,
                     correctSuggestions: 0,
                     accuracyPercentage: 0,
                     lastActivity: null,
@@ -265,6 +266,8 @@ const UserActivityRow = ({
     totalInteractions: user.totalInteractions,
     correctSuggestions: user.correctSuggestions,
     accuracyPercentage: user.accuracyPercentage,
+    correctAccepts: user.correctAccepts,
+    correctRejects: user.correctRejects,
   };
 
   if (isLoading) {

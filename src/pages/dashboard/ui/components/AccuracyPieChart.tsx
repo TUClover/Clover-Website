@@ -1,21 +1,23 @@
 import { Pie } from "react-chartjs-2";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { ProgressData, UserMode } from "@/types/user";
-import { ACCEPT_EVENTS, REJECT_EVENTS } from "@/types/event";
+import { ProgressData } from "@/types/user";
 import CustomSelect from "@/components/CustomSelect";
 import { CustomTooltip } from "@/components/CustomTooltip";
-import { ActivityLogResponse } from "@/types/suggestion";
 
 type DataMode = "total" | "accepted" | "rejected";
+
+interface StatCardData {
+  total: number;
+  correct: number;
+  accuracy: number;
+  title: string;
+}
 
 interface AccuracyPieChartProps {
   title?: string;
   progressData?: ProgressData;
-  activities?: ActivityLogResponse;
-  dataMode: DataMode;
-  onDataModeChange: (mode: DataMode) => void;
-  mode?: UserMode;
+  onDataChange?: (data: { mode: DataMode; statData: StatCardData }) => void;
 }
 
 /**
@@ -28,82 +30,73 @@ interface AccuracyPieChartProps {
 export const AccuracyPieChart = ({
   title = "Correct vs Incorrect",
   progressData,
-  activities,
-  dataMode,
-  onDataModeChange,
-  mode,
+  onDataChange,
 }: AccuracyPieChartProps) => {
   const [textColor, setTextColor] = useState("#000000");
+  const [dataMode, setDataMode] = useState<DataMode>("total");
 
-  const getChartData = () => {
-    if (progressData) {
-      switch (dataMode) {
-        case "accepted":
-          return {
-            correct: progressData.correctSuggestions,
-            incorrect:
-              progressData.totalAccepted - progressData.correctSuggestions,
-            total: progressData.totalAccepted,
-          };
-        case "rejected":
-          return {
-            correct: 0,
-            incorrect: progressData.totalRejected,
-            total: progressData.totalRejected,
-          };
-        case "total":
-        default:
-          return {
-            correct: progressData.correctSuggestions,
-            incorrect:
-              progressData.totalInteractions - progressData.correctSuggestions,
-            total: progressData.totalInteractions,
-          };
-      }
+  const getData = () => {
+    if (!progressData) {
+      return {
+        correct: 0,
+        incorrect: 0,
+        total: 0,
+        title: "Total",
+        accuracy: 0,
+      };
     }
 
-    if (activities && mode) {
-      const acceptedLogs = activities.filter((log) =>
-        ACCEPT_EVENTS.includes(log.event)
-      );
-      const rejectedLogs = activities.filter((log) =>
-        REJECT_EVENTS.includes(log.event)
-      );
-
-      const totalAccepted = acceptedLogs.length;
-      const totalRejected = rejectedLogs.length;
-      const totalInteractions = totalAccepted + totalRejected;
-      const correctSuggestions = acceptedLogs.filter(
-        (log) => !log.hasBug
-      ).length;
-
-      switch (dataMode) {
-        case "accepted":
-          return {
-            correct: correctSuggestions,
-            incorrect: totalAccepted - correctSuggestions,
-            total: totalAccepted,
-          };
-        case "rejected":
-          return {
-            correct: 0,
-            incorrect: totalRejected,
-            total: totalRejected,
-          };
-        case "total":
-        default:
-          return {
-            correct: correctSuggestions,
-            incorrect: totalInteractions - correctSuggestions,
-            total: totalInteractions,
-          };
+    switch (dataMode) {
+      case "accepted": {
+        // For accepted: only count correct accepts (suggestions that were accepted and were actually good)
+        const correct = progressData.correctAccepts || 0; // You'll need to add this to ProgressData
+        const total = progressData.totalAccepted;
+        const incorrect = total - correct;
+        const accuracy = total > 0 ? (correct / total) * 100 : 0;
+        return { correct, incorrect, total, title: "Accepted", accuracy };
+      }
+      case "rejected": {
+        // For rejected: only count correct rejects (suggestions that were rejected and were actually bad)
+        const correct = progressData.correctRejects || 0; // You'll need to add this to ProgressData
+        const total = progressData.totalRejected;
+        const incorrect = total - correct;
+        const accuracy = total > 0 ? (correct / total) * 100 : 0;
+        return { correct, incorrect, total, title: "Rejected", accuracy };
+      }
+      case "total":
+      default: {
+        const correct = progressData.correctSuggestions;
+        const total = progressData.totalInteractions;
+        const incorrect = total - correct;
+        const accuracy = total > 0 ? (correct / total) * 100 : 0;
+        return { correct, incorrect, total, title: "Total", accuracy };
       }
     }
-
-    return { correct: 0, incorrect: 0, total: 0 };
   };
 
-  const chartData = getChartData();
+  const data = getData();
+  const chartData = {
+    correct: data.correct,
+    incorrect: data.incorrect,
+    total: data.total,
+  };
+  const statData = {
+    total: data.total,
+    correct: data.correct,
+    accuracy: data.accuracy,
+    title: data.title,
+  };
+
+  useEffect(() => {
+    if (onDataChange) {
+      onDataChange({ mode: dataMode, statData });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataMode, progressData, onDataChange]);
+
+  const handleModeChange = (newMode: DataMode) => {
+    setDataMode(newMode);
+  };
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -122,7 +115,7 @@ export const AccuracyPieChart = ({
     return () => observer.disconnect();
   }, []);
 
-  const data = {
+  const pieData = {
     labels: ["Correct", "Incorrect"],
     datasets: [
       {
@@ -154,7 +147,7 @@ export const AccuracyPieChart = ({
 
           <CustomSelect
             value={dataMode}
-            onValueChange={onDataModeChange}
+            onValueChange={handleModeChange}
             options={[
               { value: "total", label: "Total" },
               { value: "accepted", label: "Accepted" },
@@ -185,7 +178,8 @@ export const AccuracyPieChart = ({
           <div className="space-y-2">
             <p className="text-sm">
               This pie chart illustrates the accuracy of code suggestions based
-              on the selected view.
+              on the selected view. This selection also updates the stat cards
+              above.
             </p>
             <p className="text-sm text-muted-foreground">
               <span className="font-medium text-alpha">Correct</span>:{" "}
@@ -202,7 +196,7 @@ export const AccuracyPieChart = ({
 
         <CustomSelect
           value={dataMode}
-          onValueChange={onDataModeChange}
+          onValueChange={handleModeChange}
           options={[
             { value: "total", label: "Total" },
             { value: "accepted", label: "Accepted" },
@@ -214,7 +208,7 @@ export const AccuracyPieChart = ({
       </div>
 
       <div className="relative w-full h-60 md:h-64 lg:h-72">
-        <Pie data={data} options={options} />
+        <Pie data={pieData} options={options} />
       </div>
     </Card>
   );

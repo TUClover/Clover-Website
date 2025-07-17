@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { User, UserRole } from "../types/user";
-import AdminProfile from "./AdminProfile";
-import InstructorProfile from "./InstructorProfile";
-import StudentProfile from "./StudentProfile";
-import NavBar from "../components/NavBar";
-import { useUser } from "../context/UserContext";
+import { User, UserRole } from "@/types/user";
+import StudentProfileView from "@/pages/profile/ui/views/StudentProfileView";
+import NavBar from "@/components/NavBar";
+import { useUser } from "@/context/UserContext";
 import Loading from "@/components/Loading";
+import AdminProfile from "../views/AdminProfileView";
+import { InstructorProfileView } from "@/pages/profile/ui/views/InstructorProfileView";
+import AdminProfileView from "@/pages/profile/ui/views/AdminProfileView";
 
 /**
  * Profile component that renders different profile views based on user role.
@@ -36,22 +37,24 @@ export const Profile = () => {
     <div className="space-y-8 width-container">
       <NavBar />
       <div className="p-10">
-        <ProfileHeader
-          userData={userData}
-          selectedRole={effectiveRole}
-          onRoleChange={
-            userData.role !== UserRole.STUDENT ? handleRoleChange : undefined
-          }
-        />
+        {!userData.role && (
+          <ProfileHeader
+            userData={userData}
+            selectedRole={effectiveRole}
+            onRoleChange={
+              userData.role !== UserRole.STUDENT ? handleRoleChange : undefined
+            }
+          />
+        )}
 
         {effectiveRole === UserRole.ADMIN && (
-          <AdminProfile userData={userData} />
+          <AdminProfileView userData={userData} />
         )}
         {effectiveRole === UserRole.INSTRUCTOR && (
-          <InstructorProfile userData={userData} />
+          <InstructorProfileView userData={userData} />
         )}
         {effectiveRole === UserRole.STUDENT && (
-          <StudentProfile userData={userData} />
+          <StudentProfileView userData={userData} />
         )}
         {effectiveRole === UserRole.DEV && <AdminProfile userData={userData} />}
       </div>

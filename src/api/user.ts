@@ -91,6 +91,15 @@ export async function getUserActivity(
 ): Promise<{ logs?: ActivityLogResponse; error?: string }> {
   const config = MODE_CONFIG[mode];
 
+  console.log(
+    "Fetching user activity for:",
+    userId,
+    "Mode:",
+    mode,
+    "Config:",
+    config
+  );
+
   try {
     const url = `${LOG_ENDPOINT}/suggestion/${userId}/${config.route}`;
 

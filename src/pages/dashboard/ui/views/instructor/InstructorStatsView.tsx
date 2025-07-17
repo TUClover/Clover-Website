@@ -48,9 +48,15 @@ const InstructorStatsView = () => {
     allClassOptions.find((classItem) => classItem.id === selectedClassId)
       ?.classTitle ?? "";
 
-  const [dataMode, setDataMode] = useState<"total" | "accepted" | "rejected">(
-    "total"
-  );
+  const [pieChartData, setPieChartData] = useState<{
+    mode: "total" | "accepted" | "rejected";
+    statData: {
+      total: number;
+      correct: number;
+      accuracy: number;
+      title: string;
+    };
+  } | null>(null);
 
   if (loading) {
     return (
@@ -60,39 +66,18 @@ const InstructorStatsView = () => {
     );
   }
 
-  const getStatCardData = () => {
-    switch (dataMode) {
-      case "accepted":
-        return {
-          total: progressData.totalAccepted,
-          correct: progressData.correctSuggestions,
-          accuracy: progressData.accuracyPercentage,
-          title: "Accepted",
-        };
-      case "rejected":
-        return {
-          total: progressData.totalRejected,
-          correct: 0,
-          accuracy: 0,
-          title: "Rejected",
-        };
-      case "total":
-      default:
-        return {
-          total: progressData.totalInteractions,
-          correct: progressData.correctSuggestions,
-          accuracy:
-            progressData.totalInteractions > 0
-              ? (progressData.correctSuggestions /
-                  progressData.totalInteractions) *
-                100
-              : 0,
-          title: "Total",
-        };
-    }
+  const statData = pieChartData?.statData || {
+    total: progressData.totalInteractions,
+    correct: progressData.correctSuggestions,
+    accuracy:
+      progressData.totalInteractions > 0
+        ? (progressData.correctSuggestions / progressData.totalInteractions) *
+          100
+        : 0,
+    title: "Total",
   };
 
-  const statData = getStatCardData();
+  const dataMode = pieChartData?.mode || "total";
 
   return (
     <div className="space-y-8">
@@ -142,7 +127,7 @@ const InstructorStatsView = () => {
             <StatCard
               title={statData.title}
               value={statData.total}
-              tooltipContent={`Total ${dataMode} suggestions across ${
+              tooltipContent={`Total ${dataMode === "total" ? "interactions with " : dataMode} suggestions across ${
                 selectedClassId === "all" ? "all classes" : selectedClassTitle
               }.`}
             />
@@ -162,8 +147,7 @@ const InstructorStatsView = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
             <AccuracyPieChart
               progressData={progressData}
-              dataMode={dataMode}
-              onDataModeChange={setDataMode}
+              onDataChange={setPieChartData}
             />
             <DecisionLineChart
               activities={

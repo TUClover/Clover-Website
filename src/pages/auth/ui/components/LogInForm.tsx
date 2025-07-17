@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, VenetianMask } from "lucide-react";
 import { supabase } from "@/supabaseClient";
 import { AUTH_ENDPOINT } from "@/api/endpoints";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 /**
  * LoginForm component for user authentication.
@@ -49,6 +50,7 @@ export const LoginForm: React.FC = () => {
       if (!data.user) {
         navigate("/signup");
       } else {
+        toast.success("Logged in successfully!");
         navigate("/dashboard", { replace: true });
       }
     } catch (err) {
@@ -95,7 +97,7 @@ export const LoginForm: React.FC = () => {
             )}
           </button>
         </div>
-        <Button type="submit" className="w-full text-text py-6 mt-6 text-md">
+        <Button type="submit" className="w-full text-text py-5 mt-6 text-md">
           {loading ? "Signing In..." : "Sign In"}
         </Button>
       </form>
@@ -103,7 +105,7 @@ export const LoginForm: React.FC = () => {
       {/* GitHub OAuth Login */}
       <Button
         onClick={handleGitHubLogin}
-        className="mt-4 text-md w-full bg-gray-700 text-white dark:text-white py-6 hover:bg-gray-600 transition flex items-center justify-center space-x-2"
+        className="mt-4 text-md w-full bg-gray-700 text-white dark:text-white py-5 hover:bg-gray-600 transition flex items-center justify-center space-x-2"
       >
         <img
           src="https://img.icons8.com/?size=100&id=62856&format=png&color=FFFFFF"
@@ -111,6 +113,15 @@ export const LoginForm: React.FC = () => {
           className="h-5 w-5"
         />
         <span>Sign in with GitHub</span>
+      </Button>
+
+      <Button
+        onClick={() => navigate("/anonymous")}
+        variant="outline"
+        className="mt-4 text-md w-full py-5"
+      >
+        <VenetianMask className="h-5 w-5 mr-2" />
+        <span>Sign in Anonymously</span>
       </Button>
 
       <p className="mt-4 text-center text-text">

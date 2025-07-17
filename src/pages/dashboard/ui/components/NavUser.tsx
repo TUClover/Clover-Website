@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { useUser } from "@/context/UserContext";
-import UserAvatar from "@/components/UserAvatar";
 import { supabase } from "@/supabaseClient";
+import UserInfoItem from "@/components/UserInfoItem";
+import { LogOutIcon, User2Icon } from "lucide-react";
 
 interface NavUserProps {
   isMobile: boolean;
@@ -35,19 +36,13 @@ function NavUser({ isMobile }: NavUserProps) {
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground space-x-1"
         >
-          <UserAvatar
+          <UserInfoItem
             firstName={user.firstName}
+            lastName={user.lastName}
+            email={user.email}
             avatarUrl={user.avatarUrl}
-            size="md"
+            className="w-full bg-transparent"
           />
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">
-              {user.firstName + " " + user.lastName}
-            </span>
-            <span className="text-muted-foreground truncate text-xs">
-              {user.email}
-            </span>
-          </div>
         </SidebarMenuButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -57,33 +52,33 @@ function NavUser({ isMobile }: NavUserProps) {
         sideOffset={4}
       >
         <DropdownMenuLabel className="p-0 font-normal">
-          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <UserAvatar
+          <div className="flex items-center gap-2 px-1 py-1.5 text-left">
+            <UserInfoItem
               firstName={user.firstName}
+              lastName={user.lastName}
+              email={user.email}
               avatarUrl={user.avatarUrl}
               size="sm"
+              className="w-full bg-transparent"
             />
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">
-                {user.firstName + " " + user.lastName}
-              </span>
-              <span className="text-muted-foreground truncate text-xs">
-                {user.email}
-              </span>
-            </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => navigate("/profile")}>
-            Profile
+            Profile <User2Icon className="w-4 h-4 ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/settings")}>
+          {/* <DropdownMenuItem onClick={() => navigate("/settings")}>
             Settings
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>Log out</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={handleSignOut}
+          className="text-red-600 dark:text-red-400"
+        >
+          Log out <LogOutIcon className="w-4 h-4 ml-auto" />
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

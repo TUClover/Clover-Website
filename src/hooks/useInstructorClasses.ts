@@ -29,7 +29,7 @@ export const useInstructorClasses = (
     enabled: !!userId,
     staleTime: QUERY_INTERVALS.staleTime,
     gcTime: QUERY_INTERVALS.gcTime,
-    retry: QUERY_INTERVALS.retry,
+    retry: 1,
   });
 
   const allClassOptions = useMemo(() => {

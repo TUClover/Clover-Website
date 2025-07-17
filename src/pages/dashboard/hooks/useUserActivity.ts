@@ -28,10 +28,10 @@ export const useUserActivity = (
 
       return logArray;
     },
-    enabled: !!userId && !!mode,
+    enabled: !!userId,
     staleTime: QUERY_INTERVALS.staleTime,
     gcTime: QUERY_INTERVALS.gcTime,
-    retry: QUERY_INTERVALS.retry,
+    retry: 1,
     retryDelay: 500,
     refetchOnWindowFocus: false,
   });

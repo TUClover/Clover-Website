@@ -51,7 +51,7 @@ const UserInfoItem = ({
           {firstName} {lastName}
         </div>
         <div className={`text-muted-foreground truncate ${textSizes.email}`}>
-          {email}
+          {email.includes("anonymous.com") ? "Anonymous" : email}
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import {
   getEmptyProgressData,
 } from "@/utils/calculateProgress";
 import { ActivityLogResponse } from "@/types/suggestion";
+import { getEventsForMode } from "@/types/event";
 
 /**
  * Custom hook to fetch and manage class activity logs.
@@ -40,7 +41,7 @@ export const useClassActivity = (
     enabled: !!instructorId,
     staleTime: QUERY_INTERVALS.staleTime,
     gcTime: QUERY_INTERVALS.gcTime,
-    retry: QUERY_INTERVALS.retry,
+    retry: 1,
     retryDelay: 500,
     refetchOnWindowFocus: false,
   });
@@ -51,25 +52,11 @@ export const useClassActivity = (
     let filtered = [...data];
 
     if (mode) {
-      const acceptPrefix = {
-        [UserMode.CODE_BLOCK]: "SUGGESTION_ACCEPT",
-        [UserMode.LINE_BY_LINE]: "SUGGESTION_LINE_ACCEPT",
-        [UserMode.CODE_SELECTION]: "SUGGESTION_SELECTION_ACCEPT",
-      }[mode as UserMode];
-
-      const rejectPrefix = {
-        [UserMode.CODE_BLOCK]: "SUGGESTION_REJECT",
-        [UserMode.LINE_BY_LINE]: "SUGGESTION_LINE_REJECT",
-        [UserMode.CODE_SELECTION]: null,
-      }[mode as UserMode];
-
-      filtered = filtered.filter((log) => {
-        return (
-          log.event === acceptPrefix ||
-          (rejectPrefix && log.event === rejectPrefix)
-        );
-      });
+      const { accept, reject } = getEventsForMode(mode);
+      const allowedEvents = [...accept, ...reject];
+      filtered = filtered.filter((log) => allowedEvents.includes(log.event));
     }
+
     if (selectedClassId === "non-class") {
       filtered = filtered.filter((activity) => !activity.classId);
     } else if (selectedClassId && selectedClassId !== "all") {

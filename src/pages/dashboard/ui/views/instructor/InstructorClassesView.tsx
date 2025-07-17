@@ -63,7 +63,7 @@ export const InstructorClassesView = ({
           <p className="text-sm text-muted-foreground hidden md:block">
             {description}
           </p>
-          <TabsList className="grid w-full md:w-[200px] grid-cols-2">
+          <TabsList className="grid w-full md:w-[200px] grid-cols-2 bg-sidebar">
             <TabsTrigger value="grid" className="flex items-center gap-2">
               <Grid className="h-4 w-4" />
             </TabsTrigger>

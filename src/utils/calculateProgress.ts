@@ -28,6 +28,8 @@ export const calculateProgress = (logs: ActivityLogResponse): ProgressData => {
     totalRejected,
     totalInteractions,
     correctSuggestions,
+    correctAccepts,
+    correctRejects,
     accuracyPercentage,
   };
 };
@@ -61,5 +63,7 @@ export const getEmptyProgressData = (): ProgressData => ({
   totalRejected: 0,
   totalInteractions: 0,
   correctSuggestions: 0,
+  correctAccepts: 0,
+  correctRejects: 0,
   accuracyPercentage: 0,
 });

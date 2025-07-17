@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { EnrollmentStatus, UserStatus } from "../types/user";
-import { supabase } from "../supabaseClient";
+import { useCallback, useMemo, useState } from "react";
+import { EnrollmentStatus } from "../types/user";
 import { getClassesbyStudent } from "@/api/classes";
 import { useQuery } from "@tanstack/react-query";
 import QUERY_INTERVALS from "@/constants/queryIntervals";
@@ -30,7 +29,7 @@ export const useUserClasses = (
     enabled: !!userId,
     staleTime: QUERY_INTERVALS.staleTime,
     gcTime: QUERY_INTERVALS.gcTime,
-    retry: QUERY_INTERVALS.retry,
+    retry: 1,
     retryDelay: 500,
     refetchOnWindowFocus: false,
   });
@@ -104,40 +103,4 @@ export const useUserClasses = (
     error: error?.message || null,
     refetch,
   };
-};
-
-export const useUserClassStatus = (
-  studentId: string | null,
-  classId: string | null
-) => {
-  const [studentStatus, setStudentStatus] = useState<UserStatus | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchStatus = async () => {
-      if (!studentId || !classId) return;
-
-      setLoading(true);
-      setError(null);
-
-      const { data, error } = await supabase
-        .from("class_users")
-        .select("user_class_status")
-        .eq("student_id", studentId)
-        .eq("class_id", classId)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        setError(error.message);
-      }
-
-      setStudentStatus(data?.user_class_status || null);
-      setLoading(false);
-    };
-
-    fetchStatus();
-  }, [studentId, classId]);
-
-  return { studentStatus, loading, error };
 };

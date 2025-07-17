@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/context/UserContext";
 import ClassesDropdownMenu from "@/pages/dashboard/ui/components/ClassesDropdownMenu";
 import Loading from "@/components/Loading";
-import { ClassData } from "@/types/user";
 import LearningProgressChart from "@/pages/dashboard/ui/components/LearningProgressChart";
 import AccuracyTimeLineChart from "@/pages/dashboard/ui/components/AccuracyTimeLineChart";
 import ResponseTimeBarChart from "@/pages/dashboard/ui/components/ResponseTimeBarChart";
@@ -47,13 +46,19 @@ const StudentStatsView = ({ description }: { description?: string }) => {
   } = useUserActivity(userData?.id, userData?.settings.mode, selectedClassId);
 
   const loading = userClassLoading || userActivityLoading;
-  const [dataMode, setDataMode] = useState<"total" | "accepted" | "rejected">(
-    "total"
-  );
+
+  const [pieChartData, setPieChartData] = useState<{
+    mode: "total" | "accepted" | "rejected";
+    statData: {
+      total: number;
+      correct: number;
+      accuracy: number;
+      title: string;
+    };
+  } | null>(null);
 
   useEffect(() => {
     if (preselectedClassId && location.state) {
-      // Clear the state after component mounts
       window.history.replaceState({}, document.title);
     }
   }, [preselectedClassId, location.state]);
@@ -66,39 +71,18 @@ const StudentStatsView = ({ description }: { description?: string }) => {
     );
   }
 
-  const getStatCardData = () => {
-    switch (dataMode) {
-      case "accepted":
-        return {
-          total: progressData.totalAccepted,
-          correct: progressData.correctSuggestions,
-          accuracy: progressData.accuracyPercentage,
-          title: "Accepted",
-        };
-      case "rejected":
-        return {
-          total: progressData.totalRejected,
-          correct: 0,
-          accuracy: 0,
-          title: "Rejected",
-        };
-      case "total":
-      default:
-        return {
-          total: progressData.totalInteractions,
-          correct: progressData.correctSuggestions,
-          accuracy:
-            progressData.totalInteractions > 0
-              ? (progressData.correctSuggestions /
-                  progressData.totalInteractions) *
-                100
-              : 0,
-          title: "Total",
-        };
-    }
+  const statData = pieChartData?.statData || {
+    total: progressData.totalInteractions,
+    correct: progressData.correctSuggestions,
+    accuracy:
+      progressData.totalInteractions > 0
+        ? (progressData.correctSuggestions / progressData.totalInteractions) *
+          100
+        : 0,
+    title: "Total",
   };
 
-  const statData = getStatCardData();
+  const currentMode = pieChartData?.mode || "total";
 
   return (
     <div className="space-y-8">
@@ -108,7 +92,7 @@ const StudentStatsView = ({ description }: { description?: string }) => {
         </p>
         <div className="w-full md:w-80">
           <ClassesDropdownMenu
-            classes={allClassOptions as ClassData[]}
+            classes={allClassOptions}
             onClassSelect={handleClassSelect}
             selectedId={selectedClassId}
           />
@@ -123,25 +107,24 @@ const StudentStatsView = ({ description }: { description?: string }) => {
             <StatCard
               title={statData.title}
               value={statData.total}
-              tooltipContent={`Total ${dataMode} suggestions.`}
+              tooltipContent={`Total ${currentMode === "total" ? "interactions with " : currentMode} suggestions.`}
             />
             <StatCard
               title="Correct"
               value={statData.correct}
-              tooltipContent={`Number of ${dataMode} suggestions that were correct.`}
+              tooltipContent={`Number of ${currentMode} suggestions that were correct.`}
             />
             <StatCard
               title="Accuracy"
               value={`${statData.accuracy.toFixed(1)}%`}
-              tooltipContent={`Accuracy rate for ${dataMode} suggestions.`}
+              tooltipContent={`Accuracy rate for ${currentMode} suggestions.`}
             />
           </div>
 
           <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6">
             <AccuracyPieChart
               progressData={progressData}
-              dataMode={dataMode}
-              onDataModeChange={setDataMode}
+              onDataChange={setPieChartData}
             />
             <DecisionLineChart activities={userActivity} />
           </div>

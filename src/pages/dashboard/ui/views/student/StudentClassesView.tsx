@@ -92,7 +92,7 @@ const StudentClassesView = ({ description }: { description?: string }) => {
         if (filteredClasses.length === 0) return null;
 
         return (
-          <div className="space-y-4">
+          <div className="space-y-4 key={title}">
             <div className="flex items-center gap-2">
               <Icon className={`size-6 ${iconColor}`} />
               <h2 className="text-xl font-semibold">{title}</h2>
@@ -116,7 +116,7 @@ const StudentClassesView = ({ description }: { description?: string }) => {
           <p className="text-sm text-muted-foreground hidden md:block">
             {description}
           </p>
-          <TabsList className="grid w-full md:w-[200px] grid-cols-2">
+          <TabsList className="grid w-full md:w-[200px] grid-cols-2 bg-sidebar">
             <TabsTrigger value="carousel" className="flex items-center gap-2">
               <Grid className="h-4 w-4" />
             </TabsTrigger>

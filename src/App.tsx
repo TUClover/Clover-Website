@@ -14,7 +14,7 @@ import PasswordCallback from "./pages/PasswordCallback";
 import VSCodeAuthCallback from "./components/VscodeAuth";
 import { JSX } from "react";
 import { UserProvider } from "./context/UserProvider";
-import Profile from "./pages/Profile";
+import Profile from "./pages/profile/ui/layout/Profile";
 import Loading from "./components/Loading";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ClassDetailsView from "./pages/classes/ui/views/ClassDetailsView";
@@ -22,6 +22,7 @@ import ClassCreateEditView from "./pages/classes/ui/views/ClassCreateEditView";
 import SettingsView from "./pages/settings/ui/views/SettingsView";
 import SignUpView from "./pages/auth/ui/views/SignUpView";
 import LogInView from "./pages/auth/ui/views/LogInView";
+import AnonymousLoginView from "./pages/auth/ui/views/AnonymousLoginView";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +78,7 @@ const App = (): JSX.Element => {
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<LogInView />} />
               <Route path="/signup" element={<SignUpView />} />
+              <Route path="/anonymous" element={<AnonymousLoginView />} />
               <Route path="/about" element={<About />} />
               <Route path="/download" element={<Download />} />
               <Route path="/getting-started" element={<Help />} />

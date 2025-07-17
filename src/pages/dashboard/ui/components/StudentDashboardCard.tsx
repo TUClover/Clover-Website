@@ -9,6 +9,9 @@ import { useUserActivity } from "@/pages/dashboard/hooks/useUserActivity";
 import { useState } from "react";
 import Loading from "@/components/Loading";
 import { StudentClassData } from "@/types/class";
+import ResponseTimeBarChart from "./ResponseTimeBarChart";
+import AccuracyTimeLineChart from "./AccuracyTimeLineChart";
+import LearningProgressChart from "./LearningProgressChart";
 
 interface StudentDashboardCardProps {
   student: StudentClassData;
@@ -33,9 +36,15 @@ export const StudentDashboardCard = ({
     student.classId
   );
 
-  const [dataMode, setDataMode] = useState<"total" | "accepted" | "rejected">(
-    "total"
-  );
+  const [pieChartData, setPieChartData] = useState<{
+    mode: "total" | "accepted" | "rejected";
+    statData: {
+      total: number;
+      correct: number;
+      accuracy: number;
+      title: string;
+    };
+  } | null>(null);
 
   if (loading) {
     return (
@@ -45,39 +54,18 @@ export const StudentDashboardCard = ({
     );
   }
 
-  const getStatCardData = () => {
-    switch (dataMode) {
-      case "accepted":
-        return {
-          total: progressData.totalAccepted,
-          correct: progressData.correctSuggestions,
-          accuracy: progressData.accuracyPercentage,
-          title: "Accepted",
-        };
-      case "rejected":
-        return {
-          total: progressData.totalRejected,
-          correct: 0,
-          accuracy: 0,
-          title: "Rejected",
-        };
-      case "total":
-      default:
-        return {
-          total: progressData.totalInteractions,
-          correct: progressData.correctSuggestions,
-          accuracy:
-            progressData.totalInteractions > 0
-              ? (progressData.correctSuggestions /
-                  progressData.totalInteractions) *
-                100
-              : 0,
-          title: "Total",
-        };
-    }
+  const statData = pieChartData?.statData || {
+    total: progressData.totalInteractions,
+    correct: progressData.correctSuggestions,
+    accuracy:
+      progressData.totalInteractions > 0
+        ? (progressData.correctSuggestions / progressData.totalInteractions) *
+          100
+        : 0,
+    title: "Total",
   };
 
-  const statData = getStatCardData();
+  const dataMode = pieChartData?.mode || "total";
 
   return (
     <ModalContainer isOpen={!!student} onClose={() => onClose && onClose()}>
@@ -136,13 +124,27 @@ export const StudentDashboardCard = ({
           <div className=" grid grid-cols-1 sm:grid-cols-2 gap-6">
             <AccuracyPieChart
               progressData={progressData}
-              dataMode={dataMode}
-              onDataModeChange={setDataMode}
+              onDataChange={setPieChartData}
             />
             <DecisionLineChart activities={userActivity} />
           </div>
 
           <AccuracyDistributionBarChart activities={userActivity} />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <ResponseTimeBarChart
+              userActivity={userActivity}
+              title="Average Response Time"
+            />
+
+            <AccuracyTimeLineChart userActivity={userActivity} />
+          </div>
+
+          <LearningProgressChart
+            userActivity={userActivity}
+            windowSize={20}
+            title="Learning Progress"
+          />
         </div>
       </Card>
     </ModalContainer>

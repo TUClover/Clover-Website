@@ -6,6 +6,7 @@ import { registerUser } from "@/api/auth";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 /**
  * SignUpForm component for user registration.
@@ -46,7 +47,13 @@ const SignUpForm = () => {
         password: password,
       });
 
+      if (data.error) {
+        setError(data.error.message);
+        return;
+      }
+
       if (data) {
+        toast.success("Account created successfully!");
         navigate("/dashboard", { replace: true });
       }
     } catch (err) {
@@ -109,9 +116,19 @@ const SignUpForm = () => {
             )}
           </button>
         </div>
-        <Button type="submit" className="w-full y-2 text-md p-6 mt-6">
+        <Button type="submit" className="w-full text-md py-5 mt-3">
           {loading ? "Creating Account..." : "Sign Up"}
         </Button>
+
+        <p className="text-center text-text">
+          Already have an account?{" "}
+          <button
+            onClick={() => navigate("/login")}
+            className="text-primary hover:underline"
+          >
+            Log In
+          </button>
+        </p>
       </form>
     </Card>
   );
