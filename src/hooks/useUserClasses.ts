@@ -1,167 +1,106 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  EnrollmentStatus,
-  StudentStatus,
-  UserClassInfo,
-} from "../api/types/user";
-import { useAuth } from "./useAuth";
-import { getUserClasses } from "../api/user";
-import { supabase } from "../supabaseClient";
+import { useCallback, useMemo, useState } from "react";
+import { EnrollmentStatus } from "../types/user";
+import { getClassesbyStudent } from "@/api/classes";
+import { useQuery } from "@tanstack/react-query";
+import QUERY_INTERVALS from "@/constants/queryIntervals";
 
-/**
- * Custom hook to fetch user classes based on user ID or authenticated user.
- * @param {string} userID - Optional user ID to fetch specific user classes.
- * @returns {Object} - Contains classes, loading state, error message, and selected class information.
- */
-export const useUserClasses = (userID?: string | null) => {
-  const { user } = useAuth();
-  const [classes, setClasses] = useState<UserClassInfo[]>([]);
-  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
-  const [selectedClassType, setSelectedClassType] = useState<
-    "all" | "class" | "non-class"
-  >("all");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export const useUserClasses = (
+  userId?: string | null,
+  preselectedClassId?: string
+) => {
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(() => {
+    return preselectedClassId || "all";
+  });
 
-  const fetchAndSetClasses = useCallback(async () => {
-    const currentUserId = userID ?? user?.id;
-    if (!currentUserId) {
-      setLoading(false);
-      setClasses([]);
-      return;
+  const {
+    data: allClasses = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["userClasses", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+
+      const { data, error } = await getClassesbyStudent(userId);
+      if (error) throw new Error(error);
+      return data || [];
+    },
+    enabled: !!userId,
+    staleTime: QUERY_INTERVALS.staleTime,
+    gcTime: QUERY_INTERVALS.gcTime,
+    retry: 1,
+    retryDelay: 500,
+    refetchOnWindowFocus: false,
+  });
+
+  const allClassOptions = useMemo(() => {
+    if (!allClasses.length) {
+      return [
+        {
+          id: "all",
+          classTitle: "All Classes",
+          classCode: "",
+          classHexColor: "#e5e5e5",
+          students: [],
+        },
+        {
+          id: "non-class",
+          classTitle: "Non-class Activities",
+          classCode: "",
+          classHexColor: "#404040",
+          students: [],
+        },
+      ];
     }
 
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { data, error } = await getUserClasses(currentUserId);
-      if (error) {
-        setError(error);
-        setClasses([]);
-      } else {
-        setClasses(data || []);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error occurred");
-      setClasses([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [userID, user?.id]);
-
-  useEffect(() => {
-    fetchAndSetClasses();
-  }, [fetchAndSetClasses]);
-
-  const mutate = useCallback(() => {
-    fetchAndSetClasses();
-  }, [fetchAndSetClasses]);
-
-  const specialClasses: UserClassInfo[] = [
-    {
-      user_class: {
+    const options = [
+      {
         id: "all",
-        created_at: "",
-        class_title: "All",
-        class_code: "",
-        instructor_id: "",
-        class_hex_color: "#e5e5e5",
-        class_image_cover: "",
-        class_description: "",
+        classTitle: "All Classes",
+        classCode: "",
+        classHexColor: "#e5e5e5",
         students: [],
       },
-      joined_at: "",
-      enrollment_status: EnrollmentStatus.ENROLLED,
-      student_status: StudentStatus.ACTIVE,
-    },
-    {
-      user_class: {
+      ...allClasses.filter(
+        (classInfo) =>
+          classInfo.enrollmentStatus === EnrollmentStatus.ENROLLED &&
+          classInfo.id // Now using classId instead of userClass.id
+      ),
+      {
         id: "non-class",
-        created_at: "",
-        class_title: "Non-class Activities",
-        class_code: "",
-        instructor_id: "",
-        class_hex_color: "#404040",
-        class_image_cover: "",
-        class_description: "",
+        classTitle: "Non-class Activities",
+        classCode: "",
+        classHexColor: "#404040",
         students: [],
       },
-      joined_at: "",
-      enrollment_status: EnrollmentStatus.ENROLLED,
-      student_status: StudentStatus.ACTIVE,
-    },
-  ];
+    ];
+    return options;
+  }, [allClasses]);
 
-  const modifiedClasses: UserClassInfo[] = [
-    specialClasses[0],
-    ...classes,
-    specialClasses[1],
-  ];
+  const handleClassSelect = useCallback((classId: string | null) => {
+    setSelectedClassId(classId);
+  }, []);
 
-  const handleClassSelect = (selection: {
-    id: string | null;
-    type: "all" | "class" | "non-class";
-  }) => {
-    setSelectedClassId(
-      selection.type === "class" ? selection.id : selection.type
-    );
-    setSelectedClassType(selection.type);
-  };
-
-  const selectedClass =
-    selectedClassType === "class"
-      ? classes.find((c) => c.user_class.id === selectedClassId) || null
-      : specialClasses.find((c) => c.user_class.id === selectedClassType)!;
+  const selectedClass = useMemo(() => {
+    if (
+      selectedClassId &&
+      selectedClassId !== "all" &&
+      selectedClassId !== "non-class"
+    ) {
+      return allClasses.find((c) => c.id === selectedClassId) || null;
+    }
+    return null;
+  }, [selectedClassId, allClasses]);
 
   return {
-    classes: modifiedClasses,
-    originalClasses: classes, // It's good you return the original list too!
-    selectedClassId:
-      selectedClassType === "class" ? selectedClassId : selectedClassType,
-    selectedClassType,
+    allClasses,
+    selectedClassId,
     selectedClass,
-    loading,
-    error,
-    mutate,
+    allClassOptions,
     handleClassSelect,
+    loading: isLoading,
+    error: error?.message || null,
+    refetch,
   };
-};
-
-export const useUserClassStatus = (
-  studentId: string | null,
-  classId: string | null
-) => {
-  const [studentStatus, setStudentStatus] = useState<StudentStatus | null>(
-    null
-  );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchStatus = async () => {
-      if (!studentId || !classId) return;
-
-      setLoading(true);
-      setError(null);
-
-      const { data, error } = await supabase
-        .from("class_users")
-        .select("user_class_status")
-        .eq("student_id", studentId)
-        .eq("class_id", classId)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        setError(error.message);
-      }
-
-      setStudentStatus(data?.user_class_status || null);
-      setLoading(false);
-    };
-
-    fetchStatus();
-  }, [studentId, classId]);
-
-  return { studentStatus, loading, error };
 };

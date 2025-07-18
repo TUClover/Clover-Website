@@ -1,22 +1,46 @@
 import { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
+import { CustomTooltip } from "./CustomTooltip";
+import { ProgressData } from "@/types/user";
 
-/**
- * MiniPieChart component displays a small pie chart with correct and incorrect answers.
- * @param {number} correct - The number of correct answers.
- * @param {number} incorrect - The number of incorrect answers.
- * @returns {JSX.Element} - A mini pie chart component.
- **/
+interface MiniPieChartProps {
+  progressData?: ProgressData;
+  size?: "sm" | "md" | "lg";
+}
+
 export const MiniPieChart = ({
-  correct,
-  incorrect,
-}: {
-  correct: number;
-  incorrect: number;
-}) => {
+  progressData = {
+    totalAccepted: 0,
+    totalRejected: 0,
+    totalInteractions: 0,
+    correctAccepts: 0,
+    correctRejects: 0,
+    correctSuggestions: 0,
+    accuracyPercentage: 0,
+  },
+  size = "md",
+}: MiniPieChartProps) => {
   const [textColor, setTextColor] = useState("#000000");
-  const total = correct + incorrect;
-  const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  const correctSuggestions = progressData.correctSuggestions;
+  const totalInteractions = progressData.totalInteractions;
+  const incorrectSuggestions = totalInteractions - correctSuggestions;
+  const accuracyPercentage = progressData.accuracyPercentage;
+
+  const getSizeClasses = () => {
+    switch (size) {
+      case "sm":
+        return { container: "w-12 h-12", fontSize: "text-xs" };
+      case "md":
+        return { container: "w-16 h-16", fontSize: "text-sm" };
+      case "lg":
+        return { container: "w-20 h-20", fontSize: "text-base" };
+      default:
+        return { container: "w-12 h-12", fontSize: "text-xs" };
+    }
+  };
+
+  const sizeClasses = getSizeClasses();
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -39,8 +63,12 @@ export const MiniPieChart = ({
     labels: ["Correct", "Incorrect"],
     datasets: [
       {
-        data: [correct, incorrect],
-        backgroundColor: ["#50B498", "#F59E0B"],
+        data:
+          totalInteractions === 0
+            ? [1]
+            : [accuracyPercentage, 100 - accuracyPercentage],
+        backgroundColor:
+          totalInteractions === 0 ? ["#9CA3AF"] : ["#50B498", "#F59E0B"],
         borderWidth: 0,
       },
     ],
@@ -48,38 +76,59 @@ export const MiniPieChart = ({
 
   const options = {
     maintainAspectRatio: false,
-    cutout: "80%",
+    cutout: "85%",
     responsive: true,
     plugins: {
       legend: {
-        display: false, // Hide legend
+        display: false,
       },
-      datalabels: {
-        display: true,
-        color: textColor,
-        font: {
-          size: 10,
-          weight: "bold",
-        },
+      tooltip: {
+        enabled: false,
       },
     },
   };
 
   return (
-    <div className="relative w-14 h-14 flex items-center justify-center">
+    <div
+      className={`relative ${sizeClasses.container} flex items-center justify-center`}
+    >
       <Pie data={data} options={options} />
-      {total === 0 ? (
-        <div className="absolute inset-0 flex items-center justify-center text-xs">
-          N/A
+      <CustomTooltip
+        trigger={
+          <div
+            className={`absolute inset-0 flex items-center justify-center ${sizeClasses.fontSize} font-bold`}
+            style={{ color: textColor }}
+          >
+            <span>{progressData.accuracyPercentage.toFixed(0)}%</span>
+          </div>
+        }
+        side="top"
+        align="center"
+      >
+        <div className="space-y-2">
+          <p className="text-sm">
+            This pie chart illustrates the overall user accuracy.
+          </p>
+          {totalInteractions === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No data available yet.
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-alpha">Correct</span>:{" "}
+              {correctSuggestions} decisions (
+              {((correctSuggestions / totalInteractions) * 100).toFixed(1)}%)
+              <br />
+              <span className="font-medium text-beta">Incorrect</span>:{" "}
+              {incorrectSuggestions} decisions (
+              {(100 - (correctSuggestions / totalInteractions) * 100).toFixed(
+                1
+              )}
+              %)
+            </p>
+          )}
         </div>
-      ) : (
-        <div
-          className="absolute inset-0 flex items-center justify-center text-xs font-bold"
-          style={{ color: textColor }}
-        >
-          {percentage}%
-        </div>
-      )}
+      </CustomTooltip>
     </div>
   );
 };

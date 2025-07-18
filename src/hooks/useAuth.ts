@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient";
 import { User } from "@supabase/supabase-js";
+import { supabase } from "@/supabaseClient";
+import { useLocation, useNavigate } from "react-router-dom";
 
 /**
  * Custom hook to manage authentication state using Supabase.

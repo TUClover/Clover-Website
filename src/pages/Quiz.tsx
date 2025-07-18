@@ -1,16 +1,16 @@
-import { Loader2 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { BASE_ENDPOINT } from "../api/endpoints";
 import { useUserClasses } from "../hooks/useUserClasses";
-import ClassesDropdownMenu from "../components/ClassesDropdownMenu";
+import ClassesDropdownMenu from "./dashboard/ui/components/ClassesDropdownMenu";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../components/ui/card";
-import { UserClassInfo } from "../api/types/user";
 import { Button } from "../components/ui/button";
 import { Paragraph, Title } from "../components/ui/text";
+import Loading from "@/components/Loading";
+import { ClassInfo } from "@/types/class";
 
 type QuizQuestion = {
   id: string;
@@ -31,7 +31,7 @@ type QuizResult = {
  * Props for the QuizControls component.
  */
 type QuizControlsProps = {
-  classes: UserClassInfo[];
+  classes: ClassInfo[];
   selectedClassId: string | null;
   onClassSelect: (selection: {
     id: string | null;
@@ -63,14 +63,16 @@ const QuizControls: React.FC<QuizControlsProps> = ({
         Select a class:
       </label>
       <ClassesDropdownMenu
-        classes={classes.map((c) => c.user_class)}
-        onClassSelect={onClassSelect}
+        classes={classes}
+        onClassSelect={(classId) =>
+          onClassSelect({ id: classId, type: "class" })
+        }
         selectedId={selectedClassId}
       />
     </div>
     <div className="flex sm:col-span-1 items-end justify-start sm:justify-center pb-1">
       <Button onClick={onGenerate} disabled={isGenerating} className="">
-        {isGenerating ? <Loader2 className="animate-spin" /> : "Generate"}
+        {isGenerating ? <Loading text="Generating" /> : "Generate"}
       </Button>
     </div>
     <div className="col-span-full sm:col-span-2">
@@ -240,7 +242,7 @@ export const QuizPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { classes, handleClassSelect, selectedClassId } = useUserClasses(
+  const { allClasses, handleClassSelect, selectedClassId } = useUserClasses(
     user?.id || ""
   );
 
@@ -299,11 +301,11 @@ export const QuizPage: React.FC = () => {
           response.status === 404 &&
           data.message?.includes("no sections that need review")
         ) {
-          const selectedClass = classes.find(
-            (cls) => cls.user_class.id === selectedClassId
+          const selectedClass = allClasses.find(
+            (cls) => cls.id === selectedClassId
           );
           toast.success(
-            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.user_class.class_title}` : ""}.`
+            `You're doing great! No sections need review${selectedClass ? ` in ${selectedClass.classTitle}` : ""}.`
           );
         } else {
           throw new Error(data?.message || "Failed to generate quiz");
@@ -311,6 +313,7 @@ export const QuizPage: React.FC = () => {
         return;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const quizQuestions = data.data.quiz.map((q: any) => ({
         id: q.id,
         question: q.question,
@@ -498,9 +501,9 @@ export const QuizPage: React.FC = () => {
       <Title>Review Quiz</Title>
 
       <QuizControls
-        classes={classes}
+        classes={allClasses}
         selectedClassId={selectedClassId}
-        onClassSelect={handleClassSelect}
+        onClassSelect={(selection) => handleClassSelect(selection.id)}
         onGenerate={generateQuiz}
         isGenerating={isGenerating}
         previousQuizzes={previousQuizzes}

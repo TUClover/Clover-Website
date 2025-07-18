@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AIStats } from "../api/types/suggestion";
+import { AIStats } from "../types/suggestion";
 import { ChartOptions } from "chart.js";
 import DatePicker from "react-datepicker";
 import { Line } from "react-chartjs-2";

@@ -36,11 +36,11 @@ Soft Gray:
     --input: 220 13% 91%;
     --ring: 164 44.8% 51%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 95%;
+    --sidebar-background: 0 0% 90%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 87%;
+    --sidebar-accent: 240 4.8% 80%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
@@ -98,5 +98,27 @@ Soft Gray:
   }
   .tooltip-container {
     @apply max-w-[320px] shadow-lg p-4;
+  }
+
+  .dot-animation::after {
+    content: ".";
+    animation: dots 1.5s steps(3, end) infinite;
+  }
+
+  @keyframes dots {
+    0% {
+      content: ".";
+    }
+    33% {
+      content: "..";
+    }
+    66% {
+      content: "...";
+    }
+  }
+
+  .animate-dots::after {
+    content: ".";
+    animation: dots 1s steps(3, end) infinite;
   }
 }

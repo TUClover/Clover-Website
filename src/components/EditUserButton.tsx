@@ -1,6 +1,6 @@
-import { User, UserRole } from "../api/types/user";
+import { User, UserRole } from "@/types/user";
 import { useState } from "react";
-import { updateUser } from "../api/user";
+import { updateUser } from "@/api/user";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -16,15 +16,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 export const EditUserButton: React.FC<{
   user: User;
@@ -34,10 +34,10 @@ export const EditUserButton: React.FC<{
   const editUser = async () => {
     const editedUser: User = {
       ...user,
-      first_name: form.getValues("firstName"),
-      last_name: form.getValues("lastName"),
+      firstName: form.getValues("firstName"),
+      lastName: form.getValues("lastName"),
       email: form.getValues("email"),
-      avatar_url: form.getValues("avatar_url"),
+      avatarUrl: form.getValues("avatarUrl"),
       role: form.getValues("role"),
     };
 
@@ -54,10 +54,10 @@ export const EditUserButton: React.FC<{
 
   const form = useForm({
     defaultValues: {
-      firstName: user.first_name,
-      lastName: user.last_name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
-      avatar_url: user.avatar_url,
+      avatarUrl: user.avatarUrl,
       role: user.role,
     },
   });
@@ -132,7 +132,7 @@ export const EditUserButton: React.FC<{
               />
               <FormField
                 control={form.control}
-                name="avatar_url"
+                name="avatarUrl"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Avatar URL</FormLabel>

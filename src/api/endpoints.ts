@@ -17,3 +17,5 @@ export const STAT_ENDPOINT: string = `${BASE_ENDPOINT}/status`;
 export const AUTH_ENDPOINT: string = `${BASE_ENDPOINT}/auth`;
 
 export const CLASS_ENDPOINT: string = `${BASE_ENDPOINT}/classes`;
+
+export const IMAGE_UPLOAD_ENDPOINT = `${BASE_ENDPOINT}/images/upload`;

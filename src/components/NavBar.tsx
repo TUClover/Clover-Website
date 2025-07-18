@@ -1,7 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import cloverLogo from "../assets/CLOVER.svg";
-import { useAuth } from "../hooks/useAuth";
-import { supabase } from "../supabaseClient";
+import { useAuth } from "@/hooks/useAuth";
 import ThemeToggle from "./ThemeToggle";
 import { useState } from "react";
 import {
@@ -11,11 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { DoorOpen, Menu, Settings2, User2 } from "lucide-react";
-import { useUserData } from "../hooks/useUserData";
-import { UserRole } from "../api/types/user";
+import { UserRole } from "@/types/user";
+import { useUser } from "@/context/UserContext";
+import UserAvatar from "./UserAvatar";
+import { supabase } from "@/supabaseClient";
+import CloverLogo from "./CloverLogo";
 
 /**
  * NavBar component that appears at the top of the page.
@@ -25,9 +25,9 @@ import { UserRole } from "../api/types/user";
  */
 export const NavBar = () => {
   const { isAuthenticated } = useAuth();
-  const { userData } = useUserData();
-  const navigate = useNavigate();
+  const { userData } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     supabase.auth.signOut();
@@ -53,10 +53,7 @@ export const NavBar = () => {
     <nav className="dark:bg-[#0a0a0a] flex justify-between items-center py-3 pl-8 pr-4 md:pl-12 md:pr-6 fixed w-full top-0 z-50 ">
       <div className="flex items-center space-x-4">
         <Link to="/" className="flex items-center space-x-2 md:space-x-3">
-          <img src={cloverLogo} alt="Clover Logo" className="h-10" />
-          <span className="text-2xl font-bold tracking-wide text-primary">
-            CLOVER
-          </span>
+          <CloverLogo size="md" />
         </Link>
       </div>
 
@@ -170,7 +167,7 @@ export const DropdownAvatar = ({
 }: {
   handleSignOut: () => void;
 }) => {
-  const { userData, loading } = useUserData();
+  const { userData, loading } = useUser();
 
   if (loading) return null;
 
@@ -178,19 +175,11 @@ export const DropdownAvatar = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-12 w-12 rounded-full">
-          <Avatar className="w-10 h-10">
-            {userData?.avatar_url ? (
-              <img
-                src={userData.avatar_url ?? ""}
-                alt={`${userData.first_name} ${userData.last_name}`}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <AvatarFallback className="bg-alpha text-white text-lg font-semibold">
-                {userData?.first_name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            )}
-          </Avatar>
+          <UserAvatar
+            firstName={userData?.firstName}
+            avatarUrl={userData?.avatarUrl}
+            size="md"
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end" forceMount>

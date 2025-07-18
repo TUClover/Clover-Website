@@ -1,11 +1,8 @@
-import {
-  User,
-  UserClassInfo,
-  ActiveUserMode,
-  UserSettings,
-} from "./types/user";
+import { User, UserMode, UserSettings } from "../types/user";
 import { USER_ENDPOINT, LOG_ENDPOINT } from "./endpoints";
-import { LogResponse } from "./types/suggestion";
+import { ActivityLogResponse } from "../types/suggestion";
+import { MODE_CONFIG } from "@/types/mode";
+import { UsersPaginationParams, UsersResponse } from "@/types/data";
 
 /**
  * Function to save user settings to the database.
@@ -14,11 +11,12 @@ import { LogResponse } from "./types/suggestion";
  * @returns {Promise<boolean>} - Returns true if the settings were saved successfully, false otherwise
  */
 export async function saveUserSettings(
-  user_id: string,
+  userId: string,
   settings: UserSettings
-): Promise<{ data?: boolean; error?: string }> {
+): Promise<{ success?: boolean; error?: string }> {
+  console.log("Saving user settings:", userId, settings);
   try {
-    const response = await fetch(`${USER_ENDPOINT}/${user_id}/settings`, {
+    const response = await fetch(`${USER_ENDPOINT}/${userId}/settings`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -36,9 +34,8 @@ export async function saveUserSettings(
       };
     }
 
-    return { data: true };
+    return { success: true };
   } catch (err) {
-    // console.error("Error saving settings:", err);
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
     };
@@ -90,26 +87,21 @@ export async function getUserData(
  */
 export async function getUserActivity(
   userId: string,
-  mode: ActiveUserMode
-): Promise<{ logs?: LogResponse<typeof mode>; error?: string }> {
-  let routeMode: string;
-  switch (mode) {
-    case "CODE_BLOCK":
-      routeMode = "code-block";
-      break;
-    case "LINE_BY_LINE":
-      routeMode = "line-by-line";
-      break;
-    case "CODE_SELECTION":
-      routeMode = "code-selection";
-      break;
-    default:
-      console.error("Invalid mode provided:", mode);
-      return { error: "Invalid mode provided" };
-  }
+  mode: UserMode
+): Promise<{ logs?: ActivityLogResponse; error?: string }> {
+  const config = MODE_CONFIG[mode];
+
+  console.log(
+    "Fetching user activity for:",
+    userId,
+    "Mode:",
+    mode,
+    "Config:",
+    config
+  );
 
   try {
-    const url = `${LOG_ENDPOINT}/suggestion/${userId}/${routeMode}`;
+    const url = `${LOG_ENDPOINT}/suggestion/${userId}/${config.route}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -127,7 +119,7 @@ export async function getUserActivity(
 
     const data = await response.json();
 
-    return { logs: data.logs as LogResponse<typeof mode> };
+    return { logs: data.logs as ActivityLogResponse };
   } catch (err) {
     console.error("Error fetching user activity:", err);
     return {
@@ -135,90 +127,19 @@ export async function getUserActivity(
     };
   }
 }
-// export async function getUserActivity(
-//   userId: string
-// ): Promise<{ data?: UserActivityLogItem[] | null; error?: string }> {
-//   try {
-//     const response = await fetch(`${LOG_ENDPOINT}/${userId}`, {
-//       method: "GET",
-//       headers: { "Content-Type": "application/json" },
-//     });
 
-//     const data = await response.json();
-
-//     if (!response.ok) {
-//       return {
-//         error:
-//           data.message ||
-//           `Failed to get user activity: ${response.status} ${response.statusText}`,
-//       };
-//     }
-
-//     if (data == null) {
-//       return { data: [] };
-//     }
-
-//     if (!Array.isArray(data)) {
-//       return { error: "Invalid response: expected an array of activity logs" };
-//     }
-
-//     return { data: data as UserActivityLogItem[] };
-//   } catch (err) {
-//     return {
-//       error: err instanceof Error ? err.message : "Unknown error occurred",
-//     };
-//   }
-// }
-
-/**
- * Function to get the classes of a user from the database.
- * @param {string} userId - The ID of the user whose classes are to be fetched
- * @returns {Promise<{ data?: UserClassInfo[]; error?: string }>} - The response from the server or an error message
- */
-export async function getUserClasses(userId: string): Promise<{
-  data?: UserClassInfo[];
+export async function getAllUsers(params: UsersPaginationParams = {}): Promise<{
+  data?: UsersResponse;
   error?: string;
 }> {
   try {
-    const response = await fetch(`${USER_ENDPOINT}/${userId}/classes`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    const data = await response.json();
+    const url = new URL(`${USER_ENDPOINT}/`);
 
-    if (response.status === 404) {
-      return { data: [] };
-    }
-    if (!response.ok) {
-      return {
-        error:
-          data.message ||
-          `Failed to get user classes: ${response.status} ${response.statusText}`,
-      };
-    }
+    if (params.page) url.searchParams.append("page", params.page.toString());
+    if (params.limit) url.searchParams.append("limit", params.limit.toString());
+    if (params.search) url.searchParams.append("search", params.search);
 
-    if (!Array.isArray(data)) {
-      return { error: "Invalid response: expected an array of classes" };
-    }
-
-    return { data: data };
-  } catch (err) {
-    return {
-      error: err instanceof Error ? err.message : "Unknown error occurred",
-    };
-  }
-}
-
-/**
- * Function to get all users from the database.
- * @returns {Promise<{ data?: User[]; error?: string } | null>} - The response from the server or an error message
- */
-export async function getAllUsers(): Promise<{
-  data?: User[];
-  error?: string;
-} | null> {
-  try {
-    const response = await fetch(`${USER_ENDPOINT}/`, {
+    const response = await fetch(url.toString(), {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -228,18 +149,23 @@ export async function getAllUsers(): Promise<{
     if (!response.ok) {
       return {
         error:
+          data.error ||
           data.message ||
-          `Failed to get all users: ${response.status} ${response.statusText}`,
+          `Failed to get users: ${response.status} ${response.statusText}`,
       };
     }
 
-    if (!Array.isArray(data)) {
-      return { error: "Invalid response: expected an array of users" };
+    if (!data.users || !Array.isArray(data.users)) {
+      return { error: "Invalid response: expected users array" };
     }
 
-    return { data: data };
+    if (!data.pagination) {
+      return { error: "Invalid response: expected pagination data" };
+    }
+
+    return { data: data as UsersResponse };
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching users:", err);
     return {
       error: err instanceof Error ? err.message : "Unknown error occurred",
     };

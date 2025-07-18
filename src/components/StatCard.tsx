@@ -1,10 +1,5 @@
+import { CustomTooltip } from "./CustomTooltip";
 import { Card } from "./ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
 
 interface StatCardProps {
   title: string;
@@ -22,29 +17,15 @@ interface StatCardProps {
  */
 const StatCard = ({ title, value, tooltipContent }: StatCardProps) => {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Card className="w-full h-full p-4 flex flex-col gap-1">
-            <p className="text-2xl font-bold text-primary">{title}</p>
-            <p className="text-2xl font-bold text-text">{value}</p>
-          </Card>
-        </TooltipTrigger>
-        {tooltipContent && (
-          <TooltipContent
-            side="top"
-            align="center"
-            className="tooltip-container"
-          >
-            {typeof tooltipContent === "string" ? (
-              <p className="text-sm">{tooltipContent}</p>
-            ) : (
-              tooltipContent
-            )}
-          </TooltipContent>
-        )}
-      </Tooltip>
-    </TooltipProvider>
+    <Card className="w-full h-full p-4 flex flex-col gap-1">
+      <CustomTooltip
+        trigger={<p className="text-2xl font-bold text-primary">{title}</p>}
+        align="start"
+      >
+        {tooltipContent}
+      </CustomTooltip>
+      <p className="text-2xl font-bold text-text">{value}</p>
+    </Card>
   );
 };
 
