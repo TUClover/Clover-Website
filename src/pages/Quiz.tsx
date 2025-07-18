@@ -501,9 +501,9 @@ export const QuizPage: React.FC = () => {
       <Title>Review Quiz</Title>
 
       <QuizControls
-        classes={classes}
+        classes={allClasses}
         selectedClassId={selectedClassId}
-        onClassSelect={handleClassSelect}
+        onClassSelect={(selection) => handleClassSelect(selection.id)}
         onGenerate={generateQuiz}
         isGenerating={isGenerating}
         previousQuizzes={previousQuizzes}

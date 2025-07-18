@@ -16,6 +16,8 @@ interface UserInfoTableCardProps {
   totalAccepted: number;
   totalRejected: number;
   totalInteractions: number;
+  correctAccepts?: number;
+  correctRejects?: number;
   correctSuggestions: number;
   accuracyPercentage: number;
   lastActivity: string | null;
@@ -36,6 +38,8 @@ const UserInfoTableCard = ({
   totalAccepted,
   totalRejected,
   totalInteractions,
+  correctAccepts,
+  correctRejects,
   correctSuggestions,
   accuracyPercentage,
   lastActivity,
@@ -53,6 +57,8 @@ const UserInfoTableCard = ({
     totalAccepted,
     totalRejected,
     totalInteractions,
+    correctAccepts,
+    correctRejects,
     correctSuggestions,
     accuracyPercentage,
   };

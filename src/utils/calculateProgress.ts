@@ -34,30 +34,6 @@ export const calculateProgress = (logs: ActivityLogResponse): ProgressData => {
   };
 };
 
-// export const calculateProgressFromInstructorLogs = (
-//   logs: ActivityLogResponse
-// ): ProgressData => {
-//   const acceptedLogs = logs.filter((log) => ACCEPT_EVENTS.includes(log.event));
-//   const rejectedLogs = logs.filter((log) => REJECT_EVENTS.includes(log.event));
-
-//   const totalAccepted = acceptedLogs.length;
-//   const totalRejected = rejectedLogs.length;
-//   const totalInteractions = totalAccepted + totalRejected;
-
-//   const correctSuggestions = acceptedLogs.filter((log) => !log.hasBug).length;
-
-//   const accuracyPercentage =
-//     totalAccepted > 0 ? (correctSuggestions / totalAccepted) * 100 : 0;
-
-//   return {
-//     totalAccepted,
-//     totalRejected,
-//     totalInteractions,
-//     correctSuggestions,
-//     accuracyPercentage,
-//   };
-// };
-
 export const getEmptyProgressData = (): ProgressData => ({
   totalAccepted: 0,
   totalRejected: 0,

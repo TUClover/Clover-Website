@@ -13,6 +13,8 @@ export const MiniPieChart = ({
     totalAccepted: 0,
     totalRejected: 0,
     totalInteractions: 0,
+    correctAccepts: 0,
+    correctRejects: 0,
     correctSuggestions: 0,
     accuracyPercentage: 0,
   },
@@ -20,11 +22,10 @@ export const MiniPieChart = ({
 }: MiniPieChartProps) => {
   const [textColor, setTextColor] = useState("#000000");
 
-  const chartData = {
-    correct: progressData.correctSuggestions,
-    incorrect: progressData.totalInteractions - progressData.correctSuggestions,
-    total: progressData.totalInteractions,
-  };
+  const correctSuggestions = progressData.correctSuggestions;
+  const totalInteractions = progressData.totalInteractions;
+  const incorrectSuggestions = totalInteractions - correctSuggestions;
+  const accuracyPercentage = progressData.accuracyPercentage;
 
   const getSizeClasses = () => {
     switch (size) {
@@ -63,14 +64,11 @@ export const MiniPieChart = ({
     datasets: [
       {
         data:
-          chartData.total === 0
+          totalInteractions === 0
             ? [1]
-            : [
-                progressData.accuracyPercentage,
-                100 - progressData.accuracyPercentage,
-              ],
+            : [accuracyPercentage, 100 - accuracyPercentage],
         backgroundColor:
-          chartData.total === 0 ? ["#9CA3AF"] : ["#50B498", "#F59E0B"],
+          totalInteractions === 0 ? ["#9CA3AF"] : ["#50B498", "#F59E0B"],
         borderWidth: 0,
       },
     ],
@@ -111,19 +109,21 @@ export const MiniPieChart = ({
           <p className="text-sm">
             This pie chart illustrates the overall user accuracy.
           </p>
-          {chartData.total === 0 ? (
+          {totalInteractions === 0 ? (
             <p className="text-sm text-muted-foreground">
               No data available yet.
             </p>
           ) : (
             <p className="text-sm text-muted-foreground">
               <span className="font-medium text-alpha">Correct</span>:{" "}
-              {chartData.correct} decisions (
-              {((chartData.correct / chartData.total) * 100).toFixed(1)}%)
+              {correctSuggestions} decisions (
+              {((correctSuggestions / totalInteractions) * 100).toFixed(1)}%)
               <br />
               <span className="font-medium text-beta">Incorrect</span>:{" "}
-              {chartData.incorrect} decisions (
-              {(100 - (chartData.correct / chartData.total) * 100).toFixed(1)}
+              {incorrectSuggestions} decisions (
+              {(100 - (correctSuggestions / totalInteractions) * 100).toFixed(
+                1
+              )}
               %)
             </p>
           )}

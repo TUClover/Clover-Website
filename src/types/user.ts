@@ -56,8 +56,8 @@ export interface ProgressData {
   totalRejected: number;
   totalInteractions: number;
   correctSuggestions: number;
-  correctAccepts: number;
-  correctRejects: number;
+  correctAccepts?: number;
+  correctRejects?: number;
   accuracyPercentage: number;
 }
 

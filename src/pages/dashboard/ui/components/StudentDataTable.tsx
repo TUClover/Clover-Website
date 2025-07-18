@@ -245,6 +245,8 @@ export const StudentRow = ({
     totalAccepted: student.totalAccepted,
     totalRejected: student.totalRejected,
     totalInteractions: student.totalInteractions,
+    correctAccepts: student.totalAccepted,
+    correctRejects: student.totalRejected,
     correctSuggestions: student.correctSuggestions,
     accuracyPercentage: student.accuracyPercentage,
   };

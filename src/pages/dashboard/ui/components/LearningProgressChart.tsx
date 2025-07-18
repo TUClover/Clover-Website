@@ -47,7 +47,7 @@ const LearningProgressChart = ({
     const labels: number[] = [];
     const data: number[] = [];
 
-    sortedActivity.forEach((log, index) => {
+    sortedActivity.forEach((_, index) => {
       const startIndex = Math.max(0, index - windowSize + 1);
       const windowLogs = sortedActivity.slice(startIndex, index + 1);
 
