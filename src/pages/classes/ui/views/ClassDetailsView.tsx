@@ -186,7 +186,7 @@ const ClassDetailsView = () => {
                 <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
                   {classTitle}
                 </h1>
-                <div className="flex items-center gap-6 text-gray-200">
+                <div className="flex flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-6 md:items-center text-gray-200">
                   <div className="flex items-center gap-2">
                     <Users className="w-5 h-5" />
                     <span>
@@ -288,9 +288,9 @@ const ClassDetailsView = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              <div className="grid grid-cols-2 lg:grid-cols-1 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-y-8 md:gap-x-6">
                 {/* Instructor info */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm flex-1 col-span-1">
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm flex-1 col-span-2 md:col-span-1">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     Instructor
                   </h3>

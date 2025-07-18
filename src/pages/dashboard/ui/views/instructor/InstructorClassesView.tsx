@@ -52,7 +52,7 @@ export const InstructorClassesView = ({
         <CreateNewClassButton />
       </div>
 
-      <ClassesTable classes={allClasses} showInstructor={false} showActions />
+      <ClassesTable classes={allClasses} showActions />
     </div>
   );
 

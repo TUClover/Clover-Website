@@ -35,7 +35,7 @@ const RoleBadge = ({ role, className }: RoleBadgeProps) => {
       return (
         <Badge
           variant="secondary"
-          className={`w-20 rounded-xl justify-center py-1 text-xs ${className || ""}`}
+          className={`w-20 rounded-xl justify-center text-[10px] md:text-xs ${className || ""}`}
         >
           {role}
         </Badge>
@@ -45,7 +45,7 @@ const RoleBadge = ({ role, className }: RoleBadgeProps) => {
     return (
       <Badge
         variant="secondary"
-        className={`${config.color} w-20 rounded-xl justify-center py-1 text-xs ${className || ""}`}
+        className={`${config.color}  max-w-20 rounded-xl justify-center py-0.5 sm:py-1 text-[10px] sm:text-xs ${className || ""}`}
       >
         {config.label}
       </Badge>

@@ -26,7 +26,10 @@ const ModeBadge = ({ mode, className }: ModeBadgeProps) => {
     const config = modeConfig[mode as keyof typeof modeConfig];
     if (!config) {
       return (
-        <Badge variant="outline" className={`text-xs ${className || ""}`}>
+        <Badge
+          variant="outline"
+          className={`text-[10px] sm:text-xs ${className || ""}`}
+        >
           {mode}
         </Badge>
       );
@@ -35,7 +38,7 @@ const ModeBadge = ({ mode, className }: ModeBadgeProps) => {
     return (
       <Badge
         variant="secondary"
-        className={`${config.color} w-20 rounded-xl justify-center py-1 text-xs ${className || ""}`}
+        className={`${config.color} max-w-20 rounded-xl justify-center py-0.5 sm:py-1 text-[10px] sm:text-xs ${className || ""}`}
       >
         {config.label}
       </Badge>
