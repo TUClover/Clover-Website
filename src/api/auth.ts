@@ -75,6 +75,14 @@ export async function loginUser(
   }
 }
 
+/**
+ *
+ * @param firstName
+ * @param lastName
+ * @param email
+ * @param id
+ * @returns
+ */
 export async function checkAndRegisterUser(
   firstName: string,
   lastName: string,

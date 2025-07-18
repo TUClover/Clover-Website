@@ -29,6 +29,10 @@ export const About: React.FC = () => {
             title="CLOVER documentation"
           ></iframe>
         </div>
+        <div>
+          <Paragraph>Version: {__APP_VERSION__}</Paragraph>
+          <Paragraph>Commit: {__COMMIT_HASH__}</Paragraph>
+        </div>
       </section>
       <footer className="py-6 text-center text-sm">
         <p>© 2025 CLOVER</p>

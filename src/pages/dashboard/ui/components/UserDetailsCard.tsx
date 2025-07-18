@@ -1,4 +1,4 @@
-import { UserMode, UserSettings } from "@/types/user";
+import { UserMode, UserSettings, UserWithActivity } from "@/types/user";
 import { saveUserSettings } from "@/api/user";
 import {
   InfoCardItem,
@@ -14,7 +14,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import UserAvatar from "@/components/UserAvatar";
-import { UserWithActivity } from "@/dashboard/hooks/useAllUsersActivity";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
