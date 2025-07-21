@@ -10,7 +10,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
 
-export type actionType = "join" | "leave" | "cancel" | "remove" | "delete";
+export type actionType =
+  | "join"
+  | "leave"
+  | "cancel"
+  | "remove"
+  | "delete"
+  | "accept"
+  | "reject"
+  | "complete";
 
 interface ClassActionDialogProps {
   isOpen: boolean;
@@ -20,6 +28,7 @@ interface ClassActionDialogProps {
     userId: string;
     classTitle?: string;
     action: actionType;
+    isInstructor?: boolean;
   } | null;
   onClose: () => void;
   onConfirm: () => void;
@@ -66,10 +75,15 @@ export const ClassActionDialog = ({
         };
 
       case "remove":
+        const isInstructorRemoval = classInfo.isInstructor;
         return {
-          title: "Remove from List",
-          description: `Are you sure you want to remove "${className}" from your list? This will permanently delete this rejected application from your records.`,
-          actionText: "remove from list",
+          title: isInstructorRemoval ? "Remove Student" : "Remove from List",
+          description: isInstructorRemoval
+            ? `Are you sure you want to remove this student from "${className}"? They will lose access to all course materials and progress.`
+            : `Are you sure you want to remove "${className}" from your list? This will permanently delete this class from your records.`,
+          actionText: isInstructorRemoval
+            ? "remove student"
+            : "remove from list",
           loadingText: "Removing...",
           buttonColor: "bg-red-600 hover:bg-red-700 focus:ring-red-600",
         };
@@ -81,6 +95,33 @@ export const ClassActionDialog = ({
           actionText: "delete permanently",
           loadingText: "Deleting...",
           buttonColor: "bg-red-600 hover:bg-red-700 focus:ring-red-600",
+        };
+
+      case "accept":
+        return {
+          title: "Accept Student",
+          description: `Are you sure you want to accept this student into "${className}"? They will be enrolled and gain full access to the course.`,
+          actionText: "accept student",
+          loadingText: "Accepting...",
+          buttonColor: "bg-green-600 hover:bg-green-700 focus:ring-green-600",
+        };
+
+      case "reject":
+        return {
+          title: "Reject Student",
+          description: `Are you sure you want to reject this student's application for "${className}"? They will be notified of this decision.`,
+          actionText: "reject student",
+          loadingText: "Rejecting...",
+          buttonColor: "bg-red-600 hover:bg-red-700 focus:ring-red-600",
+        };
+
+      case "complete":
+        return {
+          title: "Mark as Complete",
+          description: `Are you sure you want to mark this student as completed for "${className}"? This indicates they have successfully finished the course.`,
+          actionText: "mark as complete",
+          loadingText: "Updating...",
+          buttonColor: "bg-blue-600 hover:bg-blue-700 focus:ring-blue-600",
         };
 
       default:

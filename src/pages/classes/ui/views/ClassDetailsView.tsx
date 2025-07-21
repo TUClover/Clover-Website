@@ -10,6 +10,7 @@ import { useClassData } from "@/pages/classes/hooks/useClassData";
 import { useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Star, Users } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import ClassStudentStatusList from "../components/ClassStudentStatusList";
 
 const ClassDetailsView = () => {
   const { classId } = useParams();
@@ -25,6 +26,7 @@ const ClassDetailsView = () => {
   } = useClassData(classId, {
     includeStudents: true,
     userId: userData?.id,
+    includeAllStatuses: true,
   });
 
   const queryClient = useQueryClient();
@@ -256,33 +258,14 @@ const ClassDetailsView = () => {
               </div>
             </div>
 
-            {students.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                  Enrolled Students ({students.length})
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {students.slice(0, 9).map((student, index) => (
-                    <UserInfoItem
-                      key={index}
-                      firstName={student.firstName}
-                      lastName={student.lastName}
-                      email={student.email}
-                      avatarUrl={student.avatarUrl}
-                      hexColor={classHexColor}
-                      className="flex items-center gap-3 px-3 py-2 bg-slate-100 dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                    />
-                  ))}
-                  {students.length > 9 && (
-                    <div className="flex items-center justify-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600">
-                      <span className="text-gray-500 dark:text-gray-400 font-medium">
-                        +{students.length - 9} more
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            {/* Students List */}
+            <ClassStudentStatusList
+              users={students}
+              classHexColor={classHexColor}
+              isInstructor={isInstructor || false}
+              classId={classId || ""}
+              classTitle={classData.classTitle}
+            />
           </div>
 
           {/* Sidebar */}
