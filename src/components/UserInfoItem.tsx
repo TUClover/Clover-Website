@@ -8,6 +8,7 @@ interface UserInfoItemProps {
   size?: "xs" | "sm" | "md" | "lg";
   className?: string;
   hexColor?: string;
+  onClick?: () => void;
 }
 
 const UserInfoItem = ({
@@ -18,6 +19,7 @@ const UserInfoItem = ({
   size = "md",
   className,
   hexColor,
+  onClick,
 }: UserInfoItemProps) => {
   const getTextSizes = () => {
     switch (size) {
@@ -39,6 +41,7 @@ const UserInfoItem = ({
   return (
     <div
       className={`flex items-center gap-3 bg-muted rounded-lg ${className || ""}`}
+      onClick={onClick}
     >
       <UserAvatar
         firstName={firstName}

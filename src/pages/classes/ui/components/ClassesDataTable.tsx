@@ -219,7 +219,7 @@ interface ClassCardProps {
 const ClassCard = ({ classData, index, onClick }: ClassCardProps) => {
   return (
     <Card
-      className="cursor-pointer hover:shadow-md hover:bg-muted hover:dark:bg-muted transition-shadow bg-white/40 dark:bg-black/40 pt-3 pb-0"
+      className="cursor-pointer hover:shadow-md hover:bg-muted hover:dark:bg-muted transition-shadow bg-white/40 dark:bg-black/40 pt-3 pb-0 text-xs md:text-sm"
       style={{
         borderLeft: `4px solid ${classData.classHexColor || "#50B498"}`,
       }}
@@ -229,26 +229,27 @@ const ClassCard = ({ classData, index, onClick }: ClassCardProps) => {
         <div className="flex justify-between items-center">
           <div className="flex-1 min-w-0 space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">
+              <span className="font-medium text-muted-foreground">
                 #{index + 1}
               </span>
-              <span className="font-medium text-sm">
-                {classData.classTitle || "Untitled Class"}
-              </span>
+              <div>
+                <span className="font-medium">
+                  {classData.classTitle || "Untitled Class"}
+                </span>
+                <div className="font-medium truncate text-muted-foreground">
+                  {classData.classCode}
+                </div>
+              </div>
             </div>
 
-            <div className="font-medium truncate text-muted-foreground text-sm">
-              {classData.classCode}
-            </div>
-
-            <div className="text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground hidden md:block">
               Created at {formatActivityTimestamp(classData.createdAt)}
             </div>
           </div>
 
           <div className="flex flex-col w-28 text-center -mr-3 space-y-1">
-            <div className="text-2xl flex items-center justify-center font-semibold gap-1">
-              {classData.studentCount} <Users />
+            <div className="text-lg md:text-2xl flex items-center justify-center font-semibold gap-1">
+              {classData.studentCount} <Users className="size-5 md:size-7" />
             </div>
             <div className="text-xs text-muted-foreground">
               by {classData.instructorName || "Unknown Instructor"}

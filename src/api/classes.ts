@@ -428,6 +428,7 @@ export async function getClassById(
   options?: {
     includeStudents?: boolean;
     userId?: string;
+    includeAllStatuses?: boolean;
   }
 ): Promise<{
   data?: ClassData;
@@ -437,11 +438,21 @@ export async function getClassById(
     const searchParams = new URLSearchParams();
 
     if (options?.includeStudents) {
-      searchParams.append("includeStudents", "true");
+      searchParams.append(
+        "includeStudents",
+        options.includeStudents.toString()
+      );
     }
 
     if (options?.userId) {
       searchParams.append("user_id", options.userId);
+    }
+
+    if (options?.includeAllStatuses) {
+      searchParams.append(
+        "includeAllStatuses",
+        options.includeAllStatuses.toString()
+      );
     }
 
     const queryString = searchParams.toString();

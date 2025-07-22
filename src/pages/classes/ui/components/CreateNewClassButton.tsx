@@ -12,7 +12,7 @@ export const CreateNewClassButton = () => {
   return (
     <Button onClick={handleClick} variant="default">
       <Plus />
-      <span className="hidden sm:block ml-1">Add New Class</span>
+      <span>Add New Class</span>
     </Button>
   );
 };

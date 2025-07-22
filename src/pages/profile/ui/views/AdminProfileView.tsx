@@ -24,7 +24,10 @@ interface AdminProfileViewProps {
 }
 
 const AdminProfileView = ({ userData }: AdminProfileViewProps) => {
-  const { userActivity, progressData, loading } = useUserActivity(userData?.id);
+  const { userActivity, progressData, loading } = useUserActivity(
+    userData?.id,
+    userData.settings.mode
+  );
 
   if (loading) {
     return <Loading size="lg" className="min-h-screen" />;
