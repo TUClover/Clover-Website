@@ -58,7 +58,6 @@ const App = (): JSX.Element => {
               {/* Auth Routes */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard/*" element={<Dashboard />} />
-                <Route path="/quiz" element={<QuizPage />} />
                 <Route path="/settings" element={<SettingsView />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route
