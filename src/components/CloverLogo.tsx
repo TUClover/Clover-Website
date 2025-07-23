@@ -42,7 +42,7 @@ const CloverLogo = ({
       onClick={onClick}
     >
       <img
-        src="../src/assets/CLOVER.svg"
+        src="./src/assets/CLOVER.svg"
         alt="Clover Logo"
         className={config.image}
       />
