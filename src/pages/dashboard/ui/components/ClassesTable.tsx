@@ -17,6 +17,7 @@ import {
   MoreHorizontal,
   Trash2,
   UserPlus,
+  Users,
   X,
 } from "lucide-react";
 import {
@@ -34,6 +35,7 @@ import {
 } from "@/pages/classes/ui/components/ClassActionDialog";
 import { useClassActionDialog } from "@/pages/classes/hooks/useClassActionDialog";
 import { useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface ClassesTableProps {
   classes: ClassData[];
@@ -268,6 +270,79 @@ const ClassesTable = ({
     return <span className="text-xs text-muted-foreground">-</span>;
   };
 
+  const MobileCard = ({
+    classData,
+    index,
+  }: {
+    classData: ClassData;
+    index: number;
+  }) => {
+    const studentCount = classData.studentCount || 0;
+    const enrollmentStatus = classData.enrollmentStatus;
+
+    return (
+      <Card
+        key={classData.id || index}
+        className="cursor-pointer hover:shadow-md transition-shadow duration-200 py-1"
+        onClick={(e) => handleRowClick(classData, e)}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div
+                className="w-1 h-12 rounded-full flex-shrink-0"
+                style={{
+                  backgroundColor: classData.classHexColor || "#e5e7eb",
+                }}
+              />
+              <div className="min-w-0 flex-1">
+                <h3 className="font-medium text-sm leading-tight mb-1 line-clamp-2">
+                  {classData.classTitle}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {classData.classCode}
+                </p>
+              </div>
+            </div>
+            {showActions && (
+              <div className="flex-shrink-0 ml-2">
+                {getActionButton(classData)}
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              {showInstructor && (
+                <div className="flex items-center gap-1">
+                  <span className="text-muted-foreground">By</span>
+                  <span className="font-medium">
+                    {classData.instructorName || "N/A"}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-1">
+                {" • "}
+                <Users className="h-3 w-3 text-muted-foreground ml-1" />
+                <span className="font-medium">{studentCount}</span>
+                {studentCount > 5 && (
+                  <Badge variant="secondary" className="ml-1 px-1 text-xs">
+                    🔥
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {showStatus && (
+              <EnrollmentBadge status={enrollmentStatus as EnrollmentStatus} />
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <>
       <ClassActionDialog
@@ -278,7 +353,7 @@ const ClassesTable = ({
         onConfirm={classActionDialog.handleConfirm}
       />
       <div className="width-container mb-6">
-        <div className="border rounded-md shadow-sm">
+        <div className="hidden md:block border rounded-md shadow-sm">
           <Table className="table-fixed">
             <TableHeader className="bg-sidebar dark:bg-[#262626]">
               <TableRow className="font-semibold">
@@ -357,6 +432,16 @@ const ClassesTable = ({
               })}
             </TableBody>
           </Table>
+        </div>
+
+        <div className="md:hidden space-y-3">
+          {classes.map((classData, index) => (
+            <MobileCard
+              key={classData.id || index}
+              classData={classData}
+              index={index}
+            />
+          ))}
         </div>
       </div>
     </>

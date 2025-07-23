@@ -7,6 +7,7 @@ export function useClassData(
   options?: {
     includeStudents?: boolean;
     userId?: string;
+    includeAllStatuses?: boolean;
     enabled?: boolean;
   }
 ) {
@@ -20,6 +21,7 @@ export function useClassData(
       const result = await getClassById(classId, {
         includeStudents: options?.includeStudents,
         userId: options?.userId,
+        includeAllStatuses: options?.includeAllStatuses,
       });
 
       if (result.error) {

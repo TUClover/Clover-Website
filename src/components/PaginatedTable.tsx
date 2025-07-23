@@ -66,9 +66,14 @@ export const PaginatedTable = <T,>({
           />
         </div>
 
-        <div className="text-sm text-muted-foreground">
-          Page {currentPage} of {totalPages} ({filteredData.length} total{" "}
-          {filteredData.length === 1 ? "result" : "results"})
+        <div className="text-xs md:text-sm flex flex-col md:flex-row items-end text-muted-foreground md:space-x-2">
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <span>
+            ({filteredData.length} total{" "}
+            {filteredData.length === 1 ? "result" : "results"})
+          </span>
         </div>
       </div>
 

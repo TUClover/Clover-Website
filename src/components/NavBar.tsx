@@ -10,7 +10,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { DoorOpen, Menu, Settings2, User2 } from "lucide-react";
+import { DoorOpen, Menu, User2 } from "lucide-react";
 import { UserRole } from "@/types/user";
 import { useUser } from "@/context/UserContext";
 import UserAvatar from "./UserAvatar";
@@ -188,11 +188,7 @@ export const DropdownAvatar = ({
             <User2 className="h-4 w-4" /> Profile
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/settings" className="w-full cursor-pointer py-2">
-            <Settings2 /> Settings
-          </Link>
-        </DropdownMenuItem>
+
         <DropdownMenuItem
           onClick={handleSignOut}
           className="cursor-pointer text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400 py-2"

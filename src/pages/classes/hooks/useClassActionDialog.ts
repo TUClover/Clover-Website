@@ -2,8 +2,10 @@ import {
   deleteClass,
   registerUserClass,
   unregisterUserClass,
+  updateStudentEnrollmentStatus,
 } from "@/api/classes";
 import { actionType } from "@/pages/classes/ui/components/ClassActionDialog";
+import { EnrollmentStatus } from "@/types/user";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -21,6 +23,7 @@ export const useClassActionDialog = ({
     userId: string;
     classTitle?: string;
     action: actionType;
+    isInstructor?: boolean;
   } | null>(null);
 
   const openDialog = (params: {
@@ -28,6 +31,7 @@ export const useClassActionDialog = ({
     userId: string;
     classTitle?: string;
     action: actionType;
+    isInstructor?: boolean;
   }) => {
     setClassInfo(params);
     setIsOpen(true);
@@ -46,28 +50,67 @@ export const useClassActionDialog = ({
       let result;
       let successMessage;
 
-      if (classInfo.action === "join") {
-        result = await registerUserClass(classInfo.userId, classInfo.classId);
-        successMessage = "Successfully joined class!";
-      } else if (classInfo.action === "delete") {
-        result = await deleteClass(classInfo.classId);
-        successMessage = "Class deleted successfully!";
-      } else {
-        result = await unregisterUserClass(classInfo.userId, classInfo.classId);
+      switch (classInfo.action) {
+        case "join":
+          result = await registerUserClass(classInfo.userId, classInfo.classId);
+          successMessage = "Successfully joined class!";
+          break;
 
-        switch (classInfo.action) {
-          case "leave":
-            successMessage = "Successfully left class!";
-            break;
-          case "cancel":
-            successMessage = "Successfully cancelled application!";
-            break;
-          case "remove":
-            successMessage = "Successfully removed from list!";
-            break;
-          default:
-            successMessage = "Action completed successfully!";
-        }
+        case "delete":
+          result = await deleteClass(classInfo.classId);
+          successMessage = "Class deleted successfully!";
+          break;
+
+        case "accept":
+          result = await updateStudentEnrollmentStatus(
+            classInfo.classId,
+            classInfo.userId,
+            EnrollmentStatus.ENROLLED
+          );
+          successMessage = "Successfully enrolled student!";
+          break;
+
+        case "reject":
+          result = await updateStudentEnrollmentStatus(
+            classInfo.classId,
+            classInfo.userId,
+            EnrollmentStatus.REJECTED
+          );
+          successMessage = "Successfully rejected student!";
+          break;
+
+        case "complete":
+          result = await updateStudentEnrollmentStatus(
+            classInfo.classId,
+            classInfo.userId,
+            EnrollmentStatus.COMPLETED
+          );
+          successMessage = "Successfully marked student as complete!";
+          break;
+
+        case "leave":
+        case "cancel":
+        case "remove":
+        default:
+          result = await unregisterUserClass(
+            classInfo.userId,
+            classInfo.classId
+          );
+
+          switch (classInfo.action) {
+            case "leave":
+              successMessage = "Successfully left class!";
+              break;
+            case "cancel":
+              successMessage = "Successfully cancelled application!";
+              break;
+            case "remove":
+              successMessage = "Successfully removed!";
+              break;
+            default:
+              successMessage = "Action completed successfully!";
+          }
+          break;
       }
 
       if (result.success) {
