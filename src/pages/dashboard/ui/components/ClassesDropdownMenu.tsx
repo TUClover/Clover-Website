@@ -30,6 +30,7 @@ const ClassesDropdownMenu = ({
   selectedId,
   placeholder,
 }: ClassesDropdownMenuProps) => {
+  console.log(classes);
   return (
     <Select
       value={selectedId || undefined}
@@ -37,7 +38,7 @@ const ClassesDropdownMenu = ({
         onClassSelect(value);
       }}
     >
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full text-sm text-muted-foreground border-b border-slate-400 dark:border-sidebar-accent bg-gray-100 dark:bg-[#1a1a1a]">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

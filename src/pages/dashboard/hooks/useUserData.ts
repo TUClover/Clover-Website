@@ -33,7 +33,7 @@ export const useStudentData = ({
     queryFn: async () => {
       if (!instructorId) return [];
       const { data, error } = await getClassesByInstructor(instructorId, true);
-      if (error) throw new Error(error);
+      if (error) return []; // Don't throw please.
       return data || [];
     },
     enabled: !!instructorId,
