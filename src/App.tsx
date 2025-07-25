@@ -23,6 +23,8 @@ import SettingsView from "./pages/settings/ui/views/SettingsView";
 import SignUpView from "./pages/auth/ui/views/SignUpView";
 import LogInView from "./pages/auth/ui/views/LogInView";
 import AnonymousLoginView from "./pages/auth/ui/views/AnonymousLoginView";
+import Construction from "./pages/Construction";
+import { ConstructionRoute, EarlyAccessProvider } from "./hooks/useEarlyAccess";
 
 const queryClient = new QueryClient();
 
@@ -51,45 +53,50 @@ const ProtectedRoute = (): JSX.Element => {
 const App = (): JSX.Element => {
   return (
     <QueryClientProvider client={queryClient}>
-      <UserProvider>
-        <main className="flex flex-col">
-          <Routes>
-            <Route element={<RootLayout />}>
-              {/* Auth Routes */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard/*" element={<Dashboard />} />
-                <Route path="/quiz" element={<QuizPage />} />
-                <Route path="/settings" element={<SettingsView />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route
-                  path="/classes/:classId"
-                  element={<ClassDetailsView />}
-                />
-                <Route
-                  path="/classes/:classId/edit"
-                  element={<ClassCreateEditView />}
-                />
-                <Route
-                  path="/classes/create"
-                  element={<ClassCreateEditView />}
-                />
+      <EarlyAccessProvider>
+        <UserProvider>
+          <main className="flex flex-col">
+            <Routes>
+              <Route element={<RootLayout />}>
+                <Route element={<ConstructionRoute />}>
+                  {/* Auth Routes */}
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard/*" element={<Dashboard />} />
+                    <Route path="/quiz" element={<QuizPage />} />
+                    <Route path="/settings" element={<SettingsView />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route
+                      path="/classes/:classId"
+                      element={<ClassDetailsView />}
+                    />
+                    <Route
+                      path="/classes/:classId/edit"
+                      element={<ClassCreateEditView />}
+                    />
+                    <Route
+                      path="/classes/create"
+                      element={<ClassCreateEditView />}
+                    />
+                  </Route>
+                  {/* Public Routes */}
+                  <Route path="/home" element={<Landing />} />
+                  <Route path="/login" element={<LogInView />} />
+                  <Route path="/signup" element={<SignUpView />} />
+                  <Route path="/anonymous" element={<AnonymousLoginView />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/download" element={<Download />} />
+                  <Route path="/getting-started" element={<Help />} />
+                  <Route path="/passwordreset" element={<Reset />} />
+                </Route>
+                <Route path="/" element={<Construction />} />
+                <Route path="/auth" element={<AuthCallback />} />
+                <Route path="/auth/vscode" element={<VSCodeAuthCallback />} />
+                <Route path="/resetform" element={<PasswordCallback />} />
               </Route>
-              {/* Public Routes */}
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<LogInView />} />
-              <Route path="/signup" element={<SignUpView />} />
-              <Route path="/anonymous" element={<AnonymousLoginView />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/download" element={<Download />} />
-              <Route path="/getting-started" element={<Help />} />
-              <Route path="/auth" element={<AuthCallback />} />
-              <Route path="/auth/vscode" element={<VSCodeAuthCallback />} />
-              <Route path="/passwordreset" element={<Reset />} />
-              <Route path="/resetform" element={<PasswordCallback />} />
-            </Route>
-          </Routes>
-        </main>
-      </UserProvider>
+            </Routes>
+          </main>
+        </UserProvider>
+      </EarlyAccessProvider>
     </QueryClientProvider>
   );
 };
