@@ -19,17 +19,7 @@ const Dashboard = () => {
   const currentTab = location.pathname.split("/dashboard/")[1] || "user-stats";
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loading size="lg" showText={false} />
-      </div>
-    );
-  }
-
-  if (!userData) return null;
-
-  const effectiveRole = selectedRole ?? userData.role;
+  const effectiveRole = selectedRole ?? userData?.role;
 
   const handleTabClick = (tabId: string) => {
     navigate(`/dashboard/${tabId}`);
@@ -60,11 +50,10 @@ const Dashboard = () => {
           currentTab={currentTab}
           onTabClick={handleTabClick}
           onRoleChange={handleRoleChange}
-          userRole={userData.role}
+          userRole={userData?.role}
         />
         <main className="flex-1 bg-background/80 dark:bg-[#0a0a0a] overflow-auto">
           <DashboardHeader title={title} role={effectiveRole} />
-
           <div className="w-full max-w-7xl mx-auto px-6">
             {ActiveComponentView && (
               <ActiveComponentView description={description} />

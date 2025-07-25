@@ -9,11 +9,59 @@ import { useUser } from "@/context/UserContext";
 import { useUserActivity } from "@/pages/dashboard/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import { UserMode } from "@/types/user";
+import { supabase } from "@/supabaseClient";
+import { useEffect, useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const StudentLogsView = () => {
   const { userData } = useUser();
 
   const { selectedClassId, loading: userClassLoading } = useUserClasses();
+  const [isRealtimeEnabled, setIsRealtimeEnabled] = useState(false);
+  const [realtimeStatus, setRealtimeStatus] = useState("idle");
+
+  useEffect(() => {
+    console.log("Running with " + userData?.id);
+    if (!isRealtimeEnabled || !userData?.id) return;
+
+    setRealtimeStatus("connecting");
+
+    const channel = supabase
+      .channel("supabase_realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "suggestions_log",
+        },
+        (payload) => {
+          const newLog = payload.new;
+          console.log("[Realtime] New log:", newLog);
+          // updateLocalActivityLog(newLog); // optional
+        }
+      )
+      .subscribe((status, err) => {
+        if (status === "SUBSCRIBED") {
+          setRealtimeStatus("connected");
+          console.log("[Realtime] Successfully connected!");
+        } else if (status === "TIMED_OUT") {
+          setRealtimeStatus("error");
+          console.error("[Realtime] Connection timed out.");
+        } else if (err) {
+          setRealtimeStatus("error");
+          console.error("[Realtime] Connection error:", err.message);
+        }
+
+        setRealtimeStatus("idle");
+      });
+
+    return () => {
+      console.log("Component unmounted");
+      supabase.removeChannel(channel);
+    };
+  }, [userData?.id, isRealtimeEnabled]);
 
   const {
     userActivity,
@@ -67,6 +115,14 @@ const StudentLogsView = () => {
             </div>
           }
         />
+        <div className="flex items-center space-x-2">
+          <Label htmlFor="realtime-switch">Realtime Updates</Label>
+          <Switch
+            id="realtime-switch"
+            checked={isRealtimeEnabled}
+            onCheckedChange={setIsRealtimeEnabled}
+          />
+        </div>
       </div>
       <PaginatedTable
         data={sortedLogItems}
