@@ -252,7 +252,7 @@ export const SuggestionDetailCard = ({
 
           return (
             <div className="flex-1 flex flex-col min-h-0">
-              {!isCorrect ? (
+              {!isCorrect && isAccepted ? (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                     <h4 className="font-semibold text-gray-700 dark:text-gray-300">
@@ -412,30 +412,25 @@ export const SuggestionDetailCard = ({
         <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
           Prompt
         </h4>
-        <pre className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-36">
-          {suggestion.prompt || "No prompt provided"}
-        </pre>
+        <div className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-36">
+          {suggestion.refinedPrompt || "Unknown prompt"}
+        </div>
       </div>
 
-      {suggestion.refinedPrompt && (
-        <div>
-          <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
-            Refined Prompt
-          </h4>
-          <pre className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-36">
-            {suggestion.refinedPrompt}
-          </pre>
-        </div>
-      )}
-
-      {"explanation" in suggestion && suggestion.explanation && (
+      {suggestion.explanations && (
         <div>
           <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Explanation
           </h4>
-          <pre className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-62">
-            {suggestion.explanation}
-          </pre>
+          <div className="bg-sidebar p-4 rounded-md text-sm overflow-auto max-h-62">
+            <ul className="space-y-2 list-disc list-inside text-gray-600 dark:text-gray-300 leading-relaxed marker:text-primary">
+              {suggestion.explanations.map((item, index) => (
+                <li key={index} className="pl-2">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
     </div>

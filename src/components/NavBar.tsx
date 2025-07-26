@@ -50,7 +50,7 @@ export const NavBar = () => {
   ];
 
   return (
-    <nav className="dark:bg-[#0a0a0a] flex justify-between items-center py-3 pl-8 pr-4 md:pl-12 md:pr-6 fixed w-full top-0 z-50 ">
+    <nav className="bg-white dark:bg-[#0a0a0a] flex justify-between items-center py-3 pl-8 pr-4 md:pl-12 md:pr-6 fixed w-full top-0 z-50 ">
       <div className="flex items-center space-x-4">
         <Link to="/home" className="flex items-center space-x-2 md:space-x-3">
           <CloverLogo size="md" />

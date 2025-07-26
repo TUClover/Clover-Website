@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { CLOVER } from "@/components/ui/text";
 import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/useMobile";
+import CloverImg from "@/assets/CLOVER.svg";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -41,11 +42,7 @@ const CloverLogo = ({
       className={cn("flex items-center", config.gap, className)}
       onClick={onClick}
     >
-      <img
-        src="../src/assets/CLOVER.svg"
-        alt="Clover Logo"
-        className={config.image}
-      />
+      <img src={CloverImg} alt="Clover Logo" className={config.image} />
       {showText && <CLOVER className={cn(config.text, "font-bold")} />}
     </div>
   );

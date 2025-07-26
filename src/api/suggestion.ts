@@ -51,6 +51,7 @@ export async function getSuggestionByModeAndId(
       vendor: backendData.vendor || "",
       language: backendData.language || "",
       refinedPrompt: backendData.refined_prompt,
+      explanations: backendData.explanations || [],
     };
 
     return { data: config.transform(backendData, base) };
