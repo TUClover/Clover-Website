@@ -252,7 +252,7 @@ export const SuggestionDetailCard = ({
 
           return (
             <div className="flex-1 flex flex-col min-h-0">
-              {!isCorrect ? (
+              {!isCorrect && isAccepted ? (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                     <h4 className="font-semibold text-gray-700 dark:text-gray-300">
