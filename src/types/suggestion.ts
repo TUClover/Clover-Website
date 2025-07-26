@@ -8,6 +8,7 @@ export interface BaseSuggestion {
   vendor: string;
   language?: string;
   refinedPrompt?: string;
+  explanations?: string[];
 }
 
 export interface CodeBlockSuggestion extends BaseSuggestion {
