@@ -8,7 +8,7 @@ import { Toaster } from "./components/ui/sonner";
  */
 const RootLayout = () => {
   return (
-    <div className="flex flex-col dark:bg-[#0a0a0a] min-h-screen text-text">
+    <div className="flex flex-col bg-white dark:bg-[#0a0a0a] min-h-screen text-text">
       <Toaster richColors position="top-right" />
 
       {/* Main Content - Takes up remaining space */}

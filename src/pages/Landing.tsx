@@ -94,7 +94,7 @@ export const Landing: React.FC = () => {
           </Button>
         </section>
       </div>
-      <footer className="py-6 text-center text-sm sticky bottom-0">
+      <footer className="py-6 text-center text-sm">
         <p>© 2025 CLOVER</p>
         <p className="text-primary">TEAM 2</p>
       </footer>
