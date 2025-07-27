@@ -21,53 +21,16 @@ const StudentLogsView = () => {
   const [isRealtimeEnabled, setIsRealtimeEnabled] = useState(false);
   const [realtimeStatus, setRealtimeStatus] = useState("idle");
 
-  useEffect(() => {
-    console.log("Running with " + userData?.id);
-    if (!isRealtimeEnabled || !userData?.id) return;
-
-    setRealtimeStatus("connecting");
-
-    const channel = supabase
-      .channel("supabase_realtime")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "suggestions_log",
-        },
-        (payload) => {
-          const newLog = payload.new;
-          console.log("[Realtime] New log:", newLog);
-          // updateLocalActivityLog(newLog); // optional
-        }
-      )
-      .subscribe((status, err) => {
-        if (status === "SUBSCRIBED") {
-          setRealtimeStatus("connected");
-          console.log("[Realtime] Successfully connected!");
-        } else if (status === "TIMED_OUT") {
-          setRealtimeStatus("error");
-          console.error("[Realtime] Connection timed out.");
-        } else if (err) {
-          setRealtimeStatus("error");
-          console.error("[Realtime] Connection error:", err.message);
-        }
-
-        setRealtimeStatus("idle");
-      });
-
-    return () => {
-      console.log("Component unmounted");
-      supabase.removeChannel(channel);
-    };
-  }, [userData?.id, isRealtimeEnabled]);
-
   const {
     userActivity,
     loading: userActivityLoading,
     progressData,
-  } = useUserActivity(userData?.id, userData?.settings.mode, selectedClassId);
+  } = useUserActivity(
+    userData?.id,
+    userData?.settings.mode,
+    selectedClassId,
+    isRealtimeEnabled
+  );
 
   const filteredLogItems = userActivity.filter(
     (logItem) =>
