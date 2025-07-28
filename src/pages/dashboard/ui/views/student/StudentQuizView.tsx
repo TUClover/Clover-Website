@@ -123,10 +123,8 @@ export default StudentQuizView;
 
 const QuizControls = ({ generateQuiz }: { generateQuiz: () => void }) => {
   const { userData } = useUser();
-  const { allClasses, handleClassSelect, selectedClassId } = useUserClasses(
-    userData?.id,
-    null
-  );
+  const { allClassOptions, handleClassSelect, selectedClassId } =
+    useUserClasses(userData?.id);
   const navigate = useNavigate();
 
   const handleStart = () => {
@@ -148,7 +146,7 @@ const QuizControls = ({ generateQuiz }: { generateQuiz: () => void }) => {
           <div className="space-y-2">
             <Label htmlFor="class">Class</Label>
             <ClassesDropdownMenu
-              classes={allClasses}
+              classes={allClassOptions}
               onClassSelect={handleClassSelect}
               selectedId={selectedClassId}
             />

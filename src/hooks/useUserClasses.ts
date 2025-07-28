@@ -6,10 +6,10 @@ import QUERY_INTERVALS from "@/constants/queryIntervals";
 
 export const useUserClasses = (
   userId?: string | null,
-  preselectedClassId?: string | null
+  preselectedClassId?: string
 ) => {
   const [selectedClassId, setSelectedClassId] = useState<string | null>(() => {
-    return preselectedClassId || null;
+    return preselectedClassId || "";
   });
 
   const {
