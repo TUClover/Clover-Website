@@ -181,14 +181,15 @@ const UserDetailsCard = ({ user, onClose }: UserDetailsCardProps) => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Bug Percentage</span>
                     <span className="text-sm text-muted-foreground">
-                      {settings?.bugPercentage || 50}%
+                      {settings?.bugPercentage}%
                     </span>
                   </div>
                   <Slider
-                    value={[settings?.bugPercentage || 50]}
+                    value={[settings?.bugPercentage as number]}
                     onValueChange={(value) =>
                       updateSetting("bugPercentage", value[0])
                     }
+                    min={0}
                     max={100}
                     step={5}
                     disabled={!editMode}

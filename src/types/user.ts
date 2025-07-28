@@ -42,6 +42,8 @@ export interface User {
   // auth_created_at?: string;
   // last_sign_in?: string;
   // source?: string;
+
+  enrollmentStatus?: EnrollmentStatus;
 }
 
 export type UserSettings = {

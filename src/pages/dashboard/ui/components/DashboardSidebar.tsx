@@ -44,7 +44,7 @@ const DashboardSidebar = ({
   userRole = UserRole.STUDENT,
 }: DashboardSidebarProps) => {
   const navigate = useNavigate();
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   const visibleItems = sidebarItems.filter((item) =>
     item.roles.includes(effectiveRole)
@@ -61,13 +61,21 @@ const DashboardSidebar = ({
     },
     {}
   );
+
+  const handleTabClick = (id: string) => {
+    onTabClick(id);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
   return (
     <Sidebar variant="inset">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="!p-1 !m-1.5">
-              <a href="/">
+              <a href="/home">
                 <CloverLogo />
               </a>
             </SidebarMenuButton>
@@ -84,7 +92,7 @@ const DashboardSidebar = ({
                 {items.map(({ id, icon: Icon, name }) => (
                   <SidebarMenuItem key={id}>
                     <SidebarMenuButton
-                      onClick={() => onTabClick(id)}
+                      onClick={() => handleTabClick(id)}
                       isActive={currentTab === id}
                     >
                       <Icon />

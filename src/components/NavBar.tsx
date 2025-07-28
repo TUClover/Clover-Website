@@ -10,7 +10,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { DoorOpen, Menu, Settings2, User2 } from "lucide-react";
+import { DoorOpen, Menu, User2 } from "lucide-react";
 import { UserRole } from "@/types/user";
 import { useUser } from "@/context/UserContext";
 import UserAvatar from "./UserAvatar";
@@ -36,7 +36,7 @@ export const NavBar = () => {
   };
 
   const navLinks = [
-    { to: "/", label: "Home" },
+    { to: "/home", label: "Home" },
     ...(isAuthenticated
       ? [
           { to: "/dashboard", label: "Dashboard" },
@@ -50,9 +50,9 @@ export const NavBar = () => {
   ];
 
   return (
-    <nav className="dark:bg-[#0a0a0a] flex justify-between items-center py-3 pl-8 pr-4 md:pl-12 md:pr-6 fixed w-full top-0 z-50 ">
+    <nav className="bg-white dark:bg-[#0a0a0a] flex justify-between items-center py-3 pl-8 pr-4 md:pl-12 md:pr-6 fixed w-full top-0 z-50 ">
       <div className="flex items-center space-x-4">
-        <Link to="/" className="flex items-center space-x-2 md:space-x-3">
+        <Link to="/home" className="flex items-center space-x-2 md:space-x-3">
           <CloverLogo size="md" />
         </Link>
       </div>
@@ -188,11 +188,7 @@ export const DropdownAvatar = ({
             <User2 className="h-4 w-4" /> Profile
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/settings" className="w-full cursor-pointer py-2">
-            <Settings2 /> Settings
-          </Link>
-        </DropdownMenuItem>
+
         <DropdownMenuItem
           onClick={handleSignOut}
           className="cursor-pointer text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400 py-2"

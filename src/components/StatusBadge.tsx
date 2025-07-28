@@ -15,7 +15,7 @@ const StatusBadge = ({ status, className }: StatusBadgeProps) => {
     return (
       <Badge
         variant={status === "ACTIVE" ? "default" : "destructive"}
-        className={`w-20 rounded-xl justify-center py-1 text-xs ${className || ""}`}
+        className={`w-20 rounded-xl justify-center py-0.5 sm:py-1 text-[10px] sm:text-xs ${className || ""}`}
       >
         {capitalizeFirst(status)}
       </Badge>

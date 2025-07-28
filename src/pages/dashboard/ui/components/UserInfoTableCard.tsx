@@ -5,6 +5,7 @@ import RoleBadge from "@/components/RoleBadge";
 import StatusBadge from "@/components/StatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatActivityTimestamp, isOnline } from "@/utils/timeConverter";
+import { useIsMobile } from "@/hooks/useMobile";
 
 interface UserInfoTableCardProps {
   // Required props
@@ -52,6 +53,7 @@ const UserInfoTableCard = ({
 }: UserInfoTableCardProps) => {
   const isUserOnline = isOnline(lastActivity);
   const activityTimestamp = formatActivityTimestamp(lastActivity);
+  const isMobile = useIsMobile();
 
   const progressData = {
     totalAccepted,
@@ -65,17 +67,17 @@ const UserInfoTableCard = ({
 
   return (
     <Card
-      className={`cursor-pointer hover:shadow-md hover:bg-muted hover:dark:bg-muted transition-shadow bg-white/40 dark:bg-black/40 pt-3 ${className || ""}`}
+      className={`cursor-pointer hover:shadow-md hover:bg-muted hover:dark:bg-muted transition-shadow bg-white/40 dark:bg-black/40 pt-3 text-xs md:text-sm ${className || ""}`}
       onClick={onClick}
     >
       <CardContent>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-3">
           {/* Left Side */}
           <div className="flex-1 min-w-0 space-y-4">
             {/* Number and Name */}
             <div className="flex-1 min-w-0 space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground">
+                <span className="font-medium text-muted-foreground">
                   #{index + 1}
                 </span>
                 <span className="font-medium" title={name}>
@@ -85,14 +87,14 @@ const UserInfoTableCard = ({
 
               {/* Secondary info (class title or email) */}
               {(classTitle || email) && (
-                <div className="font-medium truncate text-muted-foreground text-sm">
+                <div className="font-medium truncate text-muted-foreground">
                   {classTitle || email}
                 </div>
               )}
             </div>
 
             {/* Badges Row (Mode, Role, Status) */}
-            <div className="flex gap-2 flex-wrap items-center">
+            <div className="flex gap-2 items-center">
               {mode && <ModeBadge mode={mode} />}
               {role && <RoleBadge role={role} />}
               {status && <StatusBadge status={status} />}
@@ -100,22 +102,25 @@ const UserInfoTableCard = ({
           </div>
 
           {/* Right Side */}
-          <div className="flex flex-col items-center gap-2 w-32 ">
+          <div className="flex flex-col items-center gap-2 w-20 md:w-32">
             {/* Pie Chart */}
             <div className="flex flex-col items-center">
               {totalInteractions > 0 ? (
                 <>
-                  <MiniPieChart progressData={progressData} />
+                  <MiniPieChart
+                    progressData={progressData}
+                    size={isMobile ? "sm" : "md"}
+                  />
                 </>
               ) : (
                 <div className="text-center">
-                  <MiniPieChart />
+                  <MiniPieChart size={isMobile ? "sm" : "md"} />
                 </div>
               )}
             </div>
 
             {/* Online Status */}
-            <div className="flex items-center gap-2 text-xs">
+            <div className="flex items-center gap-2 text-[10px] sm:text-xs">
               <div
                 className={`w-2 h-2 rounded-full ${
                   isUserOnline ? "bg-green-500" : "bg-gray-400"
