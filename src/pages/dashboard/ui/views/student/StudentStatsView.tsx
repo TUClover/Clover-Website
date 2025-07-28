@@ -37,7 +37,7 @@ const StudentStatsView = ({ description }: { description?: string }) => {
     selectedClassId,
     handleClassSelect,
     loading: userClassLoading,
-  } = useUserClasses(userData?.id, preselectedClassId);
+  } = useUserClasses(userData?.id, preselectedClassId || "all");
 
   const {
     userActivity,

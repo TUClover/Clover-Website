@@ -9,7 +9,7 @@ export const useUserClasses = (
   preselectedClassId?: string
 ) => {
   const [selectedClassId, setSelectedClassId] = useState<string | null>(() => {
-    return preselectedClassId || "all";
+    return preselectedClassId || "";
   });
 
   const {

@@ -8,6 +8,7 @@ import {
   FileText,
   Settings,
   BarChart3,
+  ClipboardPenIcon,
 } from "lucide-react";
 import { UserRole } from "../types/user";
 import { ComponentType } from "react";
@@ -21,6 +22,7 @@ import InstructorClassesView from "@/pages/dashboard/ui/views/instructor/Instruc
 import UsersAdministrationView from "@/pages/dashboard/ui/views/admin/UsersAdministrationView";
 import ClassesAdministrationView from "@/pages/dashboard/ui/views/admin/ClassesAdministrationView";
 import AppAnalyticsView from "@/pages/dashboard/ui/views/dev/AppAnalyticsView";
+import StudentQuizView from "@/pages/dashboard/ui/views/student/StudentQuizView";
 
 export type SideBarItem = {
   id: string;
@@ -99,6 +101,15 @@ export const sidebarItems: SideBarItem[] = [
     subheading: "My Dashboard",
     roles: STUDENT,
     dashboardView: StudentLogsView,
+  },
+  {
+    id: "user-quiz",
+    icon: ClipboardPenIcon,
+    name: "Review",
+    title: "Quiz",
+    subheading: "My Dashboard",
+    roles: STUDENT,
+    dashboardView: StudentQuizView,
   },
 
   // Teaching
