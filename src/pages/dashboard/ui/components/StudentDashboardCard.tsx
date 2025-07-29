@@ -12,6 +12,8 @@ import { StudentClassData } from "@/types/class";
 import ResponseTimeBarChart from "./ResponseTimeBarChart";
 import AccuracyTimeLineChart from "./AccuracyTimeLineChart";
 import LearningProgressChart from "./LearningProgressChart";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 interface StudentDashboardCardProps {
   student: StudentClassData;
@@ -30,10 +32,13 @@ export const StudentDashboardCard = ({
   student,
   onClose,
 }: StudentDashboardCardProps) => {
+  const [isRealtimeEnabled, setIsRealtimeEnabled] = useState(false);
+
   const { userActivity, progressData, loading } = useUserActivity(
     student.userId,
     student.mode,
-    student.classId
+    student.classId,
+    isRealtimeEnabled
   );
 
   const [pieChartData, setPieChartData] = useState<{
@@ -87,6 +92,14 @@ export const StudentDashboardCard = ({
               <p className="text-gray-600 dark:text-gray-400">
                 {student.classTitle}
               </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="realtime-switch">Realtime Updates</Label>
+              <Switch
+                id="realtime-switch"
+                checked={isRealtimeEnabled}
+                onCheckedChange={setIsRealtimeEnabled}
+              />
             </div>
             {onClose && (
               <button
