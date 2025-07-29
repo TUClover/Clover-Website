@@ -19,7 +19,6 @@ const StudentLogsView = () => {
 
   const { selectedClassId, loading: userClassLoading } = useUserClasses();
   const [isRealtimeEnabled, setIsRealtimeEnabled] = useState(false);
-  const [realtimeStatus, setRealtimeStatus] = useState("idle");
 
   const {
     userActivity,
