@@ -15,12 +15,12 @@ const CODE_BLOCK_MODE = {
   getId: (log: UserActivityLogItem) =>
     (log as BlockSuggestionLogResponse).suggestionId,
   transform: (
-    data: { suggestion_array?: string[]; explanation?: string },
+    data: { suggestion_array?: string[]; explanations?: string[] },
     base: BaseSuggestion
   ): CodeBlockSuggestion => ({
     ...base,
     suggestionArray: data.suggestion_array || [],
-    explanation: data.explanation,
+    explanations: data.explanations,
   }),
 } as const;
 

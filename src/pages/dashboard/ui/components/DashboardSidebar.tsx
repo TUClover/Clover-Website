@@ -75,7 +75,7 @@ const DashboardSidebar = ({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="!p-1 !m-1.5">
-              <a href="/">
+              <a href="/home">
                 <CloverLogo />
               </a>
             </SidebarMenuButton>

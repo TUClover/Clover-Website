@@ -7,7 +7,9 @@ import NavBar from "../components/NavBar";
 /**
  * Landing component for the CLOVER website.
  * @returns {JSX.Element} The landing page component.
+ *
  */
+
 export const Landing: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
