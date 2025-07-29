@@ -413,7 +413,7 @@ export const SuggestionDetailCard = ({
           Prompt
         </h4>
         <div className="bg-sidebar p-4 rounded-md text-sm whitespace-pre-wrap overflow-auto max-h-36">
-          {suggestion.refinedPrompt || "Unknown prompt"}
+          {suggestion.prompt || "Unknown prompt"}
         </div>
       </div>
 

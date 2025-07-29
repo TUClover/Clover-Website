@@ -12,6 +12,7 @@ const InstructorStudentListView = () => {
           Insights About Students
         </h2>
       </div>
+
       <StudentDataTable instructorId={userData?.id as string} />
     </Card>
   );
