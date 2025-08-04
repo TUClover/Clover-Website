@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useUserActivity } from "../../../dashboard/hooks/useUserActivity";
 import Loading from "@/components/Loading";
+import EditUserButton from "@/components/EditUserButton";
 
 interface StudentProfileViewProps {
   userData: User;
@@ -76,7 +77,11 @@ export const StudentProfileView = ({ userData }: StudentProfileViewProps) => {
 
             {/* Basic Information */}
             <Card className="py-3 col-span-2 hidden md:block lg:hidden">
-              <InfoCardTitle title="Details" icon={UserIcon} />
+              <div className="flex items-center justify-between pr-4">
+                <InfoCardTitle title="Details" icon={UserIcon} />
+
+                <EditUserButton user={userData} />
+              </div>
               <CardContent className="flex flex-col gap-4">
                 <InfoField
                   label="Email"

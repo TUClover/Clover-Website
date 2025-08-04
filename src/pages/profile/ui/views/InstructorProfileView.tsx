@@ -18,6 +18,7 @@ import {
 } from "@/components/CardComponents";
 import { formatActivityTimestamp } from "@/utils/timeConverter";
 import { User } from "@/types/user";
+import EditUserButton from "@/components/EditUserButton";
 
 interface InstructorProfileViewProps {
   userData: User;
@@ -75,7 +76,11 @@ export const InstructorProfileView = ({
 
             {/* Basic Information */}
             <Card className="py-3 col-span-2 hidden md:block lg:hidden">
-              <InfoCardTitle title="Details" icon={UserIcon} />
+              <div className="flex items-center justify-between pr-4">
+                <InfoCardTitle title="Details" icon={UserIcon} />
+
+                <EditUserButton user={userData} />
+              </div>
               <CardContent className="flex flex-col gap-4">
                 <InfoField
                   label="Email"
