@@ -26,6 +26,7 @@ import AnonymousLoginView from "./pages/auth/ui/views/AnonymousLoginView";
 import Construction from "./pages/Construction";
 import { ConstructionRoute, EarlyAccessProvider } from "./hooks/useEarlyAccess";
 import { PublicLayout } from "./pages/PublicLayout";
+import UserDetailsView from "./pages/dashboard/ui/views/admin/UserDetailsView";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const ProtectedRoute = (): JSX.Element => {
  * @returns {JSX.Element} - The main application component.
  */
 const App = (): JSX.Element => {
+  console.log("Run this");
   return (
     <QueryClientProvider client={queryClient}>
       <EarlyAccessProvider>
@@ -78,6 +80,10 @@ const App = (): JSX.Element => {
                       path="/classes/create"
                       element={<ClassCreateEditView />}
                     />
+                    <Route
+                      path="/users/:userId"
+                      element={<UserDetailsView />}
+                    />
                   </Route>
                   {/* Public Routes */}
 
@@ -94,9 +100,9 @@ const App = (): JSX.Element => {
                   </Route>
                 </Route>
                 <Route path="/resetform" element={<PasswordCallback />} />
-                <Route path="/" element={<Construction />} />
                 <Route path="/auth" element={<AuthCallback />} />
                 <Route path="/auth/vscode" element={<VSCodeAuthCallback />} />
+                <Route path="/early-access" element={<Construction />} />
               </Route>
             </Routes>
           </main>

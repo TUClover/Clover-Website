@@ -9,8 +9,7 @@ import { useUser } from "@/context/UserContext";
 import { useUserActivity } from "@/pages/dashboard/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import { UserMode } from "@/types/user";
-import { supabase } from "@/supabaseClient";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 

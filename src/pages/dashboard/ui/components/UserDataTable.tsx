@@ -20,14 +20,12 @@ import UserDataSearchFilters from "./UserDataSearchFilter";
 import ModeBadge from "@/components/ModeBadge";
 import RoleBadge from "@/components/RoleBadge";
 import StatusBadge from "@/components/StatusBadge";
-import UserDetailsCard from "./UserDetailsCard";
 import UserAvatar from "@/components/UserAvatar";
 import { formatActivityTimestamp, isOnline } from "@/utils/timeConverter";
+import { useNavigate } from "react-router-dom";
 
 const UsersDataTable = () => {
-  const [selectedUser, setSelectedUser] = useState<UserWithActivity | null>(
-    null
-  );
+  const navigate = useNavigate();
   const [nameFilter, setNameFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -54,12 +52,7 @@ const UsersDataTable = () => {
   }, [users, nameFilter, roleFilter, statusFilter, modeFilter]);
 
   const handleRowClick = (userId: string) => {
-    const user = users.find((user) => user.id === userId);
-    setSelectedUser(user || null);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedUser(null);
+    navigate(`/users/${userId}`);
   };
 
   if (error) {
@@ -235,10 +228,6 @@ const UsersDataTable = () => {
           )}
         />
       </div>
-
-      {selectedUser && (
-        <UserDetailsCard user={selectedUser} onClose={handleCloseModal} />
-      )}
     </>
   );
 };
