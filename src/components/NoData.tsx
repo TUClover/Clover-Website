@@ -1,12 +1,13 @@
 import CreateNewClassButton from "../pages/classes/ui/components/CreateNewClassButton";
 
 interface NoDataProps {
-  role?: "student" | "instructor";
+  role?: "student" | "instructor" | "admin";
+  userName?: string; // For displaying specific user's name when admin is viewing
 }
 
-const NoData = ({ role }: NoDataProps) => {
+const NoData = ({ role, userName }: NoDataProps) => {
   return (
-    <div className="flex flex-1 justify-center pt-24">
+    <div className="flex flex-1 justify-center py-24">
       <div className="text-center card">
         {role === "student" ? (
           <>
@@ -25,6 +26,17 @@ const NoData = ({ role }: NoDataProps) => {
             >
               Download CLOVER
             </a>
+          </>
+        ) : role === "admin" ? (
+          <>
+            <h2 className="text-lg font-semibold text mb-4">
+              No activity found
+            </h2>
+            <p className="text-gray-500 mb-6">
+              {userName
+                ? `${userName} doesn't have any activity recorded yet. They may need to start coding with CLOVER to see their progress here.`
+                : "This student doesn't have any activity recorded yet. They may need to start coding with CLOVER to see their progress here."}
+            </p>
           </>
         ) : (
           <>

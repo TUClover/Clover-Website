@@ -9,17 +9,26 @@ import { useUser } from "@/context/UserContext";
 import { useUserActivity } from "@/pages/dashboard/hooks/useUserActivity";
 import { useUserClasses } from "@/hooks/useUserClasses";
 import { UserMode } from "@/types/user";
+import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const StudentLogsView = () => {
   const { userData } = useUser();
 
   const { selectedClassId, loading: userClassLoading } = useUserClasses();
+  const [isRealtimeEnabled, setIsRealtimeEnabled] = useState(false);
 
   const {
     userActivity,
     loading: userActivityLoading,
     progressData,
-  } = useUserActivity(userData?.id, userData?.settings.mode, selectedClassId);
+  } = useUserActivity(
+    userData?.id,
+    userData?.settings.mode,
+    selectedClassId,
+    isRealtimeEnabled
+  );
 
   const filteredLogItems = userActivity.filter(
     (logItem) =>
@@ -67,6 +76,14 @@ const StudentLogsView = () => {
             </div>
           }
         />
+        <div className="flex items-center space-x-2">
+          <Label htmlFor="realtime-switch">Realtime Updates</Label>
+          <Switch
+            id="realtime-switch"
+            checked={isRealtimeEnabled}
+            onCheckedChange={setIsRealtimeEnabled}
+          />
+        </div>
       </div>
       <PaginatedTable
         data={sortedLogItems}
