@@ -249,7 +249,7 @@ const UserDetailsView = () => {
   return (
     <>
       <NavBar />
-      <div className="space-y-6 py-24 max-w-7xl mx-auto">
+      <div className="space-y-6 py-24 max-w-7xl mx-auto px-8">
         {/* User Details Section */}
         <Card className="overflow-hidden bg-white dark:bg-gray-900">
           {/* Header */}
