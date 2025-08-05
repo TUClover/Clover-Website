@@ -25,6 +25,7 @@ import LogInView from "./pages/auth/ui/views/LogInView";
 import AnonymousLoginView from "./pages/auth/ui/views/AnonymousLoginView";
 import Construction from "./pages/Construction";
 import { ConstructionRoute, EarlyAccessProvider } from "./hooks/useEarlyAccess";
+import { PublicLayout } from "./pages/PublicLayout";
 
 const queryClient = new QueryClient();
 
@@ -79,19 +80,23 @@ const App = (): JSX.Element => {
                     />
                   </Route>
                   {/* Public Routes */}
-                  <Route path="/home" element={<Landing />} />
-                  <Route path="/login" element={<LogInView />} />
-                  <Route path="/signup" element={<SignUpView />} />
-                  <Route path="/anonymous" element={<AnonymousLoginView />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/download" element={<Download />} />
-                  <Route path="/getting-started" element={<Help />} />
-                  <Route path="/passwordreset" element={<Reset />} />
+
+                  <Route path="/" element={<PublicLayout />}>
+                    <Route index element={<Landing />} />
+                    <Route path="home" element={<Landing />} />
+                    <Route path="about" element={<About />} />
+                    <Route path="download" element={<Download />} />
+                    <Route path="/login" element={<LogInView />} />
+                    <Route path="/signup" element={<SignUpView />} />
+                    <Route path="/anonymous" element={<AnonymousLoginView />} />
+                    <Route path="/getting-started" element={<Help />} />
+                    <Route path="/passwordreset" element={<Reset />} />
+                  </Route>
                 </Route>
+                <Route path="/resetform" element={<PasswordCallback />} />
                 <Route path="/" element={<Construction />} />
                 <Route path="/auth" element={<AuthCallback />} />
                 <Route path="/auth/vscode" element={<VSCodeAuthCallback />} />
-                <Route path="/resetform" element={<PasswordCallback />} />
               </Route>
             </Routes>
           </main>

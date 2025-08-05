@@ -110,8 +110,7 @@ const AnonymousLoginView = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <NavBar />
+    <div className="flex flex-col justify-center items-center w-full text-text h-[calc(100vh-12rem)]">
       <Card className="p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6 text-white">
           Enter Your 4-Character Code

@@ -163,8 +163,20 @@ export const PasswordResetCallback: React.FC = () => {
   const [passwordStrength, setPasswordStrength] = useState(0);
 
   useEffect(() => {
+    // Check if user is already in PASSWORD_RECOVERY state
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        setCanReset(true);
+      }
+    };
+
+    checkSession();
+
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event) => {
+      async (event, session) => {
         if (event === "PASSWORD_RECOVERY") {
           setCanReset(true);
         }
@@ -174,7 +186,7 @@ export const PasswordResetCallback: React.FC = () => {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     // Calculate password strength
@@ -209,12 +221,29 @@ export const PasswordResetCallback: React.FC = () => {
         setError("Failed to reset password");
       } else {
         toast.success("Password reset successful!");
-        navigate("/dashboard");
+        await supabase.auth.signOut();
+        navigate("/login", {
+          state: {
+            message:
+              "Password updated successfully. Please sign in with your new password.",
+          },
+        });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleBackToLogin = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      await supabase.auth.signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      navigate("/login");
     }
   };
 
@@ -350,12 +379,13 @@ export const PasswordResetCallback: React.FC = () => {
           {/* Footer */}
           <div className="text-center pt-4 border-t border-border/40">
             <p className="text-sm text-muted-foreground">
-              <a
-                href="/login"
-                className="text-[#50B498] hover:text-[#468585] font-medium transition-colors hover:underline"
+              <button
+                onClick={handleBackToLogin}
+                className="text-[#50B498] hover:text-[#468585] font-medium transition-colors hover:underline bg-transparent border-none cursor-pointer"
+                disabled={isLoading}
               >
                 Back to Sign In
-              </a>
+              </button>
             </p>
           </div>
         </CardContent>

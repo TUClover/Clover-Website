@@ -315,7 +315,6 @@ export const Help = () => {
 
   return (
     <div>
-      <NavBar />
       <div className="pt-16 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 width-container">
         <SideBar
           openSections={openSections}
