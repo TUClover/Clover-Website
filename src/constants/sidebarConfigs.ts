@@ -181,6 +181,7 @@ export const sidebarItems: SideBarItem[] = [
     name: "Error Analytics",
     title: "Error Monitoring",
     subheading: "Development",
+    description: "Monitor and manage application errors with ease.",
     roles: DEV,
     dashboardView: ErrorAnalyticsView,
   },
