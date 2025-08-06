@@ -24,3 +24,5 @@ export const IMAGE_UPLOAD_ENDPOINT = `${BASE_ENDPOINT}/images/upload`;
 export const RESET_PASSWORD_REDIRECT = import.meta.env.VITE_API_URL
   ? "https://clover.nickrucinski.com/resetform"
   : "http://localhost:5173/resetform";
+
+export const ERROR_ENDPOINT = `${BASE_ENDPOINT}/errors`;
