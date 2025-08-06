@@ -176,10 +176,10 @@ export const sidebarItems: SideBarItem[] = [
     dashboardView: AppAnalyticsView,
   },
   {
-    id: "error-analytics",
+    id: "error-stats",
     icon: BugIcon,
-    name: "Error Analytics",
-    title: "Error Monitoring",
+    name: "Error Stats",
+    title: "Error Statistics",
     subheading: "Development",
     description: "Monitor and manage application errors with ease.",
     roles: DEV,

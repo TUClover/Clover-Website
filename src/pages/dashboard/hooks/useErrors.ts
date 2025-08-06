@@ -4,7 +4,6 @@ import {
   ErrorLog,
   ErrorsResponse,
   getAllErrors,
-  getErrorById,
   GetErrorsParams,
   resolveError,
 } from "@/api/stats";
@@ -142,14 +141,92 @@ export const useErrors = (
   } = useQuery({
     queryKey: ["errors", queryParams],
     queryFn: async () => {
-      const { data, error } = await getAllErrors(queryParams);
-      if (error) throw new Error(error);
-      return data as ErrorsResponse;
+      try {
+        const { data, error } = await getAllErrors(queryParams);
+
+        // If there's an API error, return empty data instead of throwing
+        if (error) {
+          console.warn("API Error:", error);
+          return {
+            errors: [],
+            pagination: {
+              page: 1,
+              limit: limit,
+              totalCount: 0,
+              totalPages: 1,
+              hasNext: false,
+              hasPrev: false,
+            },
+            filters: {
+              sortBy: sortBy || "createdAt",
+              sortOrder: sortOrder || "DESC",
+            },
+          } as ErrorsResponse;
+        }
+
+        // Handle cases where API returns null/undefined or malformed data
+        if (!data) {
+          return {
+            errors: [],
+            pagination: {
+              page: 1,
+              limit: limit,
+              totalCount: 0,
+              totalPages: 1,
+              hasNext: false,
+              hasPrev: false,
+            },
+            filters: {
+              sortBy: sortBy || "createdAt",
+              sortOrder: sortOrder || "DESC",
+            },
+          } as ErrorsResponse;
+        }
+
+        // Ensure errors array exists and normalize data
+        const normalizedData = {
+          ...data,
+          errors: Array.isArray(data.errors) ? data.errors : [],
+          pagination: data.pagination || {
+            page: 1,
+            limit: limit,
+            totalCount: 0,
+            totalPages: 1,
+            hasNext: false,
+            hasPrev: false,
+          },
+          filters: data.filters || {
+            sortBy: sortBy || "createdAt",
+            sortOrder: sortOrder || "DESC",
+          },
+        } as ErrorsResponse;
+
+        return normalizedData;
+      } catch (err) {
+        // Log the error for debugging but return empty data
+        console.error("Error fetching data:", err);
+        return {
+          errors: [],
+          pagination: {
+            page: 1,
+            limit: limit,
+            totalCount: 0,
+            totalPages: 1,
+            hasNext: false,
+            hasPrev: false,
+          },
+          filters: {
+            sortBy: sortBy || "createdAt",
+            sortOrder: sortOrder || "DESC",
+          },
+        } as ErrorsResponse;
+      }
     },
     enabled: initialOptions.enabled !== false,
     staleTime: 1000 * 60 * 2, // 2 minutes
     gcTime: 1000 * 60 * 5, // 5 minutes
-    retry: 2,
+    // Remove retry logic that was causing issues
+    retry: false,
     refetchOnWindowFocus: false,
   });
 
@@ -204,10 +281,20 @@ export const useErrors = (
 
   return {
     errors: errorsResponse?.errors || [],
-    pagination: errorsResponse?.pagination || null,
-    filters: errorsResponse?.filters || null,
+    pagination: errorsResponse?.pagination || {
+      page: 1,
+      limit: limit,
+      totalCount: 0,
+      totalPages: 1,
+      hasNext: false,
+      hasPrev: false,
+    },
+    filters: errorsResponse?.filters || {
+      sortBy: sortBy || "createdAt",
+      sortOrder: sortOrder || "DESC",
+    },
     isLoading,
-    error: queryError?.message || null,
+    error: null, // Always return null for error to avoid showing error messages
     refetch,
     // Pagination controls
     setPage,

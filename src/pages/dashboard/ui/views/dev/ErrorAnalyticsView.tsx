@@ -9,9 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Search, Filter, AlertTriangle, XCircle, Hash } from "lucide-react";
-import ModalContainer from "@/components/ModalContainer";
+import { Search, AlertTriangle, Hash, ArrowLeft } from "lucide-react";
 import { useErrors } from "@/pages/dashboard/hooks/useErrors";
 import { ErrorLog } from "@/api/stats";
 import {
@@ -23,11 +21,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import CustomSelect from "@/components/CustomSelect";
-import ErrorDetailsCard from "../../components/ErrorDetailsCard";
+import ErrorDetailsView from "./ErrorDetailsView";
 
 const ErrorAnalyticsView = ({ description }: { description?: string }) => {
   const [selectedErrorId, setSelectedErrorId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [levelFilter, setLevelFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortByFilter, setSortByFilter] = useState("createdAt");
 
   const {
     errors,
@@ -80,8 +81,49 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
     }
   };
 
+  const handleLevelChange = (value: string) => {
+    setLevelFilter(value);
+    setLevel(value as any);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value);
+    setResolved(value as any);
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortByFilter(value);
+    setSortBy(value as any);
+  };
+
+  const handleResetFilters = () => {
+    setLevelFilter("all");
+    setStatusFilter("all");
+    setSortByFilter("createdAt");
+    setSearchTerm("");
+    resetFilters();
+  };
+
+  const shouldResetFilter =
+    searchTerm ||
+    levelFilter !== "all" ||
+    statusFilter !== "all" ||
+    sortByFilter !== "createdAt";
+
+  const handleBackToList = () => {
+    setSelectedErrorId(null);
+  };
+
+  const handleSelectError = (errorId: string) => {
+    const mainContent = document.querySelector("main.overflow-auto");
+
+    mainContent?.scrollTo(0, 0);
+
+    setSelectedErrorId(errorId);
+  };
+
   const renderErrorsTable = (filteredData: ErrorLog[], startIndex: number) => (
-    <div className="border rounded-md shadow-sm overflow-hidden">
+    <div className="rounded-md shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader className="bg-muted">
@@ -91,8 +133,8 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
               <TableHead className="w-32 text-center text-xs">
                 Category
               </TableHead>
-              <TableHead className="min-w-[250px] text-xs">Message</TableHead>
-              <TableHead className="w-32 text-center text-xs">
+              <TableHead className="w-64 text-xs">Message</TableHead>
+              <TableHead className="w-48 text-center text-xs">
                 Created
               </TableHead>
               <TableHead className="w-20 text-center text-xs">Status</TableHead>
@@ -102,8 +144,8 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
             {filteredData.map((errorItem, index) => (
               <TableRow
                 key={errorItem.id}
-                className="cursor-pointer bg-white/40 dark:bg-black/40 hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors border-b border-muted"
-                onClick={() => setSelectedErrorId(errorItem.id)}
+                className="cursor-pointer bg-white/40 dark:bg-black/40 hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors"
+                onClick={() => handleSelectError(errorItem.id)}
               >
                 <TableCell className="text-center py-3 text-xs">
                   {startIndex + index + 1}
@@ -129,7 +171,7 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
                     {errorItem.category}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-xs">
+                <TableCell className="text-xs w-64">
                   <p className="truncate" title={errorItem.message}>
                     {errorItem.message}
                   </p>
@@ -141,9 +183,7 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
                   )}
                 </TableCell>
                 <TableCell className="text-center text-xs">
-                  <div className="flex items-center justify-center gap-1">
-                    {formatDate(errorItem.createdAt)}
-                  </div>
+                  {formatDate(errorItem.createdAt)}
                 </TableCell>
                 <TableCell className="text-center text-xs">
                   <Badge
@@ -159,9 +199,9 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
         </Table>
       </div>
 
-      {filteredData.length === 0 && (
-        <div className="px-6 py-12 text-center text-gray-500">
-          <AlertTriangle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+      {(filteredData.length === 0 || error) && (
+        <div className="px-6 py-12 text-center text-muted-foreground">
+          <AlertTriangle className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
           <p className="text-lg">No errors found matching your criteria</p>
         </div>
       )}
@@ -260,17 +300,38 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
     </div>
   );
 
-  if (error) {
+  // Show error details view if an error is selected
+  if (selectedErrorId) {
     return (
-      <Alert variant="destructive" className="m-6">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>Failed to load errors: {error}</AlertDescription>
-      </Alert>
+      <div className="min-h-screen overflow-y-auto">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Back Button */}
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={handleBackToList}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Error List
+            </Button>
+          </div>
+
+          {/* Error Details Card */}
+          <div className="w-full">
+            <ErrorDetailsView
+              errorId={selectedErrorId}
+              onClose={handleBackToList}
+            />
+          </div>
+        </div>
+      </div>
     );
   }
 
+  // Show main error list view
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex w-full justify-between gap-6 items-center">
@@ -280,40 +341,37 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
         </div>
 
         {/* Errors Table with Embedded Filters */}
-        <Card className="shadow-xl border-0">
-          <CardHeader>
-            <CardTitle>Errors</CardTitle>
-            <CardDescription className="text-gray-500">
-              Click on any error to view detailed information
-            </CardDescription>
+        <Card className="shadow-xl py-3 bg-sidebar">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="space-y-2">
+              <CardTitle>Errors</CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Click on any error to view detailed information
+              </CardDescription>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResetFilters}
+              disabled={!shouldResetFilter}
+              className="bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              Reset
+            </Button>
           </CardHeader>
 
           {/* Embedded Filters */}
-          <CardContent className="px-6 pb-4 border-b">
+          <CardContent className="px-6 pb-4">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Filter className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">Filters</span>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={resetFilters}
-                  className="bg-muted text-muted-foreground hover:bg-gray-100 hover:text-gray-900"
-                >
-                  Reset
-                </Button>
-              </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Search */}
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-gray-600">
+                  <label className="text-xs font-semibold text-muted-foreground">
                     Search
                   </label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       placeholder="Search messages..."
                       value={searchTerm}
@@ -328,35 +386,35 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
 
                 {/* Level Filter */}
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-gray-600">
+                  <label className="text-xs font-semibold text-muted-foreground">
                     Level
                   </label>
                   <CustomSelect
-                    value="all"
-                    onValueChange={(value) => setLevel(value as any)}
+                    value={levelFilter}
+                    onValueChange={handleLevelChange}
                     options={[
-                      { value: "all", label: "All levels" },
+                      { value: "all", label: "All" },
                       { value: "CRITICAL", label: "Critical" },
                       { value: "ERROR", label: "Error" },
                       { value: "WARNING", label: "Warning" },
                       { value: "INFO", label: "Info" },
                     ]}
-                    placeholder="All levels"
+                    placeholder="All"
                     className="h-9"
                   />
                 </div>
 
                 {/* Status Filter */}
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-gray-600">
+                  <label className="text-xs font-semibold text-muted-foreground">
                     Status
                   </label>
                   <CustomSelect
-                    value="all"
-                    onValueChange={(value) => setResolved(value as any)}
+                    value={statusFilter}
+                    onValueChange={handleStatusChange}
                     options={[
-                      { value: "all", label: "All statuses" },
-                      { value: "false", label: "Unresolved" },
+                      { value: "all", label: "All" },
+                      { value: "false", label: "Open" },
                       { value: "true", label: "Resolved" },
                     ]}
                     placeholder="All statuses"
@@ -366,12 +424,12 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
 
                 {/* Sort */}
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-gray-600">
+                  <label className="text-xs font-semibold text-muted-foreground">
                     Sort by
                   </label>
                   <CustomSelect
-                    value="createdAt"
-                    onValueChange={(value) => setSortBy(value as any)}
+                    value={sortByFilter}
+                    onValueChange={handleSortChange}
                     options={[
                       { value: "createdAt", label: "Created date" },
                       { value: "level", label: "Level" },
@@ -389,26 +447,13 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
           <CardContent className="px-6 pt-6">
             {isLoading ? (
               <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/20 border-t-primary"></div>
               </div>
             ) : (
               <ErrorPagination />
             )}
           </CardContent>
         </Card>
-
-        {/* Error Detail Modal */}
-        <ModalContainer
-          isOpen={!!selectedErrorId}
-          onClose={() => setSelectedErrorId(null)}
-        >
-          {selectedErrorId && (
-            <ErrorDetailsCard
-              errorId={selectedErrorId}
-              onClose={() => setSelectedErrorId(null)}
-            />
-          )}
-        </ModalContainer>
       </div>
     </div>
   );
