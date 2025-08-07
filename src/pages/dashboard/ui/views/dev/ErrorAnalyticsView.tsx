@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, AlertTriangle, Hash, ArrowLeft } from "lucide-react";
 import { useErrors } from "@/pages/dashboard/hooks/useErrors";
-import { ErrorLog } from "@/api/stats";
 import {
   Table,
   TableBody,
@@ -22,6 +21,8 @@ import {
 } from "@/components/ui/table";
 import CustomSelect from "@/components/CustomSelect";
 import ErrorDetailsView from "./ErrorDetailsView";
+import ErrorCharts from "../../components/ErrorCharts";
+import { ErrorLog } from "@/types/error";
 
 const ErrorAnalyticsView = ({ description }: { description?: string }) => {
   const [selectedErrorId, setSelectedErrorId] = useState<string | null>(null);
@@ -129,7 +130,7 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
           <TableHeader className="bg-muted">
             <TableRow>
               <TableHead className="w-16 text-center text-xs">No.</TableHead>
-              <TableHead className="w-24 text-center text-xs">Type</TableHead>
+              <TableHead className="w-24 text-center text-xs">Level</TableHead>
               <TableHead className="w-32 text-center text-xs">
                 Category
               </TableHead>
@@ -154,9 +155,9 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
                   <Badge
                     variant={
                       errorItem.level === "CRITICAL"
-                        ? "error"
+                        ? "critical"
                         : errorItem.level === "ERROR"
-                          ? "destructive"
+                          ? "error"
                           : errorItem.level === "WARNING"
                             ? "warning"
                             : "default"
@@ -329,7 +330,6 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
     );
   }
 
-  // Show main error list view
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -339,6 +339,8 @@ const ErrorAnalyticsView = ({ description }: { description?: string }) => {
             {description}
           </p>
         </div>
+
+        <ErrorCharts />
 
         {/* Errors Table with Embedded Filters */}
         <Card className="shadow-xl py-3 bg-sidebar">

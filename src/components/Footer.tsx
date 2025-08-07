@@ -2,7 +2,7 @@ const Footer = () => {
   return (
     <footer
       className=" border-gray-200 dark:border-gray-700 
-                       bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
+                       bg-white/50 dark:bg-sidebar/50 backdrop-blur-sm"
     >
       <div className="container mx-auto px-6 py-6 text-center">
         <div className="space-y-2">

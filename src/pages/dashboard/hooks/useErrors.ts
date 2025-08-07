@@ -1,17 +1,18 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { getAllErrors, resolveError } from "@/api/stats";
 import {
+  ErrorLevel,
   ErrorLog,
   ErrorsResponse,
-  getAllErrors,
   GetErrorsParams,
-  resolveError,
-} from "@/api/stats";
+  SortOrder,
+} from "@/types/error";
 
 interface UseErrorsOptions {
   page?: number;
   limit?: number;
-  level?: "INFO" | "WARNING" | "ERROR" | "CRITICAL" | "all";
+  level?: ErrorLevel | "all";
   category?: string | "all";
   userId?: string | "all";
   resolved?: boolean | "all";
@@ -21,7 +22,7 @@ interface UseErrorsOptions {
   endDate?: string;
   search?: string;
   sortBy?: "createdAt" | "level" | "category" | "errorCode" | "resolved";
-  sortOrder?: "ASC" | "DESC";
+  sortOrder?: SortOrder;
   enabled?: boolean;
 }
 
@@ -51,7 +52,6 @@ interface UseErrorsReturn {
   isLoading: boolean;
   error: string | null;
   refetch: () => void;
-  // Filter and sort controls
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   setLevel: (level: UseErrorsOptions["level"]) => void;
@@ -91,7 +91,6 @@ export const useErrors = (
     initialOptions.sortOrder || "DESC"
   );
 
-  // Build query parameters
   const queryParams = useMemo((): GetErrorsParams => {
     const params: GetErrorsParams = {
       page,
@@ -99,7 +98,6 @@ export const useErrors = (
       sortOrder,
     };
 
-    // Map sortBy to the correct snake_case field names
     if (sortBy === "createdAt") params.sortBy = "created_at";
     else if (sortBy === "errorCode") params.sortBy = "error_code";
     else params.sortBy = sortBy;
@@ -132,7 +130,6 @@ export const useErrors = (
     sortOrder,
   ]);
 
-  // TanStack Query
   const {
     data: errorsResponse,
     isLoading,
@@ -144,7 +141,6 @@ export const useErrors = (
       try {
         const { data, error } = await getAllErrors(queryParams);
 
-        // If there's an API error, return empty data instead of throwing
         if (error) {
           console.warn("API Error:", error);
           return {
@@ -164,7 +160,6 @@ export const useErrors = (
           } as ErrorsResponse;
         }
 
-        // Handle cases where API returns null/undefined or malformed data
         if (!data) {
           return {
             errors: [],
@@ -183,7 +178,6 @@ export const useErrors = (
           } as ErrorsResponse;
         }
 
-        // Ensure errors array exists and normalize data
         const normalizedData = {
           ...data,
           errors: Array.isArray(data.errors) ? data.errors : [],
@@ -203,8 +197,6 @@ export const useErrors = (
 
         return normalizedData;
       } catch (err) {
-        // Log the error for debugging but return empty data
-        console.error("Error fetching data:", err);
         return {
           errors: [],
           pagination: {
@@ -223,9 +215,8 @@ export const useErrors = (
       }
     },
     enabled: initialOptions.enabled !== false,
-    staleTime: 1000 * 60 * 2, // 2 minutes
-    gcTime: 1000 * 60 * 5, // 5 minutes
-    // Remove retry logic that was causing issues
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -234,10 +225,9 @@ export const useErrors = (
   const setDateRange = (newStartDate?: string, newEndDate?: string) => {
     setStartDate(newStartDate || "");
     setEndDate(newEndDate || "");
-    setPage(1); // Reset to first page when changing filters
+    setPage(1);
   };
 
-  // Reset all filters
   const resetFilters = () => {
     setPage(1);
     setLevel("all");
@@ -253,7 +243,6 @@ export const useErrors = (
     setSortOrder("DESC");
   };
 
-  // Override setters to reset page when filters change
   const setLevelWithReset = (newLevel: UseErrorsOptions["level"]) => {
     setLevel(newLevel);
     setPage(1);
@@ -294,36 +283,25 @@ export const useErrors = (
       sortOrder: sortOrder || "DESC",
     },
     isLoading,
-    error: null, // Always return null for error to avoid showing error messages
+    error: null,
     refetch,
-    // Pagination controls
     setPage,
     setLimit: (newLimit: number) => {
       setLimit(newLimit);
-      setPage(1); // Reset to first page when changing limit
+      setPage(1);
     },
-    // Filter controls (with page reset)
     setLevel: setLevelWithReset,
     setCategory: setCategoryWithReset,
     setUserId: setUserIdWithReset,
     setResolved: setResolvedWithReset,
     setSearch: setSearchWithReset,
-    // Sort controls
     setSortBy,
     setSortOrder,
-    // Utility functions
     setDateRange,
     resetFilters,
   };
 };
 
-// Hook for fetching a single error by ID
-interface UseErrorByIdOptions {
-  errorId: string | null;
-  enabled?: boolean;
-}
-
-// Hook for resolving errors with optimistic updates
 export const useResolveError = () => {
   const [isResolving, setIsResolving] = useState(false);
   const [error, setError] = useState<string | null>(null);

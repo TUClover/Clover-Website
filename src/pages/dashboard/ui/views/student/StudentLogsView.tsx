@@ -58,7 +58,7 @@ const StudentLogsView = () => {
 
   return (
     <Card className="p-6">
-      <div className="flex items-center mb-3 gap-3">
+      <div className="flex items-center justify-between mb-3 gap-3">
         <CustomTooltip
           trigger={
             <h2 className="text-lg font-semibold text-[#50B498]">

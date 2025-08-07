@@ -21,10 +21,13 @@ import {
   User,
   Layers2,
   Hammer,
+  CalendarClock,
+  CheckCheck,
 } from "lucide-react";
 import { ErrorLog, getErrorById } from "@/api/stats";
 import { useResolveError } from "@/pages/dashboard/hooks/useErrors";
 import { Label } from "@/components/ui/label";
+import { formatActivityTimestamp } from "@/utils/timeConverter";
 
 interface ExpandableSectionProps {
   title: string;
@@ -259,35 +262,6 @@ const ErrorDetailsView = ({ errorId, onClose }: ErrorDetailsViewProps) => {
     }
   };
 
-  const formatDate = (dateString: string, showFull: boolean = false) => {
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return "Invalid date";
-      }
-
-      if (showFull) {
-        return date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        });
-      } else {
-        return date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      }
-    } catch (error) {
-      return "Invalid date";
-    }
-  };
-
   if (error) {
     return (
       <Card className="max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl bg-sidebar">
@@ -335,19 +309,24 @@ const ErrorDetailsView = ({ errorId, onClose }: ErrorDetailsViewProps) => {
   }
 
   return (
-    <Card className="max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl bg-sidebar">
+    <Card className="max-w-6xl w-full">
       {/* Header */}
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <CardTitle className="flex items-center gap-3 text-xl">
-              <AlertTriangle className="w-6 h-6 text-red-600" />
+              {selectedError.resolved ? (
+                <CheckCheck className="size-6 text-primary" />
+              ) : (
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              )}
               {selectedError.message}
             </CardTitle>
+
             <CardDescription className="mt-2 text-muted-foreground flex items-center gap-4">
-              <span className="flex items-center gap-2">
-                <Hash className="w-4 h-4" />
-                {errorId}
+              <span className="text-sm flex items-center gap-2">
+                <CalendarClock className="size-4" />
+                {formatActivityTimestamp(selectedError.createdAt, true)}
               </span>
               <Badge
                 variant={
@@ -359,19 +338,16 @@ const ErrorDetailsView = ({ errorId, onClose }: ErrorDetailsViewProps) => {
                         ? "secondary"
                         : "default"
                 }
-                className="text-xs"
+                className="text-xs rounded-2xl px-3"
               >
                 {selectedError.level}
               </Badge>
               <Badge
                 variant={selectedError.resolved ? "default" : "destructive"}
-                className="text-xs"
+                className="text-xs rounded-2xl px-3"
               >
                 {selectedError.resolved ? "Resolved" : "Open"}
               </Badge>
-              <span className="text-xs">
-                {formatDate(selectedError.createdAt)}
-              </span>
             </CardDescription>
           </div>
         </div>
@@ -381,7 +357,7 @@ const ErrorDetailsView = ({ errorId, onClose }: ErrorDetailsViewProps) => {
       <CardContent className="p-8 pt-0 space-y-8">
         {/* Basic Info - Always visible */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-muted rounded-lg p-4">
+          <div className="bg-muted/50 rounded-lg p-4">
             <Label className="text-sm font-semibold  items-center text-muted-foreground block mb-2">
               <Layers2 className="w-4 h-4 inline-block mr-2 mb-1" />
               Category
@@ -390,7 +366,7 @@ const ErrorDetailsView = ({ errorId, onClose }: ErrorDetailsViewProps) => {
           </div>
 
           {selectedError.action && (
-            <div className="bg-muted rounded-lg p-4">
+            <div className="bg-muted/50 rounded-lg p-4">
               <Label className="text-sm font-semibold text-muted-foreground block mb-2">
                 <Hammer className="w-4 h-4 inline-block mr-2 mb-1" />
                 Action
@@ -400,7 +376,7 @@ const ErrorDetailsView = ({ errorId, onClose }: ErrorDetailsViewProps) => {
           )}
 
           {selectedError.userId && (
-            <div className="bg-muted rounded-lg p-4">
+            <div className="bg-muted/50 rounded-lg p-4">
               <label className="text-sm font-semibold text-muted-foreground flex items-center mb-2">
                 <User className="w-4 h-4 inline-block mr-2 mb-1" />
                 User ID
@@ -461,7 +437,7 @@ const ErrorDetailsView = ({ errorId, onClose }: ErrorDetailsViewProps) => {
                 Created At
               </label>
               <p className="text-sm bg-muted/50 px-3 py-2 rounded">
-                {formatDate(selectedError.createdAt, true)}
+                {formatActivityTimestamp(selectedError.createdAt)}
               </p>
             </div>
           </div>

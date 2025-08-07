@@ -1,6 +1,7 @@
 import { ERROR_ENDPOINT, STAT_ENDPOINT } from "./endpoints";
 import { AIStats } from "../types/suggestion";
 import { toCamelCase, toSnakeCase } from "@/lib/utils";
+import { ErrorLog, ErrorsResponse, GetErrorsParams } from "@/types/error";
 
 /**
  * Fetches AI usage statistics from the server.
@@ -36,65 +37,6 @@ export async function getAIUsageStats(): Promise<{
       error: err instanceof Error ? err.message : "Unknown error occurred",
     };
   }
-}
-
-export interface ErrorLog {
-  id: string;
-  createdAt: string;
-  level: "INFO" | "WARNING" | "ERROR" | "CRITICAL";
-  category: string;
-  errorCode?: string;
-  message: string;
-  stackTrace?: string;
-  context?: Record<string, any>;
-  userId?: string;
-  vscodeVersion?: string;
-  extensionVersion?: string;
-  operatingSystem?: string;
-  action?: string;
-  resolved: boolean;
-  resolvedAt?: string;
-}
-
-export interface ErrorsResponse {
-  errors: ErrorLog[];
-  pagination: {
-    page: number;
-    limit: number;
-    totalCount: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-  filters: {
-    level?: string;
-    category?: string;
-    userId?: string;
-    resolved?: string;
-    errorCode?: string;
-    action?: string;
-    startDate?: string;
-    endDate?: string;
-    search?: string;
-    sortBy: string;
-    sortOrder: string;
-  };
-}
-
-export interface GetErrorsParams {
-  page?: number;
-  limit?: number;
-  level?: "INFO" | "WARNING" | "ERROR" | "CRITICAL";
-  category?: string;
-  userId?: string;
-  resolved?: boolean;
-  errorCode?: string;
-  action?: string;
-  startDate?: string;
-  endDate?: string;
-  search?: string;
-  sortBy?: "created_at" | "level" | "category" | "error_code" | "resolved";
-  sortOrder?: "ASC" | "DESC";
 }
 
 export interface UpdateErrorRequest {
