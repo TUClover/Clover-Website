@@ -21,13 +21,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import UserAvatar from "@/components/UserAvatar";
 import {
   Calendar,
@@ -38,7 +31,6 @@ import {
   Settings,
   User2,
   X,
-  Shield,
 } from "lucide-react";
 import { ACCEPT_EVENTS, REJECT_EVENTS } from "@/types/event";
 import { CustomTooltip } from "@/components/CustomTooltip";
@@ -251,7 +243,7 @@ const UserDetailsView = () => {
       <NavBar />
       <div className="space-y-6 py-24 max-w-7xl mx-auto px-8">
         {/* User Details Section */}
-        <Card className="overflow-hidden bg-white dark:bg-gray-900">
+        <Card className="overflow-hidden">
           {/* Header */}
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6 px-8">
             <div className="flex items-center space-x-4">
@@ -290,7 +282,7 @@ const UserDetailsView = () => {
           <CardContent className="space-y-6">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="py-3">
+              <Card className="py-3 bg-muted/40">
                 <InfoCardTitle title="Details" icon={User2} />
                 <CardContent className="space-y-3">
                   <InfoField
@@ -315,7 +307,7 @@ const UserDetailsView = () => {
               </Card>
 
               {/* User Settings */}
-              <Card className="py-3">
+              <Card className="py-3 bg-muted/40">
                 <InfoCardTitle title="Settings" icon={Settings} />
                 <CardContent className="space-y-6">
                   {/* Notifications */}
@@ -444,7 +436,7 @@ const UserDetailsView = () => {
             )}
 
             {/* Account Stats */}
-            <Card className="py-3">
+            <Card className="py-3 bg-muted/40">
               <InfoCardTitle title="Activity Status" icon={PersonStanding} />
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
