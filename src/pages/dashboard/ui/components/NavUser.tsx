@@ -39,7 +39,7 @@ function NavUser({ isMobile }: NavUserProps) {
           <UserInfoItem
             firstName={user.firstName}
             lastName={user.lastName}
-            email={user.email}
+            pid={user.pid}
             avatarUrl={user.avatarUrl}
             className="w-full bg-transparent"
           />
@@ -56,7 +56,7 @@ function NavUser({ isMobile }: NavUserProps) {
             <UserInfoItem
               firstName={user.firstName}
               lastName={user.lastName}
-              email={user.email}
+              pid={user.pid}
               avatarUrl={user.avatarUrl}
               size="sm"
               className="w-full bg-transparent"

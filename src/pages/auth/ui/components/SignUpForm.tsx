@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 /**
  * SignUpForm component for user registration.
@@ -19,6 +21,8 @@ const SignUpForm = () => {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [isConsent, setIsConsent] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +38,8 @@ const SignUpForm = () => {
         firstName,
         lastName,
         email,
-        password
+        password,
+        isConsent
       );
 
       if (error) {
@@ -116,6 +121,24 @@ const SignUpForm = () => {
             )}
           </button>
         </div>
+
+        {/* Consent Checkbox */}
+        <div className="flex items-start space-x-3">
+          <Checkbox
+            id="consent"
+            checked={isConsent}
+            onCheckedChange={(checked) => setIsConsent(!!checked)}
+            className="mt-1"
+          />
+          <Label
+            htmlFor="consent"
+            className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer leading-relaxed"
+          >
+            I consent to Clover using the data collected from my usage for
+            research purposes only.
+          </Label>
+        </div>
+
         <Button type="submit" className="w-full text-md py-5 mt-3">
           {loading ? "Creating Account..." : "Sign Up"}
         </Button>
