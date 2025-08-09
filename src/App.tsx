@@ -27,6 +27,7 @@ import Construction from "./pages/Construction";
 import { ConstructionRoute, EarlyAccessProvider } from "./hooks/useEarlyAccess";
 import { PublicLayout } from "./pages/PublicLayout";
 import UserDetailsView from "./pages/dashboard/ui/views/admin/UserDetailsView";
+import CreateEditConsentView from "./pages/dashboard/ui/views/admin/CreateEditConsentView";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +100,7 @@ const App = (): JSX.Element => {
                     <Route path="/passwordreset" element={<Reset />} />
                   </Route>
                 </Route>
+                <Route path="/consent" element={<CreateEditConsentView />} />
                 <Route path="/resetform" element={<PasswordCallback />} />
                 <Route path="/auth" element={<AuthCallback />} />
                 <Route path="/auth/vscode" element={<VSCodeAuthCallback />} />
